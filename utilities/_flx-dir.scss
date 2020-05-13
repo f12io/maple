@@ -1,0 +1,11 @@
+$um-flx-dir: (
+  _prefix: "flx-dir",
+  _common: (),
+  col: (flex-direction: column),
+  row: (flex-direction: row),
+  colrev: (flex-direction: column-reverse),
+  rowrev: (flex-direction: row-reverse),
+);
+
+/// Add to utility map
+$um: map-merge($um, (um-flx-dir: $um-flx-dir));

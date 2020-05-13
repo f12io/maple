@@ -1,0 +1,55 @@
+/// position align
+$um-pos-align: (
+  _prefix: "pos-align",
+  _common: (
+    bottom: auto,
+    left: auto,
+    position: absolute,
+    right: auto,
+    top: auto,
+  ),
+  top-left: (
+    left: 0,
+    top: 0,
+  ),
+  top-center: (
+    left: 50%,
+    top: 0,
+    transform: translateX(-50%),
+  ),
+  top-right: (
+    right: 0,
+    top: 0,
+  ),
+  center-left: (
+    left: 0,
+    top: 50%,
+    transform: translateY(-50%),
+  ),
+  center-center: (
+    left: 50%,
+    top: 50%,
+    transform: translate(-50%, -50%),
+  ),
+  center-right: (
+    right: 0,
+    top: 50%,
+    transform: translateY(-50%),
+  ),
+  bottom-left: (
+    bottom: 0,
+    left: 0,
+  ),
+  bottom-center: (
+    bottom: 0,
+    left: 50%,
+    transform: translateX(-50%),
+  ),
+  bottom-right: (
+    bottom: 0,
+    right: 0,
+  ),
+);
+
+/// Add to utility map
+$um: map-merge($um, (um-pos-align: $um-pos-align));

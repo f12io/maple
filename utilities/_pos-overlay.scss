@@ -1,0 +1,19 @@
+/// position overlay
+$um-pos-overlay: (
+  _prefix: "overlay",
+  _common: (
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  ),
+  absolute: (
+    position: absolute,
+  ),
+  fixed: (
+    position: fixed,
+  ),
+) !default;
+
+/// Add to utility map
+$um: map-merge($um, (um-pos-overlay: $um-pos-overlay));

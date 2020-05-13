@@ -1,0 +1,36 @@
+/// display
+$um-d: (
+  _prefix: "d",
+  _common: (),
+  _generate-down-breakpoints: true,
+  none: (
+    display: none,
+  ),
+  block: (
+    display: block,
+  ),
+  inline: (
+    display: inline,
+  ),
+  inblock: (
+    display: inline-block,
+  ),
+  flx: (
+    display: flex,
+  ),
+  inflx: (
+    display: inline-flex,
+  ),
+  table: (
+    display: table,
+  ),
+  trow: (
+    display: table-row,
+  ),
+  tcell: (
+    display: table-cell,
+  ),
+) !default;
+
+/// Add to utility map
+$um: map-merge($um, (um-d: $um-d));

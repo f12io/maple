@@ -1,0 +1,25 @@
+$um-flx-col-align-self: (
+  _prefix: "flx-col-align-self",
+  _common: (),
+  left: (
+    align-self: flex-start,
+  ),
+  centerx: (
+    align-self: center,
+  ),
+  right: (
+    align-self: flex-end,
+  ),
+  top: (
+    justify-self: flex-start,
+  ),
+  centery: (
+    justify-self: center,
+  ),
+  bottom: (
+    justify-self: flex-end,
+  ),
+);
+
+/// Add to utility map
+$um: map-merge($um, (um-flx-col-align-self: $um-flx-col-align-self));

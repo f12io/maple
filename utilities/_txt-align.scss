@@ -1,0 +1,17 @@
+/// text-align
+$um-txt-align: (
+  _prefix: "txt-align",
+  _common: (),
+  left: (
+    text-align: left,
+  ),
+  center: (
+    text-align: center,
+  ),
+  right: (
+    text-align: right,
+  ),
+) !default;
+
+/// Add to utility map
+$um: map-merge($um, (um-txt-align: $um-txt-align));

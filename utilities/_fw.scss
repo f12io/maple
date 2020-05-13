@@ -1,0 +1,26 @@
+/// font-weight
+$um-fw: (
+  _prefix: "fw",
+  _common: (),
+  light: (
+    font-weight: $font-weight-light,
+  ),
+  regular: (
+    font-weight: $font-weight-regular,
+  ),
+  medium: (
+    font-weight: $font-weight-medium,
+  ),
+  semi: (
+    font-weight: $font-weight-semi-bold,
+  ),
+  bold: (
+    font-weight: $font-weight-bold,
+  ),
+  extra: (
+    font-weight: $font-weight-extra-bold,
+  ),
+) !default;
+
+/// Add to utility map
+$um: map-merge($um, (um-fw: $um-fw));

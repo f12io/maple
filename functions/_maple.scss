@@ -1,0 +1,160 @@
+/// Extends a prop map by using other maps in _extend property
+/// @param {Map} $map-bundle - Map to be extended
+/// @return {Map} - Extended map
+@function maple-extend($map-bundle) {
+  $extended-map-list: ();
+
+  @each $map-name in map-keys($map-bundle) {
+    $utility-map: map-get($map-bundle, $map-name);
+    $utility-map-extend: map-get($utility-map, "_extend");
+    $utility-map-prefix: map-get($utility-map, "_prefix");
+    $utility-map: map-merge($utility-map, (_extend: null));
+
+    @if $utility-map-extend {
+      @each $prop-map in $utility-map-extend {
+        $prop-map-prefix: map-get($prop-map, "_prefix");
+        $extended-map-list: map-merge(
+          $extended-map-list,
+          (
+            #{$utility-map-prefix}-#{$prop-map-prefix}: map-collect(
+              $utility-map,
+              $prop-map,
+              (
+                _prefix: #{$utility-map-prefix}-#{$prop-map-prefix},
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @return map-merge($map-bundle, $extended-map-list);
+}
+
+/// Assigns given map's values to given property as css styles
+/// @param {Map} $map - Map to be converted
+/// @param {String} $prop - Property name to be mapped as css styles
+/// @param {String} $prefix - Utility class prefix
+/// @return {Map} - Property map
+@function maple-generate($map, $prop, $prefix: $prop) {
+  $prop-map: (
+    _prefix: $prefix,
+    _common: (),
+  );
+
+  @if str-ends-with($prop, "-x") {
+    $baseProp: str-replace($property, "-x", "");
+
+    @each $key in map-keys($map) {
+      $value: map-get($map, $key);
+      $prop-map: map-merge(
+        $prop-map,
+        (
+          #{$key}: (
+            #{$baseProp}-left: $value,
+            #{$baseProp}-right: $value,
+          ),
+        )
+      );
+    }
+  }
+  @else if str-ends-with($prop, "-y") {
+    $baseProp: str-replace($property, "-y", "");
+
+    @each $key in map-keys($map) {
+      $value: map-get($map, $key);
+      $prop-map: map-merge(
+        $prop-map,
+        (
+          #{$key}: (
+            #{$baseProp}-bottom: $value,
+            #{$baseProp}-top: $value,
+          ),
+        ),
+      );
+    }
+  }
+  @else {
+    @each $key in map-keys($map) {
+      $value: map-get($map, $key);
+      $prop-map: map-merge(
+        $prop-map,
+        (
+          #{$key}: ( #{$prop}: $value ),
+        )
+      );
+    }
+  }
+
+  @return $prop-map;
+}
+
+/// Finds min and max keys of breakpoints that set by the consumers of maple.
+/// You can expect to get xs and xl if you're just a regular person.
+/// @param {Map} $bp-map - Breakpoint map to be digged
+/// @return {Map} - A map having min and max keys
+@function maple-bp-limits($bp-map) {
+  $unknownBpKey: "";
+
+  @each $bp in map-keys($bp-map) {
+    $unknownBpKey: $bp;
+  }
+
+  $maxBpKey: $unknownBpKey;
+
+  @each $bp in map-keys($bp-map) {
+    $currentBpVal: map-get($bp-map, $bp);
+    $largestBpVal: map-get($bp-map, $maxBpKey);
+
+    @if ($currentBpVal > $largestBpVal) {
+      $maxBpKey: $bp;
+    }
+  }
+
+  $minBpKey: $maxBpKey;
+
+  @each $bp in map-keys($bp-map) {
+    $currentBpVal: map-get($bp-map, $bp);
+    $smallestBpVal: map-get($bp-map, $minBpKey);
+
+    @if ($currentBpVal < $smallestBpVal) {
+      $smallestBpVal: $bp;
+    }
+  }
+
+  @return (
+    min: $minBpKey,
+    max: $maxBpKey,
+  );
+}
+
+/// Unifies classes used in template map
+/// @param {Map} $templates - Template map to be unified
+/// @return {List} - Unified utility class list
+@function maple-unify-used-classes($templates) {
+  @if (type-of($templates) != map) {
+    @error "maple-unify-used-classes expects it\'s parameters to be map types!";
+  }
+  $utility-classes: ();
+
+  @each $key, $value in $templates {
+    @if type-of($value == list) {
+      @each $class in $value {
+        @if index($utility-classes, $class) == null {
+          $utility-classes: append($utility-classes, $class);
+        }
+      }
+    }
+    @else {
+      @if index($utility-classes, $value) == null {
+        $utility-classes: append($utility-classes, $value);
+      }
+    }
+  }
+
+  @return (
+    utility-classes: $utility-classes,
+    prefixes: map-get($templates, "_whitelist"),
+  );
+}

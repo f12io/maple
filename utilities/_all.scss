@@ -1,0 +1,32 @@
+/// Import variables here to use them in utility maps
+@import "../variables/all";
+
+/// !!! Every map imported this file should merge its own map to $um.
+/// !!! Otherwise they will be ignored.
+/// um refers utility-map
+$um: ();
+
+/// utility variables
+@import "b-radius";
+@import "bgc";
+@import "d";
+@import "flx-col";
+@import "flx-dir";
+@import "flx-order";
+@import "flx-row";
+@import "fc";
+@import "fh";
+@import "fp";
+@import "fs";
+@import "fw";
+@import "m";
+@import "opacity";
+@import "p";
+@import "pos-align";
+@import "pos-overlay";
+@import "pos";
+@import "scroll";
+@import "txt-align";
+@import "w";
+@import "wmax";
+@import "wmin";

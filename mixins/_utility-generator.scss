@@ -1,0 +1,118 @@
+
+/// DEFAULT STYLES GENERATOR
+///
+/// Generate default styles of maps having values on "_default"
+/// Here, we're combining _outer-selector and _inner-selector
+/// properties to create a selector that holds default styles.
+/// Each breakpoint defined on "_default" property creates a
+/// "media-breakpoint-up" media query and holds corresponding
+/// default style block.
+///
+/// !!! Don't forget to add your maps to $map-bundle
+@mixin generateDefaultClasses($utility-map, $map-name) {
+  @if map-get($utility-map, "_default") {
+    @include build-default-class($utility-map, $map-name);
+  }
+}
+
+/// BASE UTILITY CLASS GENERATOR
+///
+/// Generate base utility class that will be used without any
+/// responsive breakpoint. Responsive alternatives need always
+/// override the base one. That's why we're generating this one
+/// first and it should stay always above the responsive generator.
+///
+/// Here is the generated selector structure and some samples:
+///   {prefix}-{type}{selector}?
+///   d-none, d-block etc.
+///   banner-badge-narrow .badge, banner-badge-wide .badge etc.
+@mixin generateBaseUtilityClasses($utility-map, $whitelist) {
+  @each $type in map-keys($utility-map) {
+    @if str-starts-with($type, "_") == false {
+      $bp-map: map-get($grid-breakpoints, $type);
+
+      @if ($bp-map) {
+        @if $type == "xs" {
+          @include build-utility-class($utility-map, $type, $type, $whitelist);
+        }
+        @else {
+          @include media-breakpoint-up($type) {
+            @include build-utility-class($utility-map, $type, $type, $whitelist);
+          }
+        }
+      }
+      @else {
+        @include build-utility-class($utility-map, $type, null, $whitelist);
+      }
+    }
+  }
+}
+
+/// RESPONSIVE UTILITY CLASS GENERATOR
+///
+/// Generate responsive utilities based on $grid-breakpoints and $map-bundle.
+///
+/// Here is the generated selector structure and some samples:
+///   {prefix}-{type}-{breakpoint}-up{selector}?
+///   {prefix}-{type}-{breakpoint}-down{selector}
+///   d-sm-none, d-md-block etc.
+///   .banner-badge-m-auto-sm-up .badge, .banner-badge-d-block-sm-up .badge etc.
+///   .banner-badge-m-auto-lg-down .badge, .banner-badge-d-block-lg-down .badge etc.
+@mixin generateResponsiveUtilityClasses($utility-map, $whitelist) {
+  $bpLimits: maple-bp-limits($grid-breakpoints);
+  $minBpKey: map-get($bpLimits, "min");
+  $maxBpKey: map-get($bpLimits, "max");
+
+  @each $bp in map-keys($grid-breakpoints) {
+    $bp-map: map-get($utility-map, $bp);
+
+    @if ($bp-map == null) {
+      $generate_up: map-get($utility-map, "_generate-up-breakpoints");
+      $generate_down: map-get($utility-map, "_generate-down-breakpoints");
+
+      @if $generate_up == null {
+        $generate_up: true;
+      }
+
+      @if $generate_down == null {
+        $generate_down: false;
+      }
+
+      /// up
+      @if $generate_up and $bp != $minBpKey {
+        @include media-breakpoint-up($bp) {
+          @each $type in map-keys($utility-map) {
+            @if str-starts-with($type, "_") == false {
+              @include build-utility-class($utility-map, $type, #{$bp}-up, $whitelist);
+            }
+          }
+        }
+      }
+
+      /// down
+      /// https://youtu.be/OPf0YbXqDm0
+      @if $generate_down and $bp != $maxBpKey {
+        @include media-breakpoint-down($bp) {
+          @each $type in map-keys($utility-map) {
+            @if str-starts-with($type, "_") == false {
+              @include build-utility-class($utility-map, $type, #{$bp}-down, $whitelist);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@mixin happiness($maple, $whitelist) {
+  $map: map-get($map-bundle, $maple);
+
+  /// You shall not pass wihout a map that should be in the bundle
+  @if $map == null {
+    @error "\"$#{$maple}\" is not defined on \"$map-bundle\".";
+  }
+
+  @include generateDefaultClasses($map, $maple);
+  @include generateBaseUtilityClasses($map, $whitelist);
+  @include generateResponsiveUtilityClasses($map, $whitelist);
+}

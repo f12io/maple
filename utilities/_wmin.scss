@@ -1,0 +1,40 @@
+/// min-width
+$um-wmin: (
+  _prefix: "wmax",
+  _common: (),
+  narrow: (
+    min-width: map-get($container-max-widths, "sm")
+  ),
+  normal: (
+    min-width: map-get($container-max-widths, "md")
+  ),
+  wide: (
+    min-width: map-get($container-max-widths, "lg")
+  ),
+  vast: (
+    min-width: map-get($container-max-widths, "xl")
+  ),
+  5: (min-width: 5%),
+  10: (min-width: 10%),
+  15: (min-width: 15%),
+  20: (min-width: 20%),
+  25: (min-width: 25%),
+  30: (min-width: 30%),
+  35: (min-width: 35%),
+  40: (min-width: 40%),
+  45: (min-width: 45%),
+  50: (min-width: 50%),
+  55: (min-width: 55%),
+  60: (min-width: 60%),
+  65: (min-width: 65%),
+  70: (min-width: 70%),
+  75: (min-width: 75%),
+  80: (min-width: 80%),
+  85: (min-width: 85%),
+  90: (min-width: 90%),
+  95: (min-width: 95%),
+  100: (min-width: 100%),
+) !default;
+
+/// Add to utility map
+$um: map-merge($um, (um-wmin: $um-wmin));

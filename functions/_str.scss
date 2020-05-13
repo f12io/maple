@@ -1,0 +1,42 @@
+/// Checks wheter a string ends with given key or not
+/// @param {String} $str - Initial string
+/// @param {String} $key - A key that will be search at the end of the given string
+/// @return {Boolean} - The result of check: true or false
+@function str-ends-with($str, $key) {
+  @return str-slice(inspect($str), (str-length(inspect($str)) - str-length($key) + 1)) == $key;
+}
+
+/// Checks wheter a string starts with given key or not
+/// @param {String} $str - Initial string
+/// @param {String} $key - A key that will be search at the beginning of the given string
+/// @return {Boolean} - The result of check: true or false
+@function str-starts-with($str, $key) {
+  @return str-slice(inspect($str), 1, str-length($key)) == $key;
+}
+
+/// Remove spaces around given string
+/// @param {String} $str - Initial string
+/// @return {String} - Trimmed string
+@function str-trim($str) {
+  @while (str-index($str, " ") != null) {
+    $index: str-index($str, " ");
+    $str: "#{str-slice($str, 0, $index - 1)}#{str-slice($str, $index + 1)}";
+  }
+
+  @return $str;
+}
+
+/// Replace `$search` with `$replace` in `$str`
+/// @param {String} $str - Initial string
+/// @param {String} $search - Substring to replace
+/// @param {String} $replace ('') - New value
+/// @return {String} - Updated string
+@function str-replace($str, $search, $replace: "") {
+  $index: str-index($str, $search);
+
+  @if $index {
+    @return str-slice($str, 1, $index - 1) + $replace + str-replace(str-slice($str, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $str;
+}

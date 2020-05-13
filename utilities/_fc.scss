@@ -1,0 +1,5 @@
+/// font color
+$um-fc: maple-generate($color-map, "color", "fc") !default;
+
+/// Add to utility map
+$um: map-merge($um, (um-fc: $um-fc));

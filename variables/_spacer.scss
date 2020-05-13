@@ -1,0 +1,25 @@
+/// spacers
+$spacer: 1rem !default;
+$spacer1: $spacer * 0.25 !default;
+$spacer2: $spacer * 0.5 !default;
+$spacer3: $spacer !default;
+$spacer4: $spacer * 1.5 !default;
+$spacer5: $spacer * 2.5 !default;
+$spacer6: $spacer * 3 !default;
+$spacer7: $spacer * 4 !default;
+$spacer8: $spacer * 6 !default;
+$spacer9: $spacer * 7 !default;
+
+$spacers: (
+  auto: auto,
+  0: 0,
+  1: $spacer1,
+  2: $spacer2,
+  3: $spacer3,
+  4: $spacer4,
+  5: $spacer5,
+  6: $spacer6,
+  7: $spacer7,
+  8: $spacer8,
+  9: $spacer9,
+) !default;
