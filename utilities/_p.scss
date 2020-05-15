@@ -1,22 +1,8 @@
 /// padding
-$um-pt: maple-generate($spacers, "padding-top", "pt") !default;
-$um-pr: maple-generate($spacers, "padding-right", "pr") !default;
-$um-pl: maple-generate($spacers, "padding-left", "pl") !default;
-$um-pb: maple-generate($spacers, "padding-bottom", "pb") !default;
-$um-px: maple-generate($spacers, "padding-x", "px") !default;
-$um-py: maple-generate($spacers, "padding-y", "py") !default;
-$um-p: maple-generate($spacers, "padding", "p") !default;
-
-/// Add to utility map
-$um: map-merge(
-  $um,
-  (
-    um-pt: $um-pt,
-    um-pr: $um-pr,
-    um-pl: $um-pl,
-    um-pb: $um-pb,
-    um-px: $um-px,
-    um-py: $um-py,
-    um-p:  $um-p,
-  )
-);
+$pt: maple-generate($spacers, "padding-top", "pt") !default;
+$pr: maple-generate($spacers, "padding-right", "pr") !default;
+$pl: maple-generate($spacers, "padding-left", "pl") !default;
+$pb: maple-generate($spacers, "padding-bottom", "pb") !default;
+$px: maple-generate($spacers, "padding-x", "px") !default;
+$py: maple-generate($spacers, "padding-y", "py") !default;
+$p: maple-generate($spacers, "padding", "p") !default;

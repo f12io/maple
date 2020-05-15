@@ -1,7 +1,6 @@
 /// display
-$um-d: (
+$d: (
   _prefix: "d",
-  _common: (),
   _generate-down-breakpoints: true,
   none: (
     display: none,
@@ -31,6 +30,3 @@ $um-d: (
     display: table-cell,
   ),
 ) !default;
-
-/// Add to utility map
-$um: map-merge($um, (um-d: $um-d));

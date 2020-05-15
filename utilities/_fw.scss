@@ -1,7 +1,6 @@
 /// font-weight
-$um-fw: (
+$fw: (
   _prefix: "fw",
-  _common: (),
   light: (
     font-weight: $font-weight-light,
   ),
@@ -21,6 +20,3 @@ $um-fw: (
     font-weight: $font-weight-extra-bold,
   ),
 ) !default;
-
-/// Add to utility map
-$um: map-merge($um, (um-fw: $um-fw));

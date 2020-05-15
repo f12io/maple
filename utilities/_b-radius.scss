@@ -1,17 +1,13 @@
 // stylelint-disable
 /// border-radius
-$um-b-radius: (
+$b-radius: (
   _prefix: "b-radius",
-  _common: (),
   full: (border-radius: 100%),
   half: (border-radius: 50%),
   quarter: (border-radius: 25%),
-  2: (border-radius: 2px),
-  4: (border-radius: 4px),
-  6: (border-radius: 6px),
-  8: (border-radius: 8px),
-  10: (border-radius: 10px),
+  "2": (border-radius: 2px),
+  "4": (border-radius: 4px),
+  "6": (border-radius: 6px),
+  "8": (border-radius: 8px),
+  "10": (border-radius: 10px),
 ) !default;
-
-/// Add to utility map
-$um: map-merge($um, (um-b-radius: $um-b-radius));

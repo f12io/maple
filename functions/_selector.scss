@@ -1,65 +1,33 @@
-/// Creates a utilitiy class selector by using
-/// @param {String} $utility-map - Utility map
-/// @param {String} $type - Type of the utility class
-/// @param {String} $bp - A breakpoint that will be included in the class. e.g. sm, md...
-/// @return {String} - A utility class selector
-@function get-utility-selector($utility-map, $type, $bp: null, $whitelist) {
-  $prefix: map-get($utility-map, "_prefix");
-  $innerSelectors: map-get($utility-map, "_inner-selector");
-  $outerSelectors: map-get($utility-map, "_outer-selector");
-  $selectors: ();
-  $utility-class-whitelist: map-get($whitelist, "utility-classes");
-  $prefix-whitelist: map-get($whitelist, "prefixes");
-
-  @each $outerSelector in $outerSelectors {
-    @each $innerSelector in $innerSelectors {
-      $selector: null;
-
-      @if $type == $bp {
-        @if index($prefix-whitelist, #{$prefix}) {
-          $selector: #{$outerSelector} + " ." + #{$prefix} +  #{$innerSelector};
-        }
-      }
-      @else if $bp {
-        $utilityClass: #{$prefix} + "-" + #{$type} + "-" + #{$bp};
-
-        @if index($prefix-whitelist, #{$prefix}) or index($utility-class-whitelist, $utilityClass) {
-          $selector: #{$outerSelector} + " ." + #{$utilityClass} + #{$innerSelector};
-        }
-      }
-      @else {
-        $utilityClass: #{$prefix} + "-" + #{$type};
-
-        @if index($prefix-whitelist, #{$prefix}) or index($utility-class-whitelist, $utilityClass) {
-          $selector: #{$outerSelector} + " ." + #{$utilityClass}  + #{$innerSelector};
-        }
-      }
-
-      @if $selector != null {
-        $selectors: append($selectors, $selector);
-      }
-    }
-  }
-
-  @return join($selectors, (), $separator: comma, $bracketed: false);
-}
-
 /// Creates a selector by using `_outer-selector` and `_inner-selector` of a prop-map
-/// @param {String} $utility-map - Utility map
+/// @param {String} $outer-selectors - Outer selector
+/// @param {String} $prefix - Prefix: Component name
+/// @param {String} $bp-key - Breakpoint: xs-up, sm-down etc.
+/// @param {String} $type - Type fo the utility class: d, mx, txt-align etc.
+/// @param {String} $inner-selectors - Inner selector
 /// @return {String} - A selector
-@function get-default-selector($utility-map, $map-name) {
-  $innerSelectors: map-get($utility-map, "_inner-selector");
-
-  @if $innerSelectors == null {
-    @error "_inner-selector should be defined on utility map: $#{$map-name}";
-  }
-
-  $outerSelectors: map-get($utility-map, "_outer-selector");
+@function get-selectors($outer-selectors: null, $bp-key, $prefix, $type: null, $inner-selectors: null, $unusable-bp) {
   $selectors: ();
 
-  @each $outerSelector in $outerSelectors {
-    @each $innerSelector in $innerSelectors {
-      $selectors: append($selectors, #{$outerSelector} + " " + #{$innerSelector});
+  @if $type != null {
+    $prefix: #{$prefix}\=#{$type};
+  }
+
+  @if map-get($unusable-bp, $bp-key) == null {
+    $prefix: #{$bp-key}\:#{$prefix};
+  }
+
+  @if $type == null {
+    $prefix: ('[class^="#{$prefix}"]', '[class*=" #{$prefix}"]');
+  }
+  @else {
+    $prefix: " ." + #{$prefix};
+  }
+
+  @each $middle in $prefix {
+    @each $outer in $outer-selectors {
+      @each $inner in $inner-selectors {
+        $selectors: append($selectors, "#{$outer} #{$middle}#{$inner}");
+      }
     }
   }
 

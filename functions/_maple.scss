@@ -40,36 +40,35 @@
 @function maple-generate($map, $prop, $prefix: $prop) {
   $prop-map: (
     _prefix: $prefix,
-    _common: (),
   );
 
   @if str-ends-with($prop, "-x") {
-    $baseProp: str-replace($property, "-x", "");
+    $base-prop: str-replace($property, "-x", "");
 
     @each $key in map-keys($map) {
       $value: map-get($map, $key);
       $prop-map: map-merge(
         $prop-map,
         (
-          #{$key}: (
-            #{$baseProp}-left: $value,
-            #{$baseProp}-right: $value,
+          "#{$key}": (
+            #{$base-prop}-left: $value,
+            #{$base-prop}-right: $value,
           ),
         )
       );
     }
   }
   @else if str-ends-with($prop, "-y") {
-    $baseProp: str-replace($property, "-y", "");
+    $base-prop: str-replace($property, "-y", "");
 
     @each $key in map-keys($map) {
       $value: map-get($map, $key);
       $prop-map: map-merge(
         $prop-map,
         (
-          #{$key}: (
-            #{$baseProp}-bottom: $value,
-            #{$baseProp}-top: $value,
+          "#{$key}": (
+            #{$base-prop}-bottom: $value,
+            #{$base-prop}-top: $value,
           ),
         ),
       );
@@ -81,7 +80,7 @@
       $prop-map: map-merge(
         $prop-map,
         (
-          #{$key}: ( #{$prop}: $value ),
+          "#{$key}": ( #{$prop}: $value ),
         )
       );
     }
@@ -95,37 +94,37 @@
 /// @param {Map} $bp-map - Breakpoint map to be digged
 /// @return {Map} - A map having min and max keys
 @function maple-bp-limits($bp-map) {
-  $unknownBpKey: "";
+  $unknown-bp: "";
 
   @each $bp in map-keys($bp-map) {
-    $unknownBpKey: $bp;
+    $unknown-bp: $bp;
   }
 
-  $maxBpKey: $unknownBpKey;
+  $max-bp: $unknown-bp;
 
   @each $bp in map-keys($bp-map) {
-    $currentBpVal: map-get($bp-map, $bp);
-    $largestBpVal: map-get($bp-map, $maxBpKey);
+    $current-bp-val: map-get($bp-map, $bp);
+    $max-bp-val: map-get($bp-map, $max-bp);
 
-    @if ($currentBpVal > $largestBpVal) {
-      $maxBpKey: $bp;
+    @if $current-bp-val > $max-bp-val {
+      $max-bp: $bp;
     }
   }
 
-  $minBpKey: $maxBpKey;
+  $min-bp: $max-bp;
 
   @each $bp in map-keys($bp-map) {
-    $currentBpVal: map-get($bp-map, $bp);
-    $smallestBpVal: map-get($bp-map, $minBpKey);
+    $current-bp-val: map-get($bp-map, $bp);
+    $min-bp-val: map-get($bp-map, $min-bp);
 
-    @if ($currentBpVal < $smallestBpVal) {
-      $smallestBpVal: $bp;
+    @if $current-bp-val < $min-bp-val {
+      $min-bp: $bp;
     }
   }
 
   @return (
-    min: $minBpKey,
-    max: $maxBpKey,
+    min: $min-bp,
+    max: $max-bp,
   );
 }
 
@@ -133,10 +132,11 @@
 /// @param {Map} $templates - Template map to be unified
 /// @return {List} - Unified utility class list
 @function maple-unify-used-classes($templates) {
-  @if (type-of($templates) != map) {
-    @error "maple-unify-used-classes expects it\'s parameters to be map types!";
-  }
   $utility-classes: ();
+
+  @if empty($templates) {
+    @return $utility-classes;
+  }
 
   @each $key, $value in $templates {
     @if type-of($value == list) {
@@ -153,8 +153,41 @@
     }
   }
 
-  @return (
-    utility-classes: $utility-classes,
-    prefixes: map-get($templates, "_whitelist"),
+  @return $utility-classes;
+}
+
+/// Cahce maps
+/// @param {Map} $cache - Cache map
+/// @param {String} $bp-key - Key to assign map on
+/// @param {String} $selector - A selector for collection maps uniquely
+/// @param {Map} $prop-map-to-be-cached - Map to be cached
+/// @param {String} $unusable-bp - Breakpoint keys that won't be cached
+/// @param {String} $min-bp-key - Default breakpoint key
+/// @return {Map} - Modified cache
+@function maple-cache($cache, $bp-key, $selector, $prop-map-to-be-cached, $unusable-bp, $min-bp-key) {
+  @if map-get($unusable-bp, $bp-key) != null {
+    $bp-key: $min-bp-key;
+  }
+
+  $cache-item: map-get($cache, $bp-key);
+
+  @if $cache-item == null {
+    @error "\"#{$bp-key}\" is not a known breakpoint \"#{join(map-keys($cache), (), $separator: comma, $bracketed: false)}\".";
+  }
+
+  $cache-item: map-recursive-merge(
+    $cache-item,
+    (
+      #{$selector}: $prop-map-to-be-cached,
+    )
   );
+
+  $cache: map-merge(
+    $cache,
+    (
+      #{$bp-key}: $cache-item,
+    )
+  );
+
+  @return $cache;
 }

@@ -1,118 +1,174 @@
 
-/// DEFAULT STYLES GENERATOR
-///
-/// Generate default styles of maps having values on "_default"
-/// Here, we're combining _outer-selector and _inner-selector
-/// properties to create a selector that holds default styles.
-/// Each breakpoint defined on "_default" property creates a
-/// "media-breakpoint-up" media query and holds corresponding
-/// default style block.
-///
-/// !!! Don't forget to add your maps to $map-bundle
-@mixin generateDefaultClasses($utility-map, $map-name) {
-  @if map-get($utility-map, "_default") {
-    @include build-default-class($utility-map, $map-name);
-  }
-}
+@mixin happiness($maple-bundle, $whitelist) {
+  // Find min and max available breakpoint definitions
+  $bp-limits: maple-bp-limits($grid-breakpoints);
+  $min-bp: #{map-get($bp-limits, "min")};
+  $max-bp: #{map-get($bp-limits, "max")};
+  $min-bp-key: #{$min-bp}-up;
+  $unusable-bp: (
+    #{$max-bp}-down: true,
+    #{$min-bp}-down: true,
+  );
 
-/// BASE UTILITY CLASS GENERATOR
-///
-/// Generate base utility class that will be used without any
-/// responsive breakpoint. Responsive alternatives need always
-/// override the base one. That's why we're generating this one
-/// first and it should stay always above the responsive generator.
-///
-/// Here is the generated selector structure and some samples:
-///   {prefix}-{type}{selector}?
-///   d-none, d-block etc.
-///   banner-badge-narrow .badge, banner-badge-wide .badge etc.
-@mixin generateBaseUtilityClasses($utility-map, $whitelist) {
-  @each $type in map-keys($utility-map) {
-    @if str-starts-with($type, "_") == false {
-      $bp-map: map-get($grid-breakpoints, $type);
+  ///Define a cache to collect selectors and maps on breakpoint keys
+  $cache: ();
 
-      @if ($bp-map) {
-        @if $type == "xs" {
-          @include build-utility-class($utility-map, $type, $type, $whitelist);
-        }
-        @else {
-          @include media-breakpoint-up($type) {
-            @include build-utility-class($utility-map, $type, $type, $whitelist);
-          }
-        }
-      }
-      @else {
-        @include build-utility-class($utility-map, $type, null, $whitelist);
+  @each $dir in up down {
+    @each $bp in map-keys($grid-breakpoints) {
+      $bp-key: #{$bp}-#{$dir};
+
+      @if map-get($unusable-bp, $bp-key) == null {
+        $cache: map-merge(
+          $cache,
+          (
+            $bp-key: (),
+          )
+        );
       }
     }
   }
-}
 
-/// RESPONSIVE UTILITY CLASS GENERATOR
-///
-/// Generate responsive utilities based on $grid-breakpoints and $map-bundle.
-///
-/// Here is the generated selector structure and some samples:
-///   {prefix}-{type}-{breakpoint}-up{selector}?
-///   {prefix}-{type}-{breakpoint}-down{selector}
-///   d-sm-none, d-md-block etc.
-///   .banner-badge-m-auto-sm-up .badge, .banner-badge-d-block-sm-up .badge etc.
-///   .banner-badge-m-auto-lg-down .badge, .banner-badge-d-block-lg-down .badge etc.
-@mixin generateResponsiveUtilityClasses($utility-map, $whitelist) {
-  $bpLimits: maple-bp-limits($grid-breakpoints);
-  $minBpKey: map-get($bpLimits, "min");
-  $maxBpKey: map-get($bpLimits, "max");
+  @each $utility-class in $whitelist {
+    $utility-class-parts: str-split($utility-class, ":");
+    $utility-class-length: length($utility-class-parts);
 
-  @each $bp in map-keys($grid-breakpoints) {
-    $bp-map: map-get($utility-map, $bp);
+    @if $utility-class-length < 2 {
+      @error "Wrong utility class: \"#{$utility-class}\" The utility class format should always start with a media query definiton. For styles that need to affect all screen resolutions you can use \"#{$min-bp-key}:\" prefix";
+    }
 
-    @if ($bp-map == null) {
-      $generate_up: map-get($utility-map, "_generate-up-breakpoints");
-      $generate_down: map-get($utility-map, "_generate-down-breakpoints");
+    $base-bp-key: nth($utility-class-parts, 1);
+    $base-prefix: nth($utility-class-parts, 2);
+    $sub-prefix: null;
+    $type: null;
 
-      @if $generate_up == null {
-        $generate_up: true;
+    @if $utility-class-length == 2 {
+      /// Check base prefix is actually a type definition or not
+      $base-prefix-parts: str-split($base-prefix, "=");
+      $base-prefix: nth($base-prefix-parts, 1);
+
+      @if length($base-prefix-parts) == 2 {
+        $sub-prefix: $base-prefix;
+        $type: nth($base-prefix-parts, 2);
+      }
+    }
+    @else if $utility-class-length == 3 {
+      $base-prop: nth($utility-class-parts, 3);
+      $base-prop-parts: str-split($base-prop, "=");
+      $sub-prefix: nth($base-prop-parts, 1);
+
+      @if length($base-prop-parts) == 2 {
+        $type: nth($base-prop-parts, 2);
+      }
+    }
+
+    $maple: map-get($map-bundle, $base-prefix);
+
+    @if $maple == null {
+      @error "\"#{$base-prefix}\" is not a known component name. It should be defined as a map variable \"$#{$base-prefix}: ();\" on \"$maple-components\".";
+    }
+
+    $default: map-get($maple, "_default");
+    $common: map-get($maple, "_common");
+    $outer-selectors: map-get($maple, "_outer-selector");
+    $inner-selectors: map-get($maple, "_inner-selector");
+    $selector: "";
+
+    @if empty($common) == false or empty($default) == false {
+      $selector: get-selectors($outer-selectors, $base-bp-key, $base-prefix, null, $inner-selectors, $unusable-bp);
+    }
+
+    // collect commont styles
+    @if empty($common) == false {
+      $cache: maple-cache($cache, $min-bp-key, $selector, $common, $unusable-bp, $min-bp-key);
+    }
+
+    @if $sub-prefix == null and $default != null {
+      @each $bp-key, $type in $default {
+        $cache: maple-cache($cache, $bp-key, $selector, map-get($maple, $type), $unusable-bp, $min-bp-key);
+      }
+    }
+
+    @if $utility-class-length == 2 {
+      @if $type != null {
+        $prop-map: map-get($maple, $type);
+        $selector: get-selectors($outer-selectors, $base-bp-key, $base-prefix, $type, $inner-selectors, $unusable-bp);
+        $cache: maple-cache($cache, $base-bp-key, $selector, $prop-map, $unusable-bp, $min-bp-key);
+      }
+    }
+    @else if $utility-class-length == 3 {
+      $maple: map-get($map-bundle, $sub-prefix);
+
+      @if $maple == null {
+        @error "\"#{$sub-prefix}\" is not a known component name. It should be defined as a map variable \"$#{$sub-prefix}: ();\" on \"$maple-components\".";
       }
 
-      @if $generate_down == null {
-        $generate_down: false;
+      $prefix: #{$base-prefix}\:#{$sub-prefix};
+      $default: map-get($maple, "_default");
+      $common: map-get($maple, "_common");
+      $selector: "";
+
+      @if empty($common) == false or empty($default) == false {
+        $selector: get-selectors($outer-selectors, $min-bp-key, $prefix, null, $inner-selectors, $unusable-bp);
       }
 
-      /// up
-      @if $generate_up and $bp != $minBpKey {
+      // collect common styles
+      @if empty($common) == false {
+        $cache: maple-cache($cache, $min-bp-key, $selector, $common, $unusable-bp, $min-bp-key);
+      }
+
+      @if $type == null and $default != null {
+        @each $bp-key, $type in $default {
+          $cache: maple-cache($cache, $bp-key, $selector, map-get($maple, $type), $unusable-bp, $min-bp-key);
+        }
+      }
+
+      @if $type != null {
+        $prop-map: map-get($maple, $type);
+        $selector: get-selectors($outer-selectors, $base-bp-key, $prefix, $type, $inner-selectors, $unusable-bp);
+        $cache: maple-cache($cache, $base-bp-key, $selector, $prop-map, $unusable-bp, $min-bp-key);
+      }
+    }
+  }
+
+  // Generate common styles
+  $common: map-get($cache, $min-bp-key);
+
+  @each $selector, $prop-map in $common {
+    #{$selector} {
+      @include styles($prop-map);
+    }
+  }
+
+  // Generate responsive styles
+  @each $bp-key, $cache-item in $cache {
+    @if $bp-key != $min-bp-key and map-get($unusable-bp, $bp-key) == null {
+      $bp-parts: str-split($bp-key, "-");
+      $bp: nth($bp-parts, 1);
+      $bp-dir: "up";
+
+      @if length($bp-parts) == 2 {
+        $bp-dir: nth($bp-parts, 2);
+      }
+
+      @if $bp-dir == "up" {
         @include media-breakpoint-up($bp) {
-          @each $type in map-keys($utility-map) {
-            @if str-starts-with($type, "_") == false {
-              @include build-utility-class($utility-map, $type, #{$bp}-up, $whitelist);
+          @each $selector, $prop-map in $cache-item {
+            #{$selector} {
+              @include styles($prop-map);
             }
           }
         }
       }
 
-      /// down
-      /// https://youtu.be/OPf0YbXqDm0
-      @if $generate_down and $bp != $maxBpKey {
+      @if $bp-dir == "down" {
         @include media-breakpoint-down($bp) {
-          @each $type in map-keys($utility-map) {
-            @if str-starts-with($type, "_") == false {
-              @include build-utility-class($utility-map, $type, #{$bp}-down, $whitelist);
+          @each $selector, $prop-map in $cache-item {
+            #{$selector} {
+              @include styles($prop-map);
             }
           }
         }
       }
     }
   }
-}
-
-@mixin happiness($maple, $whitelist) {
-  $map: map-get($map-bundle, $maple);
-
-  /// You shall not pass wihout a map that should be in the bundle
-  @if $map == null {
-    @error "\"$#{$maple}\" is not defined on \"$map-bundle\".";
-  }
-
-  @include generateDefaultClasses($map, $maple);
-  @include generateBaseUtilityClasses($map, $whitelist);
-  @include generateResponsiveUtilityClasses($map, $whitelist);
 }

@@ -5,21 +5,16 @@
 $maple-components: () !default;
 
 // Add templates to this variable
-$maple-templates: (
-  template-name-1: ("utility-class-1", "utility-class-2"),
-  template-name-2: ("utility-class-1", "utility-class-3")
-) !default;
+$maple-templates: () !default;
 
 $whitelist: maple-unify-used-classes($maple-templates);
 
 /// !!! Always keep "$map-bundle" as the last variable in the stack and don't remove.
 /// !!! Always keep $um as the first parameter.
 $map-bundle: map-collect(
-  maple-extend($um),
+  $um,
   maple-extend($maple-components),
 ) !default;
 
 /// happiness is just a maple on scss
-@each $maple in map-keys($map-bundle) {
-  @include happiness($maple, $whitelist);
-}
+@include happiness($map-bundle, $whitelist);

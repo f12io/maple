@@ -1,4 +1,4 @@
-@mixin styles($prop-map, $important: null) {
+@mixin styles($prop-map, $important: !important) {
   @each $property in map-keys($prop-map) {
     @if str-ends-with($property, "-x") and $property != "overflow-x" {
       $baseProp: str-replace($property, "-x", "");
@@ -14,34 +14,6 @@
     }
     @else {
       #{$property}: map-get($prop-map, $property) $important;
-    }
-  }
-}
-
-@mixin defaultStyles($utility-map, $map-name) {
-  $default: map-get($utility-map, "_default");
-
-  @include styles(map-get($utility-map, "_common"));
-
-  @each $bp in map-keys($default) {
-    @if map-get($grid-breakpoints, $bp) == null {
-      @error "Breakpoint #{$bp} defined on '_default' map of '$#{$map-name}' is not a known breakpoint. Please use one of the following breakpoints: '#{map-keys($grid-breakpoints)}'";
-    }
-
-    $type: map-get($default, $bp);
-    $prop-map: map-get($utility-map, $type);
-
-    @if $prop-map == null {
-      @error "Breakpoint #{$bp} defined on '_default' has no such a type on '$#{$map-name}'. Please use one of the following known types: '#{map-keys($utility-map)}'";
-    }
-
-    @if $bp == "xs" {
-      @include styles($prop-map);
-    }
-    @else {
-      @include media-breakpoint-up($bp) {
-        @include styles($prop-map);
-      }
     }
   }
 }

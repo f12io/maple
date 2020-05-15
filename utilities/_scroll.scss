@@ -1,4 +1,4 @@
-$um-scroll: (
+$scroll: (
   _prefix: "scrollable",
   _generate-up-breakpoints: false,
   _generate-down-breakpoints: true,
@@ -17,6 +17,3 @@ $um-scroll: (
     overflow-y: auto,
   ),
 ) !default;
-
-/// Add to utility map
-$um: map-merge($um, (um-scroll: $um-scroll));

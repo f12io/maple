@@ -1,5 +1,2 @@
 /// background color
-$um-bgc: maple-generate($color-map, "background-color", "bgc") !default;
-
-/// Add to utility map
-$um: map-merge($um, (um-bgc: $um-bgc));
+$bgc: maple-generate($color-map, "background-color", "bgc") !default;

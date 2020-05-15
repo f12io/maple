@@ -3,8 +3,6 @@
 
 /// !!! Every map imported this file should merge its own map to $um.
 /// !!! Otherwise they will be ignored.
-/// um refers utility-map
-$um: ();
 
 /// utility variables
 @import "b-radius";
@@ -30,3 +28,45 @@ $um: ();
 @import "w";
 @import "wmax";
 @import "wmin";
+
+$um: (
+  b-radius: $b-radius,
+  bgc: $bgc,
+  bottom: $bottom,
+  d: $d,
+  fc: $fc,
+  fh: $fh,
+  flx-col-align-self: $flx-col-align-self,
+  flx-dir: $flx-dir,
+  flx-order: $flx-order,
+  flx-row-align-self: $flx-row-align-self,
+  fp: $fp,
+  fs: $fs,
+  fw: $fw,
+  left: $left,
+  m:  $m,
+  mb: $mb,
+  ml: $ml,
+  mr: $mr,
+  mt: $mt,
+  mx: $mx,
+  my: $my,
+  opacity: $opacity,
+  p:  $p,
+  pb: $pb,
+  pl: $pl,
+  pos-align: $pos-align,
+  pos-overlay: $pos-overlay,
+  pos: $pos,
+  pr: $pr,
+  pt: $pt,
+  px: $px,
+  py: $py,
+  right: $right,
+  scroll: $scroll,
+  top: $top,
+  txt-align: $txt-align,
+  w: $w,
+  wmax: $wmax,
+  wmin: $wmin,
+);

@@ -1,7 +1,6 @@
 /// font-size
-$um-fs: (
+$fs: (
   _prefix: "fs",
-  _common: (),
   h1: (font-size: $font-size-h1),
   h2: (font-size: $font-size-h2),
   h3: (font-size: $font-size-h3),
@@ -15,6 +14,3 @@ $um-fs: (
   p5: (font-size: $font-size-p5),
   p6: (font-size: $font-size-p6),
 ) !default;
-
-/// Add to utility map
-$um: map-merge($um, (um-fs: $um-fs));

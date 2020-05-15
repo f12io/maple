@@ -1,7 +1,6 @@
 /// position
-$um-pos: (
+$pos: (
   _prefix: "pos",
-  _common: (),
   absolute: (
     position: absolute,
   ),
@@ -20,19 +19,7 @@ $um-pos: (
 ) !default;
 
 /// position spacing
-$um-pos-t: maple-generate($spacers, "top", "top") !default;
-$um-pos-r: maple-generate($spacers, "right", "right") !default;
-$um-pos-l: maple-generate($spacers, "left", "left") !default;
-$um-pos-b: maple-generate($spacers, "bottom", "bottom") !default;
-
-/// Add to utility map
-$um: map-merge(
-  $um,
-  (
-    um-pos: $um-pos,
-    um-pos-t: $um-pos-t,
-    um-pos-b: $um-pos-b,
-    um-pos-r: $um-pos-r,
-    um-pos-l: $um-pos-l,
-  )
-);
+$top: maple-generate($spacers, "top", "top") !default;
+$right: maple-generate($spacers, "right", "right") !default;
+$left: maple-generate($spacers, "left", "left") !default;
+$bottom: maple-generate($spacers, "bottom", "bottom") !default;

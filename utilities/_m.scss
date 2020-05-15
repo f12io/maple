@@ -1,22 +1,8 @@
 /// margin
-$um-mt: maple-generate($spacers, "margin-top", "mt") !default;
-$um-mr: maple-generate($spacers, "margin-right", "mr") !default;
-$um-ml: maple-generate($spacers, "margin-left", "ml") !default;
-$um-mb: maple-generate($spacers, "margin-bottom", "mb") !default;
-$um-mx: maple-generate($spacers, "margin-x", "mx") !default;
-$um-my: maple-generate($spacers, "margin-y", "my") !default;
-$um-m: maple-generate($spacers, "margin", "m") !default;
-
-/// Add to utility map
-$um: map-merge(
-  $um,
-  (
-    um-mt: $um-mt,
-    um-mr: $um-mr,
-    um-ml: $um-ml,
-    um-mb: $um-mb,
-    um-mx: $um-mx,
-    um-my: $um-my,
-    um-m:  $um-m,
-  )
-);
+$mt: maple-generate($spacers, "margin-top", "mt") !default;
+$mr: maple-generate($spacers, "margin-right", "mr") !default;
+$ml: maple-generate($spacers, "margin-left", "ml") !default;
+$mb: maple-generate($spacers, "margin-bottom", "mb") !default;
+$mx: maple-generate($spacers, "margin-x", "mx") !default;
+$my: maple-generate($spacers, "margin-y", "my") !default;
+$m: maple-generate($spacers, "margin", "m") !default;
