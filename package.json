@@ -13,7 +13,21 @@
   "homepage": "https://github.com/onuradsay/maple",
   "keywords": [
     "sass",
-    "scss"
+    "scss",
+    "maple"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onuradsay/maple.git"
+  },
+  "bugs": {
+    "url": "https://github.com/onuradsay/maple/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/onuradsay/maple/blob/master/LICENSE"
+    }
   ],
   "dependencies": {
     "@angular/animations": "~9.1.12",
