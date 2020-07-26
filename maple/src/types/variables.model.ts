@@ -9,6 +9,7 @@ export interface MapleVariableModel {
   button: MapleVariableButtonModel;
   alert: MapleVariableAlertModel;
   transition: MapleVariableTransitionModel;
+  isRtl?: boolean;
 }
 
 export interface MapleVariableSizeModel {
