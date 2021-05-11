@@ -42,7 +42,8 @@ const PREFIX_MAPLE_PROP = '_';
 const SUFFIX_MEDIA_UP = SEP_MEDIA + STR_UP;
 const SUFFIX_MEDIA_DOWN = SEP_MEDIA + STR_DOWN;
 
-const R_SELECTOR_RESERVED = /(\.|\+|\~|\<|\>|\[|\]|\(|\)|\!|\:|\,|\=|\||\%|\#|\*|\"|\/)/g;
+const R_SELECTOR_RESERVED =
+  /(\.|\+|\~|\<|\>|\[|\]|\(|\)|\!|\:|\,|\=|\||\%|\#|\*|\"|\/)/g;
 const R_ESCAPE_RESERVED = '\\$1';
 const R_SEP_NO_SPACE = /\</g;
 const R_SEP_SEL_SPACE = /\>\>/g;

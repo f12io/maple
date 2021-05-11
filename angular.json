@@ -32,13 +32,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "maple/tsconfig.lib.json",
-              "maple/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["maple/tsconfig.lib.json", "maple/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
