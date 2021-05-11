@@ -1,0 +1,12 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true,
+    "source.fixAll.stylelint": true
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#d47171",
+    "titleBar.activeBackground": "#fd9191",
+    "titleBar.activeForeground": "#000000"
+  }
+}
