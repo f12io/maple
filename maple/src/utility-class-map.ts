@@ -932,6 +932,11 @@ export const getMapleUtilityClassMap = ({
       active: { 'pointer-events': 'auto' },
     },
 
+    rtl: {
+      yes: { direction: 'rtl' },
+      no: { direction: 'ltr' },
+    },
+
     // overflow
     scrollable: {
       _common: { 'flex-wrap': 'nowrap' },
@@ -1024,6 +1029,12 @@ export const getMapleUtilityClassMap = ({
     scale: {
       default: { transform: 'scale(1)' },
       '*': { transform: 'scale(*)' },
+    },
+
+    'scale-x': {
+      1: { transform: 'scaleX(1)' },
+      n1: { transform: 'scaleX(-1)' },
+      '*': { transform: 'scaleX(*)' },
     },
 
     // transform-origin
@@ -1353,6 +1364,12 @@ export const getMapleUtilityVariableMap = ({
   { prefix: 'bottom', map: spacer, props: ['bottom'] },
   { prefix: 'tobo', map: spacer, props: ['top', 'bottom'] },
   { prefix: 'leri', map: spacer, props: ['left', 'right'] },
+  { prefix: 'lebo', map: spacer, props: ['left', 'bottom'] },
+  {
+    prefix: 'tblr',
+    map: spacer,
+    props: ['top', 'bottom', 'left', 'right'],
+  },
   { prefix: 'tblr', map: spacer, props: ['top', 'bottom', 'left', 'right'] },
   { prefix: 'bw', map: spacer, props: ['border-width'] },
   { prefix: 'bw-bottom', map: spacer, props: ['border-bottom-width'] },

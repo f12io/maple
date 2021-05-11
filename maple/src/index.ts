@@ -17,8 +17,7 @@ import { MAPLE_VAR_MAX_WIDTH } from './variables/max-width';
 import { MAPLE_VAR_SPACER } from './variables/spacer';
 import { MAPLE_VAR_TRANSITION } from './variables/transition';
 
-// Define a global CACHE to collect selectors and maps on breakpoint keys
-const CACHE = {};
+// Define a global Maple.CACHE to collect selectors and maps on breakpoint keys
 const BREAKPOINT: any = {
   media: {},
 };
@@ -57,7 +56,6 @@ const R_EXTRACT_CLASS = /class\=\"([\s\S]+?)\"/g;
 const R_UNIFIY = /\=(?=[^.]*$)/;
 
 let preInitClassList = [];
-let isInitialized = false;
 let isMapleEnabled = true;
 let doc;
 
@@ -65,6 +63,7 @@ const esc = (selector: string) =>
   selector.replace(R_SELECTOR_RESERVED, R_ESCAPE_RESERVED);
 
 export class Maple {
+  private static CACHE = {};
   private static variables: MapleVariableModel = {
     breakpoint: MAPLE_VAR_BREAKPOINT,
     color: MAPLE_VAR_COLOR,
@@ -132,8 +131,13 @@ export class Maple {
     );
 
     breakpointsUp.concat(breakpointsDown.reverse()).forEach((key) => {
-      styleElements[key] = doc.createElement('style');
-      styleElements[key].setAttribute('id', `${prefix}-${key}`);
+      const styleId = `${prefix}-${key}`;
+      const el = doc.getElementById(styleId);
+      if (!!el) {
+        docHead.removeChild(el);
+      }
+      styleElements[key] = (doc as Document).createElement('style');
+      (styleElements[key] as HTMLElement).setAttribute('id', styleId);
       docHead.appendChild(styleElements[key]);
     });
   }
@@ -217,7 +221,7 @@ export class Maple {
     }
 
     const cacheKey = `${media}${selector}${JSON.stringify(mapToBeCached)}`;
-    if (!CACHE[cacheKey]) {
+    if (!Maple.CACHE[cacheKey]) {
       Maple.tempCache[media] = Maple.tempCache[media] || {};
       Maple.tempCache[media] = {
         ...Maple.tempCache[media],
@@ -226,7 +230,7 @@ export class Maple {
           ...mapToBeCached,
         },
       };
-      CACHE[cacheKey] = 1;
+      Maple.CACHE[cacheKey] = 1;
     }
   }
 
@@ -356,6 +360,7 @@ export class Maple {
     utilClassMap: any = {},
     whitelist: Array<string>,
     variables: MapleVariableModel = Maple.variables,
+    isRtl: boolean = false,
     utilPrefixList: Array<any> = [],
     propExtensionMap: any = {},
   ): void {
@@ -364,34 +369,36 @@ export class Maple {
       return;
     }
     doc = document;
-    if (isInitialized === false) {
-      isInitialized = true;
-      Maple.variables = {
-        ...Maple.variables,
-        ...variables,
-      };
-      MapleColorHelper.generateAlphaColors(Maple.variables.color);
-      Maple.utilClassMap = {
-        ...getMapleUtilityClassMap(Maple.variables),
-        ...utilClassMap,
-      };
-      Maple.utilPrefixList = [
-        ...getMapleUtilityVariableMap(Maple.variables),
-        ...utilPrefixList,
-      ];
-      Maple.propExtensionMap = {
-        ...MAPLE_PROP_EXTENSION_MAP,
-        ...propExtensionMap,
-      };
-      Maple.breakpointMap = {
-        ...Maple.variables.breakpoint,
-      };
-      Maple.setMinAndMaxBreakpoints();
-      Maple.createDomElements(STYLE_ELEMENTS);
-      Maple.extendProperties();
-      Maple.generateWhitelist(whitelist);
-      this.onInit$.next(true);
-    }
+    Maple.CACHE = {};
+    Maple.variables = {
+      ...Maple.variables,
+      ...variables,
+    };
+    MapleColorHelper.generateAlphaColors(Maple.variables.color);
+    Maple.utilClassMap = {
+      ...getMapleUtilityClassMap(Maple.variables),
+      ...utilClassMap,
+    };
+    Maple.utilPrefixList = [
+      ...getMapleUtilityVariableMap(Maple.variables),
+      ...utilPrefixList,
+    ];
+    Maple.propExtensionMap = {
+      ...MAPLE_PROP_EXTENSION_MAP,
+      ...propExtensionMap,
+    };
+    Maple.breakpointMap = {
+      ...Maple.variables.breakpoint,
+    };
+    Maple.setMinAndMaxBreakpoints();
+    Maple.createDomElements(STYLE_ELEMENTS);
+    Maple.extendProperties();
+    Maple.utilClassMap = Maple.convertUtilClassMapToRtl(
+      Maple.utilClassMap,
+      isRtl,
+    );
+    Maple.generateWhitelist(whitelist);
+    this.onInit$.next(true);
   }
 
   public static findAndFly(str: string): void {
@@ -408,11 +415,72 @@ export class Maple {
     }
   }
 
+  public static convertUtilClassMapToRtl(
+    utilityClass: any,
+    isRtl: boolean,
+  ): any {
+    if (!isRtl) {
+      return utilityClass;
+    }
+    const data = {};
+    Object.keys(utilityClass).forEach((key) => {
+      const value = utilityClass[key];
+      if (value && typeof value === 'object' && value.rtl) {
+        Object.keys(value.rtl).reduce((rtlValue, rtlKey) => {
+          rtlValue[rtlKey] = value.rtl[rtlKey];
+        }, value);
+      }
+      if (typeof value === 'string' || typeof value === 'number') {
+        if (key.includes('left')) {
+          const replacedKey = key.replace('left', 'right');
+          data[replacedKey] = value;
+        } else if (key.includes('right')) {
+          const replacedKey = key.replace('right', 'left');
+          data[replacedKey] = value;
+        } else {
+          data[key] = value;
+        }
+        if (typeof value === 'string' && value.includes('left')) {
+          data[key] = value.replace('left', 'right');
+        } else if (typeof value === 'string' && value.includes('right')) {
+          data[key] = value.replace('right', 'left');
+        } else if (
+          typeof value === 'string' &&
+          key === 'transform' &&
+          value.includes('translate') &&
+          !['Y(', 'Z('].some((t) => value.includes(t))
+        ) {
+          data[key] = value
+            .split(' ')
+            .map((item) => {
+              const splittedValue = item.split('(');
+              splittedValue[1] =
+                splittedValue[1] && splittedValue[1].startsWith('-')
+                  ? splittedValue[1].replace('-', '(')
+                  : splittedValue[1]
+                  ? '(-' + splittedValue[1]
+                  : '';
+
+              return splittedValue[0] + splittedValue[1];
+            })
+            .join(' ');
+        }
+      } else {
+        const fixedUtility = Maple.convertUtilClassMapToRtl(
+          { ...value },
+          isRtl,
+        );
+        data[key] = { ...fixedUtility };
+      }
+    });
+    return data;
+  }
+
   public static fly(classList: any): void {
     if (isMapleEnabled === false) {
       return;
     }
-    if (isInitialized === false) {
+    if (!preInitClassList.length) {
       preInitClassList = preInitClassList.concat(classList);
       return;
     }
