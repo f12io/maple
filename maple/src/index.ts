@@ -90,7 +90,7 @@ export class Maple {
   constructor() {}
 
   // Find min and max breakpoints
-  private static setMinAndMaxBreakpoints() {
+  private static setMinAndMaxBreakpoints(): void {
     const breakpointKeys: Array<string> = Object.keys(Maple.breakpointMap);
     const breakpoints = breakpointKeys
       .map((key) => ({
@@ -116,9 +116,9 @@ export class Maple {
 
   public static createDomElements(
     styleElements: any,
-    prefix = 'maple',
-    document?,
-  ) {
+    prefix: string = 'maple',
+    document?: any,
+  ): void {
     // Prepare style element on head
     const docHead = (document || doc).getElementsByTagName('head')[0];
     const breakpoints = Object.keys(BREAKPOINT.media)
@@ -135,7 +135,7 @@ export class Maple {
       });
   }
 
-  private static extendProperties() {
+  private static extendProperties(): void {
     Maple.utilPrefixList.forEach((def: any) => {
       Maple.utilClassMap[def.prefix] = Maple.utilClassMap[def.prefix] || {};
       Maple.utilClassMap[def.prefix][WILDCARD] = {};
@@ -157,9 +157,10 @@ export class Maple {
     selKey: string = STR_EMPTY,
     utilKey: string = STR_EMPTY,
     utilVal: string = STR_EMPTY,
+    // tslint:disable-next-line: variable-name
     _selector: string = STR_EMPTY,
-    important = false,
-  ) {
+    important: boolean = false,
+  ): string {
     const maple = Maple.utilClassMap[selKey] || {};
     _selector = (maple._selector || '') + _selector;
 
@@ -203,7 +204,11 @@ export class Maple {
       .join(',');
   }
 
-  private static cache(media: string, selector: string, mapToBeCached: any) {
+  private static cache(
+    media: string,
+    selector: string,
+    mapToBeCached: any,
+  ): void {
     if (!mapToBeCached) {
       throw new Error(`Property map not found for selector: ${selector}`);
     }
@@ -222,7 +227,7 @@ export class Maple {
     }
   }
 
-  private static styles(media: string) {
+  private static styles(media: string): string {
     const cacheItem = Maple.tempCache[media];
     if (!cacheItem) {
       return STR_EMPTY;
@@ -283,7 +288,7 @@ export class Maple {
     return result.length > 2 ? result.join(STR_EMPTY) : STR_EMPTY;
   }
 
-  private static generateWhitelist(whitelist: Array<string> = []) {
+  private static generateWhitelist(whitelist: Array<string> = []): void {
     const classList = [];
     for (const utilKey of whitelist) {
       if (!Maple.utilClassMap[utilKey]) {
@@ -314,7 +319,7 @@ export class Maple {
     Maple.fly(preInitClassList.concat(classList));
   }
 
-  private static splitLastOccurrence(str, key) {
+  private static splitLastOccurrence(str: string, key: string): Array<string> {
     const pos = str.lastIndexOf(key);
     const result = [];
     const firstPart = str.substring(0, pos);
@@ -328,7 +333,7 @@ export class Maple {
     return result;
   }
 
-  private static splitFirstOccurrence(str, key) {
+  private static splitFirstOccurrence(str: string, key: string): Array<string> {
     const pos = str.indexOf(key);
     const result = [];
     const firstPart = str.substring(0, pos);
@@ -343,14 +348,14 @@ export class Maple {
   }
 
   public static init(
-    document,
+    document: any,
     enabled: boolean,
     utilClassMap: any = {},
     whitelist: Array<string>,
     variables: MapleVariableModel = Maple.variables,
     utilPrefixList: Array<any> = [],
     propExtensionMap: any = {},
-  ) {
+  ): void {
     isMapleEnabled = enabled;
     if (isMapleEnabled === false) {
       return;
@@ -386,7 +391,7 @@ export class Maple {
     }
   }
 
-  public static findAndFly(str: string) {
+  public static findAndFly(str: string): void {
     if (isMapleEnabled === false) {
       return;
     }
@@ -400,7 +405,7 @@ export class Maple {
     }
   }
 
-  public static fly(classList: any) {
+  public static fly(classList: any): void {
     if (isMapleEnabled === false) {
       return;
     }
@@ -580,7 +585,7 @@ export class Maple {
     //#endregion
   }
 
-  public static unifyUtilityClass(classList) {
+  public static unifyUtilityClass(classList: Array<string>): Array<string> {
     const classes = classList.reduce((acc, prev) => {
       const existingStyleIndex = acc.findIndex(
         (p) =>
@@ -601,8 +606,8 @@ export class Maple {
     styleElements: any,
     bp: string,
     style: string,
-    silent = true,
-  ) {
+    silent: boolean = true,
+  ): void {
     styleElements[bp].appendChild(doc.createTextNode(style));
 
     if (!silent) {
@@ -674,7 +679,7 @@ export class Maple {
     return { ...Maple.variables };
   }
 
-  public static fillInTheGaps(breakpointMap): any {
+  public static fillInTheGaps(breakpointMap: any): any {
     const fullBreakpointMap = Maple.getVariables().breakpoint;
     const keys = Object.keys(fullBreakpointMap);
     const minKey = keys.find((key) => key in breakpointMap);
@@ -699,7 +704,7 @@ export class Maple {
       }, {});
   }
 
-  public static isBreakpointMap(breakpointMap): any {
+  public static isBreakpointMap(breakpointMap: any): any {
     if (typeof breakpointMap === 'object' && breakpointMap !== null) {
       return Object.keys(Maple.getVariables().breakpoint).some(
         (key) => breakpointMap && key in breakpointMap,

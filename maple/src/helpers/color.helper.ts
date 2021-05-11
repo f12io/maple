@@ -15,37 +15,36 @@ export class MapleColorHelper {
     return yiq >= 128 ? '#000' : '#fff';
   }
 
-  public static alpha2hex(alpha) {
+  public static alpha2hex(alpha: string): string {
     alpha = ((1 << 8) + Math.round(parseFloat(alpha) * 255))
       .toString(16)
       .slice(1);
     return alpha === 'ff' ? '' : alpha;
   }
 
-  public static hex8(hex, opacity: number = 1) {
+  public static hex8(hex: string, opacity: number = 1): string {
     return `#${MapleColorHelper.hex2Short(
       hex.replace(
         /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
         (m, r, g, b) => '#' + r + r + g + g + b + b,
-      ) + MapleColorHelper.alpha2hex(opacity),
+      ) + MapleColorHelper.alpha2hex(opacity.toString()),
     )}`;
   }
 
-  public static hex2Short(hex) {
+  public static hex2Short(hex: string): string {
     if (hex.length > 6) {
-      hex = hex.replace('#', '').split('');
-      hex =
-        hex[0] === hex[1] &&
-        hex[2] === hex[3] &&
-        hex[4] === hex[5] &&
-        hex[6] === hex[7]
-          ? hex[0] + hex[2] + hex[4] + (hex[6] || '')
-          : hex.join('');
+      const hexArr = hex.replace('#', '').split('');
+      return hexArr[0] === hexArr[1] &&
+        hexArr[2] === hexArr[3] &&
+        hexArr[4] === hexArr[5] &&
+        hexArr[6] === hexArr[7]
+        ? hexArr[0] + hexArr[2] + hexArr[4] + (hexArr[6] || '')
+        : hexArr.join('');
     }
     return hex;
   }
 
-  public static generateAlphaColors(color) {
+  public static generateAlphaColors(color: string): string {
     Object.keys(color)
       .filter((key) => color[key].charAt(0) === '#' && key !== 'transparent')
       .forEach((key) => {
