@@ -121,18 +121,21 @@ export class Maple {
   ): void {
     // Prepare style element on head
     const docHead = (document || doc).getElementsByTagName('head')[0];
-    const breakpoints = Object.keys(BREAKPOINT.media)
-      .sort((a, b) => BREAKPOINT.media[a] - BREAKPOINT.media[b])
-      .sort((a, b) => a.indexOf(SUFFIX_MEDIA_UP));
+    const breakpoints = Object.keys(BREAKPOINT.media).sort(
+      (a, b) => BREAKPOINT.media[a] - BREAKPOINT.media[b],
+    );
+    const breakpointsUp = breakpoints.filter((key) =>
+      key.includes(SUFFIX_MEDIA_UP),
+    );
+    const breakpointsDown = breakpoints.filter((key) =>
+      key.includes(SUFFIX_MEDIA_DOWN),
+    );
 
-    breakpoints
-      .slice(breakpoints.indexOf(BREAKPOINT.minMedia), breakpoints.length)
-      .concat(breakpoints.slice(0, breakpoints.indexOf(BREAKPOINT.minMedia)))
-      .forEach((key) => {
-        styleElements[key] = doc.createElement('style');
-        styleElements[key].setAttribute('id', `${prefix}-${key}`);
-        docHead.appendChild(styleElements[key]);
-      });
+    breakpointsUp.concat(breakpointsDown.reverse()).forEach((key) => {
+      styleElements[key] = doc.createElement('style');
+      styleElements[key].setAttribute('id', `${prefix}-${key}`);
+      docHead.appendChild(styleElements[key]);
+    });
   }
 
   private static extendProperties(): void {
