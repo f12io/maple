@@ -14,7 +14,7 @@ rm -rf node_modules # package-lock.json <-- may want to remove this file too if 
 npm install 
 
 # Test validity 
-npm test
+# npm test
 
 # Build and update docs
 ng build
