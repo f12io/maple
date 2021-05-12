@@ -8,7 +8,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "release": "./make-release.sh"
+    "release": "sh make-release.sh"
   },
   "private": true,
   "homepage": "https://github.com/onuradsay/maple",
