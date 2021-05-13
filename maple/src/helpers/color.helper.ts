@@ -44,7 +44,7 @@ export class MapleColorHelper {
     return hex;
   }
 
-  public static generateAlphaColors(color: string): string {
+  public static generateAlphaColors(color: any): string {
     Object.keys(color)
       .filter((key) => color[key].charAt(0) === '#' && key !== 'transparent')
       .forEach((key) => {
