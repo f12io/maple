@@ -25,7 +25,9 @@ releaseVersion="v$releaseVersion" # of the form vX.X.X
 
 # Remove all files except for the ones inside dist/maple
 mkdir TO_DELETE
-mv * TO_DELETE
+shopt -s dotglob extglob
+mv !(.git) TO_DELETE
+shopt -u dotglob extglob
 mv TO_DELETE/dist/maple/** .
 rm -rf TO_DELETE
 
