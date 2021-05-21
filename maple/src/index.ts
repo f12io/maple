@@ -650,20 +650,19 @@ export class Maple {
   }
 
   public static unifyUtilityClass(classList: Array<string>): Array<string> {
-    const classes = classList.reduce((acc, prev) => {
+    return classList.reduce((acc, classItem) => {
       const existingStyleIndex = acc.findIndex(
         (p) =>
           ((p || '').split(R_UNIFIY) || [])[0] ===
-          ((prev || '').split(R_UNIFIY) || [])[0],
+          ((classItem || '').split(R_UNIFIY) || [])[0],
       );
       if (existingStyleIndex < 0) {
-        acc.push(prev);
+        acc.push(classItem);
       } else {
-        acc[existingStyleIndex] = prev;
+        acc[existingStyleIndex] = classItem;
       }
       return acc;
     }, []);
-    return classes;
   }
 
   public static appendStyle(
