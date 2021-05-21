@@ -169,8 +169,6 @@ export class Maple {
     important: boolean = false,
   ): string {
     const maple = Maple.utilClassMap[selKey] || {};
-    _selector = (maple._selector || '') + _selector;
-
     const parentSelector = selKey.includes(SEP_OUTER_SPACE)
       ? selKey.split(SEP_OUTER_SPACE).pop().split(R_SEP_SEL_SPACE_ALL).shift()
       : STR_EMPTY;
@@ -184,7 +182,7 @@ export class Maple {
       utilVal ? SEP_UTIL_VAL : STR_EMPTY,
     ].join(STR_EMPTY);
 
-    return _selector
+    return ((maple._selector || selKey || '') + _selector)
       .split(/,\s*/)
       .map((selector) =>
         [
@@ -195,15 +193,10 @@ export class Maple {
           maple._selector || !selKey || selKey.charAt(0) === SEP_NO_SPACE
             ? STR_EMPTY
             : STR_SPACE,
-          maple._selector
-            ? STR_EMPTY
-            : selKey
-                .replace(SEP_OUTER_SPACE + parentSelector, STR_EMPTY)
-                .replace(R_SEP_SEL_SPACE, STR_SPACE)
-                .replace(R_SEP_NO_SPACE, STR_EMPTY),
           selector.trim().charAt(0) === SEP_NO_SPACE ? STR_EMPTY : STR_SPACE,
           selector
             .trim()
+            .replace(SEP_OUTER_SPACE + parentSelector, STR_EMPTY)
             .replace(R_SEP_SEL_SPACE, STR_SPACE)
             .replace(R_SEP_NO_SPACE, STR_EMPTY),
         ].join(STR_EMPTY),
