@@ -686,6 +686,44 @@ export const getMapleUtilityClassMap = ({
       none: { float: 'none' },
     },
 
+    'grid-row-temp': {
+      1: { 'grid-template-rows': 'auto' },
+      2: { 'grid-template-rows': 'auto auto' },
+      '*': { 'grid-template-rows': '*' },
+    },
+
+    'grid-col-temp': {
+      1: { 'grid-template-columns': 'auto' },
+      2: { 'grid-template-columns': 'repeat(2, auto)' },
+      3: { 'grid-template-columns': 'repeat(3, auto)' },
+      4: { 'grid-template-columns': 'repeat(4, auto)' },
+      5: { 'grid-template-columns': 'repeat(5, auto)' },
+      6: { 'grid-template-columns': 'repeat(6, auto)' },
+      7: { 'grid-template-columns': 'repeat(7, auto)' },
+      8: { 'grid-template-columns': 'repeat(8, auto)' },
+      9: { 'grid-template-columns': 'repeat(9, auto)' },
+      10: { 'grid-template-columns': 'repeat(10, auto)' },
+      11: { 'grid-template-columns': 'repeat(11, auto)' },
+      12: { 'grid-template-columns': 'repeat(12, auto)' },
+      '*': { 'grid-template-columns': '*' },
+    },
+
+    'grid-row-start': {
+      '*': { 'grid-row-start': '*' },
+    },
+
+    'grid-row-end': {
+      '*': { 'grid-row-end': '*' },
+    },
+
+    'grid-col-start': {
+      '*': { 'grid-column-start': '*' },
+    },
+
+    'grid-col-end': {
+      '*': { 'grid-column-end': '*' },
+    },
+
     // list-style
     'list-style': {
       none: { 'list-style': 'none', margin: 0, padding: 0 },
