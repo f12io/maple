@@ -1,14 +1,14 @@
 export interface MapleVariableModel {
-  breakpoint: any;
-  color: any;
-  fontFamily: any;
-  fontSize: any;
-  fontWeight: any;
-  maxWidth: any;
-  spacer: any;
-  button: MapleVariableButtonModel;
-  alert: MapleVariableAlertModel;
-  transition: MapleVariableTransitionModel;
+  breakpoint?: any;
+  color?: any;
+  fontFamily?: any;
+  fontSize?: any;
+  fontWeight?: any;
+  maxWidth?: any;
+  spacer?: any;
+  button?: MapleVariableButtonModel;
+  alert?: MapleVariableAlertModel;
+  transition?: MapleVariableTransitionModel;
   isRtl?: boolean;
 }
 
