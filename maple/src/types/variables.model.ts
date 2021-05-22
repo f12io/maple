@@ -1,4 +1,4 @@
-export interface MapleVariableModel {
+export interface IMapleVariableModel {
   breakpoint?: any;
   color?: any;
   fontFamily?: any;
@@ -6,13 +6,13 @@ export interface MapleVariableModel {
   fontWeight?: any;
   maxWidth?: any;
   spacer?: any;
-  button?: MapleVariableButtonModel;
-  alert?: MapleVariableAlertModel;
+  button?: IMapleVariableButtonModel;
+  alert?: IMapleVariableAlertModel;
   transition?: MapleVariableTransitionModel;
   isRtl?: boolean;
 }
 
-export interface MapleVariableSizeModel {
+export interface IMapleVariableSizeModel {
   borderWidth: string;
   borderRadius: string;
   fontSize: string;
@@ -23,22 +23,22 @@ export interface MapleVariableSizeModel {
   textCase: 'uppercase' | 'lowercase' | 'capitalize' | 'none';
 }
 
-export interface MapleVariableButtonModel {
+export interface IMapleVariableButtonModel {
   transitionDuration: string;
   transitionTiming: string;
   outlineWidth: string;
   outlineOffset: string;
-  small: MapleVariableSizeModel;
-  normal: MapleVariableSizeModel;
-  medium: MapleVariableSizeModel;
-  large: MapleVariableSizeModel;
+  small: IMapleVariableSizeModel;
+  normal: IMapleVariableSizeModel;
+  medium: IMapleVariableSizeModel;
+  large: IMapleVariableSizeModel;
 }
 
-export interface MapleVariableAlertModel {
-  small: MapleVariableSizeModel;
-  normal: MapleVariableSizeModel;
-  medium: MapleVariableSizeModel;
-  large: MapleVariableSizeModel;
+export interface IMapleVariableAlertModel {
+  small: IMapleVariableSizeModel;
+  normal: IMapleVariableSizeModel;
+  medium: IMapleVariableSizeModel;
+  large: IMapleVariableSizeModel;
 }
 
 export interface MapleVariableTransitionModel {

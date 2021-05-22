@@ -1,4 +1,4 @@
-import { MapleVariableModel } from './types/variables.model';
+import { IMapleVariableModel } from './types/variables.model';
 
 export const getMapleUtilityClassMap = ({
   fontFamily,
@@ -9,7 +9,7 @@ export const getMapleUtilityClassMap = ({
   transition,
   button,
   alert,
-}: MapleVariableModel) => {
+}: IMapleVariableModel) => {
   const buttonCommonStyles = {
     display: 'inline-flex',
     'align-items': 'center',
@@ -1365,7 +1365,7 @@ export const getMapleUtilityVariableMap = ({
   color,
   spacer,
   fontFamily,
-}: MapleVariableModel) => [
+}: IMapleVariableModel) => [
   { prefix: 'ff', map: fontFamily, props: ['font-family'] },
   { prefix: 'bgc', map: color, props: ['background-color'] },
   { prefix: 'bc', map: color, props: ['border-color'] },

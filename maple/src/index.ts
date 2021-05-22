@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import { MapleColorHelper } from './helpers/color.helper';
 import { MAPLE_PROP_EXTENSION_MAP } from './property-extension-map';
-import { MapleVariableModel } from './types/variables.model';
+import { IMapleVariableModel } from './types/variables.model';
 import {
   getMapleUtilityClassMap,
   getMapleUtilityVariableMap,
@@ -64,7 +64,7 @@ const esc = (selector: string) =>
 
 export class Maple {
   private static CACHE = {};
-  private static variables: MapleVariableModel = {
+  private static variables: IMapleVariableModel = {
     breakpoint: MAPLE_VAR_BREAKPOINT,
     color: MAPLE_VAR_COLOR,
     fontFamily: MAPLE_VAR_FONT_FAMILY,
@@ -352,7 +352,7 @@ export class Maple {
     enabled: boolean,
     utilClassMap: any = {},
     whitelist: Array<string>,
-    variables: MapleVariableModel = Maple.variables,
+    variables: IMapleVariableModel = Maple.variables,
     isRtl: boolean = false,
     utilPrefixList: Array<any> = [],
     propExtensionMap: any = {},
@@ -738,7 +738,7 @@ export class Maple {
     return Maple.isBreakpointValid(breakpoint) ? breakpoint : null;
   }
 
-  public static getVariables(): MapleVariableModel {
+  public static getVariables(): IMapleVariableModel {
     return { ...Maple.variables };
   }
 
