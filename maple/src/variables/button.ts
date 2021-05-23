@@ -1,9 +1,9 @@
-import { IMapleVariableButtonModel } from '../types/variables.model';
+import { MapleVariableButtonModel } from '../types/variables.model';
 import { MAPLE_VAR_FONT_SIZE } from './font-size';
 import { MAPLE_VAR_FONT_WEIGHT } from './font-weight';
 import { MAPLE_VAR_SPACER } from './spacer';
 
-export const MAPLE_VAR_BUTTON: IMapleVariableButtonModel = {
+export const MAPLE_VAR_BUTTON: MapleVariableButtonModel = {
   transitionDuration: '0.3s',
   transitionTiming: 'ease-in-out',
   outlineWidth: '1px',

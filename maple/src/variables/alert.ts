@@ -1,9 +1,9 @@
-import { IMapleVariableAlertModel } from '../types/variables.model';
+import { MapleVariableAlertModel } from '../types/variables.model';
 import { MAPLE_VAR_FONT_SIZE } from './font-size';
 import { MAPLE_VAR_FONT_WEIGHT } from './font-weight';
 import { MAPLE_VAR_SPACER } from './spacer';
 
-export const MAPLE_VAR_ALERT: IMapleVariableAlertModel = {
+export const MAPLE_VAR_ALERT: MapleVariableAlertModel = {
   small: {
     borderWidth: '1px',
     borderRadius: '0',
