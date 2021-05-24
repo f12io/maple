@@ -688,8 +688,6 @@ export const getMapleUtilityClassMap = ({
 
     'grid-rows': {
       _common: { display: 'grid' },
-      1: { 'grid-template-rows': 'auto' },
-      2: { 'grid-template-rows': 'auto auto' },
       '*': { 'grid-template-rows': '*' },
     },
 
