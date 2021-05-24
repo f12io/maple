@@ -3,4 +3,5 @@ export const MAPLE_VAR_MAX_WIDTH = {
   md: '720px',
   lg: '960px',
   xl: '1140px',
+  xxl: '1680px',
 };
