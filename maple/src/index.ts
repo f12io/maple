@@ -56,6 +56,7 @@ const R_EXTRACT_CLASS = /class\=\"([\s\S]+?)\"/g;
 const R_UNIFIY = /\=(?=[^.]*$)/;
 
 let preInitClassList = [];
+let preInitClassListGenerated = false;
 let isMapleEnabled = true;
 let doc;
 
@@ -317,6 +318,7 @@ export class Maple {
       }
     }
     Maple.fly(preInitClassList.concat(classList));
+    preInitClassListGenerated = true;
   }
 
   private static splitLastOccurrence(str: string, key: string): Array<string> {
@@ -473,7 +475,7 @@ export class Maple {
     if (isMapleEnabled === false) {
       return;
     }
-    if (!preInitClassList.length) {
+    if (!preInitClassListGenerated) {
       preInitClassList = preInitClassList.concat(classList);
       return;
     }

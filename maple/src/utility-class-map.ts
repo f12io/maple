@@ -686,26 +686,20 @@ export const getMapleUtilityClassMap = ({
       none: { float: 'none' },
     },
 
-    'grid-row-temp': {
+    'grid-rows': {
+      _common: { display: 'grid' },
       1: { 'grid-template-rows': 'auto' },
       2: { 'grid-template-rows': 'auto auto' },
       '*': { 'grid-template-rows': '*' },
     },
 
-    'grid-col-temp': {
-      1: { 'grid-template-columns': 'auto' },
-      2: { 'grid-template-columns': 'repeat(2, auto)' },
-      3: { 'grid-template-columns': 'repeat(3, auto)' },
-      4: { 'grid-template-columns': 'repeat(4, auto)' },
-      5: { 'grid-template-columns': 'repeat(5, auto)' },
-      6: { 'grid-template-columns': 'repeat(6, auto)' },
-      7: { 'grid-template-columns': 'repeat(7, auto)' },
-      8: { 'grid-template-columns': 'repeat(8, auto)' },
-      9: { 'grid-template-columns': 'repeat(9, auto)' },
-      10: { 'grid-template-columns': 'repeat(10, auto)' },
-      11: { 'grid-template-columns': 'repeat(11, auto)' },
-      12: { 'grid-template-columns': 'repeat(12, auto)' },
+    'grid-columns': {
+      _common: { display: 'grid', 'column-gap': spacer['gutter-half'] },
       '*': { 'grid-template-columns': '*' },
+    },
+
+    'grid-area': {
+      '*': { 'grid-area': '*' },
     },
 
     'grid-row-start': {
@@ -722,6 +716,68 @@ export const getMapleUtilityClassMap = ({
 
     'grid-col-end': {
       '*': { 'grid-column-end': '*' },
+    },
+
+    // grid column align-self
+    'grid-col-align-self': {
+      'top-left': { 'align-self': 'start', 'justify-self': 'start' },
+      'top-center': { 'align-self': 'start', 'justify-self': 'center' },
+      'top-right': { 'align-self': 'start', 'justify-self': 'end' },
+      'center-left': { 'align-self': 'center', 'justify-self': 'start' },
+      'center-center': { 'align-self': 'center', 'justify-self': 'center' },
+      'center-right': { 'align-self': 'center', 'justify-self': 'end' },
+      'bottom-left': { 'align-self': 'end', 'justify-self': 'start' },
+      'bottom-center': { 'align-self': 'end', 'justify-self': 'center' },
+      'bottom-right': { 'align-self': 'end', 'justify-self': 'end' },
+    },
+
+    // grid-colum-align
+    'grid-col-align': {
+      'top-left': {
+        'align-items': 'start',
+        'justify-items': 'start',
+      },
+      'top-center': {
+        'align-items': 'start',
+        'justify-items': 'center',
+      },
+      'top-right': {
+        'align-items': 'start',
+        'justify-items': 'end',
+      },
+      'center-left': {
+        'align-items': 'center',
+        'justify-items': 'start',
+      },
+      'center-center': { 'justify-items': 'center', 'align-items': 'center' },
+      'center-right': {
+        'align-items': 'center',
+        'justify-items': 'end',
+      },
+      'bottom-left': {
+        'align-items': 'end',
+        'justify-items': 'start',
+      },
+      'bottom-center': {
+        'align-items': 'end',
+        'justify-items': 'center',
+      },
+      'bottom-right': {
+        'align-items': 'end',
+        'justify-items': 'end',
+      },
+      'between-left': {
+        'align-items': 'space-between',
+        'justify-items': 'start',
+      },
+      'between-center': {
+        'align-items': 'space-between',
+        'justify-items': 'center',
+      },
+      'between-right': {
+        'align-items': 'space-between',
+        'justify-items': 'end',
+      },
     },
 
     // list-style
