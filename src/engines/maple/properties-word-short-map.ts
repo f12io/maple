@@ -1,0 +1,16 @@
+export const propertiesWordShortMap = {
+  min: 'mn',
+  max: 'mx',
+  width: 'w',
+  height: 'h',
+  transform: 'trnsf',
+  transition: 'trnst',
+  translate: 'trnsl',
+  overflow: 'of',
+  overflowX: 'ofx',
+  overflowY: 'ofy',
+  background: 'bg',
+  position: 'pos',
+  perspective: 'per',
+  gap: 'gap',
+};
