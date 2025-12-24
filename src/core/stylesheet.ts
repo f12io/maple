@@ -25,7 +25,7 @@ const parseMedia = (mediaText: string): ParsedMediaQuery => {
 };
 
 const compareMedia = (a: ParsedMediaQuery, b: ParsedMediaQuery): number => {
-  const order = { other: 0, max: 1, min: 2 };
+  const order = { other: 0, min: 1, max: 2, };
   if (a.type !== b.type) return order[a.type] - order[b.type];
   if (a.type === 'max') return b.max - a.max;
   if (a.type === 'min') return a.min - b.min;
@@ -39,8 +39,8 @@ const bpQueryBuilder = (bp: string, size?: string) => {
     (!isNaN(parseInt(size || ''))
       ? size
       : size
-      ? breakpoints[size]
-      : breakpoints[bp]);
+        ? breakpoints[size]
+        : breakpoints[bp]);
 
   return resolvedSize
     ? `(${type === 'min' ? 'min-width' : 'max-width'}: ${resolvedSize})`
@@ -127,8 +127,7 @@ const findContainerOrInsert = (
         compareMedia(parsedQuery, parseMedia(rule.conditionText)) < 0
       ) {
         sheet!.insertRule(
-          `@container ${
-            container === 'none' ? '' : container + ' '
+          `@container ${container === 'none' ? '' : container + ' '
           }${query} {}`,
           i
         );
