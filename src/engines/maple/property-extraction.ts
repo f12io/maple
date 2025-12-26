@@ -9,7 +9,18 @@ type WordPart = {
   original: string;
 };
 
+let cachedProperties: any = null;
+
 function getAllCssProperties() {
+  if (cachedProperties) return cachedProperties;
+
+  const doc = typeof document !== 'undefined' ? document : null;
+
+  if (!doc) {
+    throw new Error('Document not found. Please ensure document is available or load pre-calculated properties using loadPrecalculatedProperties().');
+  }
+
+  const element = doc.createElement('div');
   const props = CSS_PROP_MAP;
 
   const result: {
@@ -25,6 +36,27 @@ function getAllCssProperties() {
     utilityMap: { ...predefinedUtilityMap },
   };
 
+  const findRelationAndKeyInternal = (words: Array<string | WordPart>): {
+    key: string;
+    rel: 'd' | 'c' | 'o' | 'trnsf';
+  } => {
+    const key = words
+      .map((w) => (typeof w === 'object' ? w.original : w))
+      .join('-');
+
+    (element.style as any)[key] = '#000000';
+    (element.style as any)[key] = '1rem';
+
+    const rel =
+      (element.style as any)[key] === '1rem'
+        ? 'd'
+        : !!(element.style as any)[key]
+          ? 'c'
+          : 'o';
+    (element.style as any)[key] = '';
+    return { key, rel };
+  }
+
   for (const prop of props) {
     if (result.shortMap[prop]) {
       continue;
@@ -33,7 +65,7 @@ function getAllCssProperties() {
     const words = normalizeWords(rawWords);
     if (propertiesShortMap[prop]) {
       result.shortMap[propertiesShortMap[prop]] = prop;
-      result.utilityMap[prop] = findRelationAndKey(words);
+      result.utilityMap[prop] = findRelationAndKeyInternal(words);
       continue;
     }
 
@@ -46,7 +78,7 @@ function getAllCssProperties() {
 
     if (!result.shortMap[initials]) {
       result.shortMap[initials] = prop;
-      result.utilityMap[prop] = findRelationAndKey(words);
+      result.utilityMap[prop] = findRelationAndKeyInternal(words);
       continue;
     }
 
@@ -77,11 +109,12 @@ function getAllCssProperties() {
 
     if (found) {
       result.shortMap[found] = prop;
-      result.utilityMap[prop] = findRelationAndKey(words);
+      result.utilityMap[prop] = findRelationAndKeyInternal(words);
       continue;
     }
   }
 
+  cachedProperties = result;
   return result;
 }
 
@@ -100,7 +133,20 @@ function normalizeWords(words: string[]): WordPart[] {
 }
 
 function mapleMatcher() {
-  const properties = getAllCssProperties();
+  const properties = new Proxy({} as any, {
+    get(_, prop) {
+      if (!cachedProperties) {
+        if (typeof document !== 'undefined') {
+          getAllCssProperties();
+        } else {
+          // If we reach here in Node, and cachedProperties is null, 
+          // dynamic calculations aren't possible.
+          return undefined;
+        }
+      }
+      return cachedProperties?.[prop];
+    }
+  });
   const pattern = new RegExp(`(.*)`);
   return {
     pattern,
@@ -108,27 +154,20 @@ function mapleMatcher() {
   };
 }
 
-const element = document.createElement('div');
-
-function findRelationAndKey(words: Array<string | WordPart>): {
-  key: string;
-  rel: 'd' | 'c' | 'o' | 'trnsf';
-} {
-  const key = words
-    .map((w) => (typeof w === 'object' ? w.original : w))
-    .join('-');
-
-  (element.style as any)[key] = '#000000';
-  (element.style as any)[key] = '1rem';
-
-  const rel =
-    (element.style as any)[key] === '1rem'
-      ? 'd'
-      : !!(element.style as any)[key]
-      ? 'c'
-      : 'o';
-  (element.style as any)[key] = '';
-  return { key, rel };
+/**
+ * For non-browser environments, load pre-calculated properties.
+ */
+export async function loadPrecalculatedProperties() {
+  if (cachedProperties) return cachedProperties;
+  try {
+    const data = await import('../../generated/properties-runtime.json');
+    cachedProperties = data.default || data;
+    return cachedProperties;
+  } catch (e) {
+    console.error('Failed to load pre-calculated properties:', e);
+    return null;
+  }
 }
+
 const maple = mapleMatcher();
 export default maple;
