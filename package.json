@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "private": false,
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/types/src/index.d.ts",
+  "main": "./dist/module/index.cjs",
+  "module": "./dist/module/index.js",
+  "types": "./dist/module/types/src/index.d.ts",
   "exports": {
     ".": {
       "types": {
-        "import": "./dist/types/src/index.d.ts",
-        "require": "./dist/types/src/index.d.cts"
+        "import": "./dist/module/types/src/index.d.ts",
+        "require": "./dist/module/types/src/index.d.cts"
       },
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/module/index.js",
+      "require": "./dist/module/index.cjs"
     }
   },
   "files": [
@@ -22,7 +22,7 @@
   "sideEffects": false,
   "scripts": {
     "dev": "vite",
-    "build": "rm -rf dist && BUILD_TYPE=lib vite build && BUILD_TYPE=runtime vite build && tsc -p tsconfig.build.json && find dist/types -name '*.d.ts' -exec sh -c 'cp \"$1\" \"${1%.d.ts}.d.cts\"' _ {} \\;",
+    "build": "rm -rf dist && BUILD_TYPE=lib vite build && BUILD_TYPE=runtime vite build && tsc -p tsconfig.build.json && find dist/module/types -name '*.d.ts' -exec sh -c 'cp \"$1\" \"${1%.d.ts}.d.cts\"' _ {} \\;",
     "preview": "vite preview",
     "test": "vitest --browser"
   },

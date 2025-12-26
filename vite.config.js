@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       port: 3000,
     },
     build: {
+      outDir: isRuntime ? 'dist/runtime' : 'dist/module',
       lib: isRuntime
         ? {
           entry: path.resolve(__dirname, 'src/runtime.ts'),
@@ -35,7 +36,7 @@ export default defineConfig(({ mode }) => {
       },
       target: 'es2018',
       minify: true,
-      emptyOutDir: !isRuntime, // Only empty on the first build
+      emptyOutDir: true,
     },
     plugins: [
       {
