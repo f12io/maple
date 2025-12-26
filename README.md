@@ -1,6 +1,6 @@
 # 🍁 Maple
 
-**Maple** is a **runtime utility-first CSS engine** inspired by Tailwind CSS.
+**Maple** is a **runtime utility-first CSS engine**.
 Instead of precompiling styles, Maple generates styles **on demand at runtime** by converting utility-like class strings into CSS property maps.
 
 Maple is designed to be:
@@ -61,7 +61,6 @@ This makes Maple ideal for:
 - Design systems
 - Headless UI libraries
 - CSS-in-JS alternatives
-- Tailwind-like DSL experiments
 
 ---
 
