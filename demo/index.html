@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Runtime Demo</title>
-    <style>
-      :root {
-        --color-primary: oklch(0.77 0.22 0 / 1);
-        --breakpoint-tablet: 30rem;
-        --ligtines-factor: 1;
-        --chroma-factor: 1;
-        --hue-factor: 1;
-      }
-      @layer base {
-      }
-    </style>
 
-    <script src="../dist/maple.runtime.js?sm=480px&md=640px&yy=500px"></script>
-  </head>
-  <body>
-    <div
-      class="app @container p-1 sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-red min=720px:p-3.5"
-    >
-      <div class="child @container size-20 d-flex bg-yellow m=auto @md:p-6">
-        <div class="child2 size-10 m=auto bg-white @min=3rem:p-8">Test</div>
-      </div>
+<head>
+  <meta charset="utf-8" />
+  <title>Runtime Demo</title>
+  <style>
+    :root {
+      --color-primary: oklch(0.77 0.22 0 / 1);
+      --breakpoint-tablet: 30rem;
+      --ligtines-factor: 1;
+      --chroma-factor: 1;
+      --hue-factor: 1;
+    }
+
+    @layer base {}
+  </style>
+
+  <script src="../dist/runtime/maple.runtime.js?sm=480px&md=640px&yy=500px"></script>
+</head>
+
+<body>
+  <div class="app @container p-1 sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-red min=720px:p-3.5">
+    <div class="child @container size-20 d-flex bg-yellow m=auto @md:p-6">
+      <div class="child2 size-10 m=auto bg-white @min=3rem:p-8">Test</div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
