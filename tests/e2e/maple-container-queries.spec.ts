@@ -14,7 +14,7 @@ import { startRuntime } from '../../src';
 const findCSSRule = (
   sheet: CSSStyleSheet,
   media: string,
-  containerName?: string
+  containerName?: string,
 ): CSSLayerBlockRule | CSSMediaRule | CSSContainerRule | null => {
   const rules = Array.from(sheet.cssRules) as Array<
     CSSLayerBlockRule | CSSMediaRule | CSSContainerRule
@@ -29,7 +29,7 @@ const findCSSRule = (
           ? rule instanceof CSSContainerRule &&
             rule.containerName === containerName.replace('none', '')
           : true) &&
-        (rule as CSSMediaRule | CSSContainerRule).conditionText === media
+        (rule as CSSMediaRule | CSSContainerRule).conditionText === media,
     ) || null
   );
 };
@@ -163,13 +163,13 @@ describe('Maple Responsive', () => {
           parent.classList.add(
             containerName === 'none'
               ? `@container`
-              : `@container(${containerName})`
+              : `@container(${containerName})`,
           );
         }
         const rule = findCSSRule(
           sheet,
           expected[i].media,
-          containerName || ''
+          containerName || '',
         ) as any;
         await new Promise((r) => setTimeout(r, 1));
 
@@ -179,7 +179,7 @@ describe('Maple Responsive', () => {
           page.getByTestId('child2').hover(),
         ]);
         const computed = getComputedStyle(
-          page.getByTestId(computeSelect).element()
+          page.getByTestId(computeSelect).element(),
         ).paddingTop;
         await Promise.all([
           page.getByTestId('app').unhover(),
@@ -191,11 +191,11 @@ describe('Maple Responsive', () => {
         const styleRules = Object.keys(expected[i].styleRules).reduce(
           (acc, key) => {
             acc[key] = (styleRule as CSSStyleRule)?.style?.getPropertyValue(
-              key
+              key,
             );
             return acc;
           },
-          {} as Record<string, string>
+          {} as Record<string, string>,
         );
         expect({
           media: rule?.conditionText || '',
@@ -205,6 +205,6 @@ describe('Maple Responsive', () => {
           containerName: rule?.containerName === '' ? 'none' : '',
         }).toEqual(expected[i]);
       }
-    }
+    },
   );
 });

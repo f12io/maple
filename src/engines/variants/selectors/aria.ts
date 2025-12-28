@@ -1,7 +1,7 @@
 export function ariaVariant(
   css: any,
   cfg?: any,
-  variant?: string | Record<string, string>
+  variant?: string | Record<string, string>,
 ) {
   if (!css) return false;
 

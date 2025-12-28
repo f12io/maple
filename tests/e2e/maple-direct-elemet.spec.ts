@@ -514,12 +514,15 @@ describe('Maple', () => {
     const sheet = document.styleSheets[1];
     const layer = sheet.cssRules[0] as CSSLayerBlockRule;
     await new Promise((r) => setTimeout(r, 1));
-    const styleRules = Object.keys(expected.styleRules).reduce((acc, key) => {
-      acc[key] = (layer.cssRules[0] as CSSStyleRule).style.getPropertyValue(
-        key
-      );
-      return acc;
-    }, {} as Record<string, string>);
+    const styleRules = Object.keys(expected.styleRules).reduce(
+      (acc, key) => {
+        acc[key] = (layer.cssRules[0] as CSSStyleRule).style.getPropertyValue(
+          key,
+        );
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
     expect({
       selectorText: (layer.cssRules[0] as CSSStyleRule).selectorText,
       styleRules,

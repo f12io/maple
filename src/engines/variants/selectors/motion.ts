@@ -2,7 +2,7 @@ export function motionVariant(which: string) {
   if (which === 'safe')
     return (css: any) => ({
       wrap: `@media (prefers-reduced-motion: no-preference) { {{selector}} { ${Object.entries(
-        css
+        css,
       )
         .map(([k, v]) => `${k}: ${v};`)
         .join(' ')} } }`,
@@ -10,7 +10,7 @@ export function motionVariant(which: string) {
   if (which === 'reduce')
     return (css: any) => ({
       wrap: `@media (prefers-reduced-motion: reduce) { {{selector}} { ${Object.entries(
-        css
+        css,
       )
         .map(([k, v]) => `${k}: ${v};`)
         .join(' ')} } }`,

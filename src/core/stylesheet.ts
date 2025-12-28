@@ -25,7 +25,7 @@ const parseMedia = (mediaText: string): ParsedMediaQuery => {
 };
 
 const compareMedia = (a: ParsedMediaQuery, b: ParsedMediaQuery): number => {
-  const order = { other: 0, min: 1, max: 2, };
+  const order = { other: 0, min: 1, max: 2 };
   if (a.type !== b.type) return order[a.type] - order[b.type];
   if (a.type === 'max') return b.max - a.max;
   if (a.type === 'min') return a.min - b.min;
@@ -58,7 +58,7 @@ export const init = () => {
     breakpoints = getBreakpoints();
     // Initial media rules insertion
     const sortedBps = Object.entries(breakpoints).sort(
-      (prev, curr) => parseInt(prev[1]) - parseInt(curr[1])
+      (prev, curr) => parseInt(prev[1]) - parseInt(curr[1]),
     );
 
     sortedBps.forEach(([key, size]) => {
@@ -66,7 +66,7 @@ export const init = () => {
       el!.sheet?.insertRule(`@media ${query}{}`, el!.sheet.cssRules.length);
       breakpointRules.set(
         key,
-        el!.sheet?.cssRules[el!.sheet.cssRules.length - 1] as CSSMediaRule
+        el!.sheet?.cssRules[el!.sheet.cssRules.length - 1] as CSSMediaRule,
       );
     });
   }
@@ -78,7 +78,7 @@ export const init = () => {
 
 const findMediaRuleOrInsert = (
   bp: string,
-  mediaQuery?: string
+  mediaQuery?: string,
 ): CSSMediaRule | undefined => {
   const key = mediaQuery ? `${bp}-${mediaQuery}` : bp;
   let mediaRule = breakpointRules.get(key);
@@ -112,7 +112,7 @@ const findMediaRuleOrInsert = (
 const findContainerOrInsert = (
   bp: string,
   container: string,
-  mediaQuery?: string
+  mediaQuery?: string,
 ): CSSContainerRule => {
   const query = bpQueryBuilder(bp, mediaQuery);
   const key = `${container}-${query}`.trim();
@@ -127,9 +127,10 @@ const findContainerOrInsert = (
         compareMedia(parsedQuery, parseMedia(rule.conditionText)) < 0
       ) {
         sheet!.insertRule(
-          `@container ${container === 'none' ? '' : container + ' '
+          `@container ${
+            container === 'none' ? '' : container + ' '
           }${query} {}`,
-          i
+          i,
         );
         containerRule = sheet!.cssRules[i] as CSSContainerRule;
         containerRules.set(key, containerRule);
@@ -142,7 +143,7 @@ const findContainerOrInsert = (
     const pos = breakpointRules.size + containerRules.size + 1;
     sheet!.insertRule(
       `@container ${container === 'none' ? '' : container + ' '}${query} {}`,
-      pos
+      pos,
     );
     containerRule = sheet!.cssRules[pos] as CSSContainerRule;
     containerRules.set(key, containerRule);
@@ -168,7 +169,7 @@ export const setCache = (rawClassName: string) =>
  */
 export const insert = (
   rule: string,
-  resolved?: { bp?: string; container?: string; mediaQuery?: string }
+  resolved?: { bp?: string; container?: string; mediaQuery?: string },
 ) => {
   try {
     const { bp, container, mediaQuery } = resolved || {};

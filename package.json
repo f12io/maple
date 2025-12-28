@@ -24,12 +24,14 @@
     "dev": "vite",
     "build": "rm -rf dist && BUILD_TYPE=lib vite build && BUILD_TYPE=runtime vite build && tsc -p tsconfig.build.json && find dist/module/types -name '*.d.ts' -exec sh -c 'cp \"$1\" \"${1%.d.ts}.d.cts\"' _ {} \\;",
     "preview": "vite preview",
-    "test": "vitest --browser"
+    "test": "vitest --browser",
+    "prettier:fix": "prettier --write ."
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@vitest/browser-playwright": "^4.0.16",
     "playwright": "^1.57.0",
+    "prettier": "^3.7.4",
     "tslib": "^2.8.1",
     "tsx": "4.19.2",
     "typescript": "^5.9.3",

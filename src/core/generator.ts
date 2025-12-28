@@ -23,7 +23,7 @@ export function generateForClass(rawClass: string, config: any = {}) {
     typeof resolved === 'object' && !resolved.wrap
       ? Object.entries(resolved)
           .map(
-            ([k, v]) => `${k}: ${v}${parsed.important ? ' !important' : ''};`
+            ([k, v]) => `${k}: ${v}${parsed.important ? ' !important' : ''};`,
           )
           .join(' ')
       : '';
@@ -34,7 +34,7 @@ export function generateForClass(rawClass: string, config: any = {}) {
         '{{selector}}',
         parsed.parentSelector
           ? `${parsed.parentSelector} ${classSelector}`
-          : classSelector
+          : classSelector,
       )
       .replace('{{childSelector}}', parsed.childSelector || '');
     const importantWrapped = parsed.important
@@ -52,7 +52,7 @@ export function generateForClass(rawClass: string, config: any = {}) {
   insert(
     `${
       parsed.parentSelector ? parsed.parentSelector + ' ' : ''
-    }${classSelctorWithChild} { ${body} }`
+    }${classSelctorWithChild} { ${body} }`,
   );
   setCache(rawClass);
   return rawClass;

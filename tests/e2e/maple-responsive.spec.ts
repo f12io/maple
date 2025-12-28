@@ -13,7 +13,7 @@ import { startRuntime } from '../../src';
 
 const findCSSRule = (
   sheet: CSSStyleSheet,
-  media: string
+  media: string,
 ): CSSLayerBlockRule | CSSMediaRule | CSSContainerRule | null => {
   const rules = Array.from(sheet.cssRules) as Array<
     CSSLayerBlockRule | CSSMediaRule | CSSContainerRule
@@ -24,7 +24,7 @@ const findCSSRule = (
   return (
     rules.find(
       (rule) =>
-        (rule as CSSMediaRule | CSSContainerRule).conditionText === media
+        (rule as CSSMediaRule | CSSContainerRule).conditionText === media,
     ) || null
   );
 };
@@ -248,7 +248,7 @@ describe('Maple Responsive', () => {
           page.getByTestId('child2').hover(),
         ]);
         const computed = getComputedStyle(
-          page.getByTestId(computeSelect).element()
+          page.getByTestId(computeSelect).element(),
         ).paddingTop;
         await Promise.all([
           page.getByTestId('app').unhover(),
@@ -259,11 +259,11 @@ describe('Maple Responsive', () => {
         const styleRules = Object.keys(expected[i].styleRules).reduce(
           (acc, key) => {
             acc[key] = (styleRule as CSSStyleRule)?.style?.getPropertyValue(
-              key
+              key,
             );
             return acc;
           },
-          {} as Record<string, string>
+          {} as Record<string, string>,
         );
         expect({
           media: rule?.conditionText || '',
@@ -272,6 +272,6 @@ describe('Maple Responsive', () => {
           computed,
         }).toEqual(expected[i]);
       }
-    }
+    },
   );
 });

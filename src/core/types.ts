@@ -8,7 +8,7 @@ export type VariantHandler = {
   apply(
     css: Record<string, string> | string,
     config?: any,
-    variant?: string | Record<string, string>
+    variant?: string | Record<string, string>,
   ): Record<string, any> | boolean | string;
 };
 
