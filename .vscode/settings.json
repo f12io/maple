@@ -5,8 +5,8 @@
     "source.fixAll.stylelint": "explicit"
   },
   "workbench.colorCustomizations": {
-    "activityBar.background": "#2100c6",
-    "titleBar.activeBackground": "#2100c6",
+    "activityBar.background": "#0000f1",
+    "titleBar.activeBackground": "#0000f1",
     "titleBar.activeForeground": "#ffffff"
   }
 }
