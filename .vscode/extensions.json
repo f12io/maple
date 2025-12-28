@@ -1,7 +1,0 @@
-{
-  "recommendations": [
-    "esbenp.prettier-vscode",
-    "ms-vscode.vscode-typescript-tslint-plugin",
-    "stuart.unique-window-colors"
-  ]
-}
