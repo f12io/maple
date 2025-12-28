@@ -17,7 +17,9 @@ function getAllCssProperties() {
   const doc = typeof document !== 'undefined' ? document : null;
 
   if (!doc) {
-    throw new Error('Document not found. Please ensure document is available or load pre-calculated properties using loadPrecalculatedProperties().');
+    throw new Error(
+      'Document not found. Please ensure document is available or load pre-calculated properties using loadPrecalculatedProperties().',
+    );
   }
 
   const element = doc.createElement('div');
@@ -31,12 +33,14 @@ function getAllCssProperties() {
     >;
   } = {
     shortMap: Object.fromEntries(
-      Object.keys(predefinedUtilityMap).map((key) => [key, key])
+      Object.keys(predefinedUtilityMap).map((key) => [key, key]),
     ),
     utilityMap: { ...predefinedUtilityMap },
   };
 
-  const findRelationAndKeyInternal = (words: Array<string | WordPart>): {
+  const findRelationAndKeyInternal = (
+    words: Array<string | WordPart>,
+  ): {
     key: string;
     rel: 'd' | 'c' | 'o' | 'trnsf';
   } => {
@@ -55,7 +59,7 @@ function getAllCssProperties() {
           : 'o';
     (element.style as any)[key] = '';
     return { key, rel };
-  }
+  };
 
   for (const prop of props) {
     if (result.shortMap[prop]) {
@@ -139,13 +143,13 @@ function mapleMatcher() {
         if (typeof document !== 'undefined') {
           getAllCssProperties();
         } else {
-          // If we reach here in Node, and cachedProperties is null, 
+          // If we reach here in Node, and cachedProperties is null,
           // dynamic calculations aren't possible.
           return undefined;
         }
       }
       return cachedProperties?.[prop];
-    }
+    },
   });
   const pattern = new RegExp(`(.*)`);
   return {

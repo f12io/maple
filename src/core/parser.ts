@@ -51,7 +51,7 @@ export function parseClass(input: string): ParsedClass | null {
           ...(customVariant || {}),
           containerName,
         };
-      })
+      }),
     );
   }
   return {

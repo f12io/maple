@@ -15,12 +15,12 @@ const axisMap: any = {
   '': (key: string | string[], value: string, isImportant: boolean) =>
     Array.isArray(key)
       ? key.reduce((acc, k) => {
-        acc[k] = value + (isImportant ? '!important' : '');
-        return acc;
-      }, {} as any)
+          acc[k] = value + (isImportant ? '!important' : '');
+          return acc;
+        }, {} as any)
       : {
-        [key]: value + (isImportant ? '!important' : ''),
-      },
+          [key]: value + (isImportant ? '!important' : ''),
+        },
 };
 
 export const mapleMatcher = (className: string) => {
@@ -45,7 +45,7 @@ export const mapleMatcher = (className: string) => {
       utility,
       data.key,
       operator,
-      value
+      value,
     );
   } else if (data.rel === 'c') {
     generatedValue = generateColorValues(operator, value);
@@ -55,7 +55,7 @@ export const mapleMatcher = (className: string) => {
       data.key as string,
       utility,
       operator,
-      value
+      value,
     );
   } else {
     const val = generateOtherValues(data.key, utility, operator, value);
@@ -71,8 +71,8 @@ export const mapleMatcher = (className: string) => {
 
 export const getUtilityData = (utility: string) => {
   const shortKey = maple.properties.shortMap?.[utility];
-  return maple.properties.utilityMap?.[shortKey || utility]
-}
+  return maple.properties.utilityMap?.[shortKey || utility];
+};
 
 export function getProperty(input: string): {
   sign: -1 | 1;
@@ -122,7 +122,7 @@ function generateDimensionValues(
   key: string | string[],
   operator: string,
   value: string,
-  unit: string = 'rem'
+  unit: string = 'rem',
 ) {
   if (operator === '=') {
     return value;
@@ -131,8 +131,9 @@ function generateDimensionValues(
   if (utility.match(/^(gtc|gtr)$/)) {
     return `repeat(var(--${key}-${value
       .replace(/\s/g, '_')
-      .replace(/([^a-zA-Z0-9_-])/g, '\\$1')}, ${fraction || value
-      }), minmax(0, 1fr))`;
+      .replace(/([^a-zA-Z0-9_-])/g, '\\$1')}, ${
+      fraction || value
+    }), minmax(0, 1fr))`;
   }
   if (operator !== '=' && value.match(/^([d|l|s]?)vw|vh|%/g)) {
     return `100${value}`;
@@ -143,10 +144,11 @@ function generateDimensionValues(
     ? fraction
     : isNaN(numVal)
       ? `var(--${Array.isArray(key) ? utility : key}-${uti}, var(--base-${uti}))`
-      : `var(--${Array.isArray(key) ? utility : key}-${uti}, var(--base-${uti}, ${isNaN(numVal)
-        ? value
-        : Number(value) * (unit === 'rem' ? 0.25 : 1) + unit
-      }))`;
+      : `var(--${Array.isArray(key) ? utility : key}-${uti}, var(--base-${uti}, ${
+          isNaN(numVal)
+            ? value
+            : Number(value) * (unit === 'rem' ? 0.25 : 1) + unit
+        }))`;
   return sign === -1 ? `calc(${val} * -1)` : val;
 }
 
@@ -158,16 +160,17 @@ function generateOtherValues(
   key: string | string[],
   utility: string,
   operator: string,
-  value: string
+  value: string,
 ) {
   return operator === '='
     ? predefinedUtilityMap[utility]?.apply
       ? predefinedUtilityMap[utility]?.apply(value)
       : value
-    : `var(--${key}-${value.replace(/([^a-zA-Z0-9_-])/g, '\\$1')}, ${predefinedUtilityMap[utility]?.apply
-      ? predefinedUtilityMap[utility]?.apply(value)
-      : value
-    })`;
+    : `var(--${key}-${value.replace(/([^a-zA-Z0-9_-])/g, '\\$1')}, ${
+        predefinedUtilityMap[utility]?.apply
+          ? predefinedUtilityMap[utility]?.apply(value)
+          : value
+      })`;
 }
 
 const trnsfMap: any = {
@@ -193,7 +196,7 @@ function generateTransformValues(
   key: string,
   utility: string,
   operator: string,
-  value: string
+  value: string,
 ) {
   const [_, axis, val] = value.match(/([xyz])?-?(.+)/) || [];
   const variable = generateDimensionValues(
@@ -202,22 +205,22 @@ function generateTransformValues(
     utility,
     operator,
     val,
-    trnsfMap[key].unit ?? 'rem'
+    trnsfMap[key].unit ?? 'rem',
   );
 
   return {
     ...(axis
       ? {
-        [`--${utility}-${axis}`]: trnsfMap[key].generator(
-          utility,
-          axis,
-          variable
-        ),
-      }
+          [`--${utility}-${axis}`]: trnsfMap[key].generator(
+            utility,
+            axis,
+            variable,
+          ),
+        }
       : {
-        [`--${utility}-x`]: trnsfMap[key].generator(utility, 'x', variable),
-        [`--${utility}-y`]: trnsfMap[key].generator(utility, 'y', variable),
-      }),
+          [`--${utility}-x`]: trnsfMap[key].generator(utility, 'x', variable),
+          [`--${utility}-y`]: trnsfMap[key].generator(utility, 'y', variable),
+        }),
     [key]: trnsfMap[key]?.value + (axis === 'z' ? `var(--${utility}-z,)` : ''),
   };
 }

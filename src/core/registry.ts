@@ -7,8 +7,8 @@ export function registerVariant(
   h: (
     css: Record<string, string> | string,
     config?: any,
-    variant?: Variant
-  ) => Record<string, any> | boolean
+    variant?: Variant,
+  ) => Record<string, any> | boolean,
 ) {
   variantHandlers.set(name, {
     name,
@@ -19,13 +19,13 @@ export function registerVariant(
 export function applyVariantChain(
   variants: Array<string | Record<string, string>>,
   cssObj: Record<string, string>,
-  config: any
+  config: any,
 ) {
   let current: any = cssObj;
 
   for (const variant of variants) {
     const handler = variantHandlers.get(
-      typeof variant === 'object' ? variant.name : variant
+      typeof variant === 'object' ? variant.name : variant,
     );
     if (!handler) continue;
 

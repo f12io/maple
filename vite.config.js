@@ -17,18 +17,17 @@ export default defineConfig(({ mode }) => {
       outDir: isRuntime ? 'dist/runtime' : 'dist/module',
       lib: isRuntime
         ? {
-          entry: path.resolve(__dirname, 'src/runtime.ts'),
-          name: 'Maple',
-          formats: ['iife'],
-          fileName: () => 'maple.runtime.js',
-        }
+            entry: path.resolve(__dirname, 'src/runtime.ts'),
+            name: 'Maple',
+            formats: ['iife'],
+            fileName: () => 'maple.runtime.js',
+          }
         : {
-          entry: path.resolve(__dirname, 'src/index.ts'),
-          name: 'Maple',
-          formats: ['es', 'cjs'],
-          fileName: (format) =>
-            format === 'es' ? 'index.js' : 'index.cjs',
-        },
+            entry: path.resolve(__dirname, 'src/index.ts'),
+            name: 'Maple',
+            formats: ['es', 'cjs'],
+            fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
+          },
       rollupOptions: {
         output: {
           inlineDynamicImports: true,
@@ -49,7 +48,7 @@ export default defineConfig(({ mode }) => {
               propertiesShortMap[a]
                 ? -1
                 : Number(propertiesWeightMap[b] ?? 0) -
-                Number(propertiesWeightMap[a] ?? 0)
+                  Number(propertiesWeightMap[a] ?? 0),
             );
           const content = `// ⚠️ AUTO-GENERATED — DO NOT EDIT
 export const CSS_PROP_MAP = ${JSON.stringify(sortedProps, null, 2)} as const;
@@ -65,7 +64,8 @@ export const CSS_PROP_MAP = ${JSON.stringify(sortedProps, null, 2)} as const;
         apply: 'build',
         async buildStart() {
           const { chromium } = await import('playwright');
-          const { propertiesWordShortMap } = await import('./src/engines/maple/properties-word-short-map.ts');
+          const { propertiesWordShortMap } =
+            await import('./src/engines/maple/properties-word-short-map.ts');
 
           const sortedProps = defaultUtilities
             .split(',')
@@ -73,117 +73,119 @@ export const CSS_PROP_MAP = ${JSON.stringify(sortedProps, null, 2)} as const;
               propertiesShortMap[a]
                 ? -1
                 : Number(propertiesWeightMap[b] ?? 0) -
-                Number(propertiesWeightMap[a] ?? 0)
+                  Number(propertiesWeightMap[a] ?? 0),
             );
 
           const browser = await chromium.launch();
           const page = await browser.newPage();
 
-          const result = await page.evaluate(({
-            sortedProps,
-            propertiesShortMap,
-            propertiesWordShortMap
-          }) => {
-            const element = document.createElement('div');
+          const result = await page.evaluate(
+            ({ sortedProps, propertiesShortMap, propertiesWordShortMap }) => {
+              const element = document.createElement('div');
 
-            function normalizeWords(words) {
-              return words.map((w) => {
-                const key = w.toLowerCase();
-                if (propertiesWordShortMap[key]) {
-                  return {
-                    text: propertiesWordShortMap[key],
-                    fixed: true,
-                    original: key,
-                  };
-                }
-                return { text: w, fixed: false, original: key };
-              });
-            }
-
-            function findRelationAndKey(words) {
-              const key = words
-                .map((w) => (typeof w === 'object' ? w.original : w))
-                .join('-');
-
-              element.style[key] = '#000000';
-              element.style[key] = '1rem';
-
-              const rel =
-                element.style[key] === '1rem'
-                  ? 'd'
-                  : !!element.style[key]
-                    ? 'c'
-                    : 'o';
-              element.style[key] = '';
-              return { key, rel };
-            }
-
-            const res = {
-              shortMap: {},
-              utilityMap: {},
-            };
-
-            for (const prop of sortedProps) {
-              if (res.shortMap[prop]) continue;
-
-              const rawWords = prop.match(/([A-Z]?[a-z]+|[XY])/g) || [];
-              const words = normalizeWords(rawWords);
-
-              if (propertiesShortMap[prop]) {
-                res.shortMap[propertiesShortMap[prop]] = prop;
-                res.utilityMap[prop] = findRelationAndKey(words);
-                continue;
+              function normalizeWords(words) {
+                return words.map((w) => {
+                  const key = w.toLowerCase();
+                  if (propertiesWordShortMap[key]) {
+                    return {
+                      text: propertiesWordShortMap[key],
+                      fixed: true,
+                      original: key,
+                    };
+                  }
+                  return { text: w, fixed: false, original: key };
+                });
               }
 
-              const maxLen = words.map((w) => w.text.length);
-              const take = words.map((w) => (w.fixed ? w.text.length : 1));
+              function findRelationAndKey(words) {
+                const key = words
+                  .map((w) => (typeof w === 'object' ? w.original : w))
+                  .join('-');
 
-              const initials = words
-                .map((w, i) => (w.fixed ? w.text : w.text[0].toLowerCase()))
-                .join('');
+                element.style[key] = '#000000';
+                element.style[key] = '1rem';
 
-              if (!res.shortMap[initials]) {
-                res.shortMap[initials] = prop;
-                res.utilityMap[prop] = findRelationAndKey(words);
-                continue;
+                const rel =
+                  element.style[key] === '1rem'
+                    ? 'd'
+                    : !!element.style[key]
+                      ? 'c'
+                      : 'o';
+                element.style[key] = '';
+                return { key, rel };
               }
 
-              let expandIndex = words.length - 1;
-              let found = null;
+              const res = {
+                shortMap: {},
+                utilityMap: {},
+              };
 
-              while (expandIndex >= 0) {
-                const candidate = words
-                  .map((w, i) => w.text.slice(0, take[i]))
-                  .join('')
-                  .toLowerCase();
+              for (const prop of sortedProps) {
+                if (res.shortMap[prop]) continue;
 
-                if (!res.shortMap[candidate]) {
-                  found = candidate.toLowerCase();
-                  break;
+                const rawWords = prop.match(/([A-Z]?[a-z]+|[XY])/g) || [];
+                const words = normalizeWords(rawWords);
+
+                if (propertiesShortMap[prop]) {
+                  res.shortMap[propertiesShortMap[prop]] = prop;
+                  res.utilityMap[prop] = findRelationAndKey(words);
+                  continue;
                 }
 
-                if (take[expandIndex] < maxLen[expandIndex]) {
-                  take[expandIndex]++;
-                } else {
-                  expandIndex--;
+                const maxLen = words.map((w) => w.text.length);
+                const take = words.map((w) => (w.fixed ? w.text.length : 1));
+
+                const initials = words
+                  .map((w, i) => (w.fixed ? w.text : w.text[0].toLowerCase()))
+                  .join('');
+
+                if (!res.shortMap[initials]) {
+                  res.shortMap[initials] = prop;
+                  res.utilityMap[prop] = findRelationAndKey(words);
+                  continue;
+                }
+
+                let expandIndex = words.length - 1;
+                let found = null;
+
+                while (expandIndex >= 0) {
+                  const candidate = words
+                    .map((w, i) => w.text.slice(0, take[i]))
+                    .join('')
+                    .toLowerCase();
+
+                  if (!res.shortMap[candidate]) {
+                    found = candidate.toLowerCase();
+                    break;
+                  }
+
+                  if (take[expandIndex] < maxLen[expandIndex]) {
+                    take[expandIndex]++;
+                  } else {
+                    expandIndex--;
+                  }
+                }
+
+                if (found) {
+                  res.shortMap[found] = prop;
+                  res.utilityMap[prop] = findRelationAndKey(words);
                 }
               }
-
-              if (found) {
-                res.shortMap[found] = prop;
-                res.utilityMap[prop] = findRelationAndKey(words);
-              }
-            }
-            return res;
-          }, {
-            sortedProps,
-            propertiesShortMap,
-            propertiesWordShortMap
-          });
+              return res;
+            },
+            {
+              sortedProps,
+              propertiesShortMap,
+              propertiesWordShortMap,
+            },
+          );
 
           await browser.close();
 
-          const outFile = path.resolve(__dirname, 'src/generated/properties-runtime.json');
+          const outFile = path.resolve(
+            __dirname,
+            'src/generated/properties-runtime.json',
+          );
           fs.writeFileSync(outFile, JSON.stringify(result, null, 2));
         },
       },

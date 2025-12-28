@@ -131,14 +131,17 @@ describe('Maple Child Selector', () => {
     const sheet = document.styleSheets[1];
     const layer = sheet.cssRules[0] as CSSLayerBlockRule;
     await new Promise((r) => setTimeout(r, 1));
-    const styleRules = Object.keys(expected.styleRules).reduce((acc, key) => {
-      acc[key] = (layer.cssRules[0] as CSSStyleRule).style.getPropertyValue(
-        key
-      );
-      return acc;
-    }, {} as Record<string, string>);
+    const styleRules = Object.keys(expected.styleRules).reduce(
+      (acc, key) => {
+        acc[key] = (layer.cssRules[0] as CSSStyleRule).style.getPropertyValue(
+          key,
+        );
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
     let computed: any = getComputedStyle(
-      page.getByTestId(computeSelect).element()
+      page.getByTestId(computeSelect).element(),
     ).paddingTop;
     await Promise.all([
       page.getByTestId('app').hover(),
@@ -146,7 +149,7 @@ describe('Maple Child Selector', () => {
       page.getByTestId('child2').hover(),
     ]);
     computed = getComputedStyle(
-      page.getByTestId(computeSelect).element()
+      page.getByTestId(computeSelect).element(),
     ).paddingTop;
     await Promise.all([
       page.getByTestId('app').unhover(),
