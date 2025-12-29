@@ -1,38 +1,41 @@
 // ⚠️ AUTO-GENERATED — DO NOT EDIT
 export const precalculatedCssProps = {
   shortMap: {
-    d: "display",
     w: "width",
-    h: "height",
-    p: "padding",
-    m: "margin",
+    zi: "zIndex",
+    trnsl: "translate",
+    trnst: "transition",
+    trnsf: "transform",
     pos: "position",
+    rgap: "rowGap",
+    t: "top",
+    per: "perspective",
+    p: "padding",
+    of: "overflow",
+    h: "height",
+    m: "margin",
+    jc: "justifyContent",
+    gap: "gap",
+    d: "display",
     c: "color",
+    cgap: "columnGap",
+    shadow: "boxShadow",
+    bgc: "backgroundColor",
     fs: "fontSize",
     fw: "fontWeight",
     f: "flex",
-    jc: "justifyContent",
-    cgap: "columnGap",
-    rgap: "rowGap",
-    gap: "gap",
-    shadow: "boxShadow",
-    bgc: "backgroundColor",
+    bg: "background",
     ai: "alignItems",
     br: "borderRadius",
     b: "border",
     bc: "borderColor",
     bs: "borderStyle",
     bw: "borderWidth",
-    zi: "zIndex",
-    of: "overflow",
     mxw: "maxWidth",
     mnw: "minWidth",
     mxh: "maxHeight",
     mnh: "minHeight",
     o: "opacity",
-    trnst: "transition",
-    trnsf: "transform",
-    t: "top",
     r: "right",
     bo: "bottom",
     l: "left",
@@ -64,7 +67,6 @@ export const precalculatedCssProps = {
     ara: "aspectRatio",
     bf: "backdropFilter",
     bv: "backfaceVisibility",
-    bg: "background",
     bga: "backgroundAttachment",
     bgbm: "backgroundBlendMode",
     bgcl: "backgroundClip",
@@ -371,7 +373,6 @@ export const precalculatedCssProps = {
     pbi: "pageBreakInside",
     po: "pageOrientation",
     por: "paintOrder",
-    per: "perspective",
     pero: "perspectiveOrigin",
     pc: "placeContent",
     pit: "placeItems",
@@ -497,7 +498,6 @@ export const precalculatedCssProps = {
     trnstdu: "transitionDuration",
     trnstp: "transitionProperty",
     trnsttf: "transitionTimingFunction",
-    trnsl: "translate",
     ty: "types",
     ub: "unicodeBidi",
     ur: "unicodeRange",
@@ -525,32 +525,84 @@ export const precalculatedCssProps = {
     z: "zoom"
   },
   utilityMap: {
-    display: {
-      key: "display",
-      rel: "o"
-    },
     width: {
       key: "width",
       rel: "d"
     },
-    height: {
-      key: "height",
+    zIndex: {
+      key: "z-index",
+      rel: "o"
+    },
+    translate: {
+      key: "translate",
+      rel: "d"
+    },
+    transition: {
+      key: "transition",
+      rel: "o"
+    },
+    transform: {
+      key: "transform",
+      rel: "o"
+    },
+    position: {
+      key: "position",
+      rel: "o"
+    },
+    rowGap: {
+      key: "row-gap",
+      rel: "d"
+    },
+    top: {
+      key: "top",
+      rel: "d"
+    },
+    perspective: {
+      key: "perspective",
       rel: "d"
     },
     padding: {
       key: "padding",
       rel: "d"
     },
+    overflow: {
+      key: "overflow",
+      rel: "o"
+    },
+    height: {
+      key: "height",
+      rel: "d"
+    },
     margin: {
       key: "margin",
       rel: "d"
     },
-    position: {
-      key: "position",
+    justifyContent: {
+      key: "justify-content",
+      rel: "o"
+    },
+    gap: {
+      key: "gap",
+      rel: "d"
+    },
+    display: {
+      key: "display",
       rel: "o"
     },
     color: {
       key: "color",
+      rel: "c"
+    },
+    columnGap: {
+      key: "column-gap",
+      rel: "d"
+    },
+    boxShadow: {
+      key: "box-shadow",
+      rel: "o"
+    },
+    backgroundColor: {
+      key: "background-color",
       rel: "c"
     },
     fontSize: {
@@ -565,28 +617,8 @@ export const precalculatedCssProps = {
       key: "flex",
       rel: "c"
     },
-    justifyContent: {
-      key: "justify-content",
-      rel: "o"
-    },
-    columnGap: {
-      key: "column-gap",
-      rel: "d"
-    },
-    rowGap: {
-      key: "row-gap",
-      rel: "d"
-    },
-    gap: {
-      key: "gap",
-      rel: "d"
-    },
-    boxShadow: {
-      key: "box-shadow",
-      rel: "o"
-    },
-    backgroundColor: {
-      key: "background-color",
+    background: {
+      key: "background",
       rel: "c"
     },
     alignItems: {
@@ -613,14 +645,6 @@ export const precalculatedCssProps = {
       key: "border-width",
       rel: "d"
     },
-    zIndex: {
-      key: "z-index",
-      rel: "o"
-    },
-    overflow: {
-      key: "overflow",
-      rel: "o"
-    },
     maxWidth: {
       key: "max-width",
       rel: "d"
@@ -640,18 +664,6 @@ export const precalculatedCssProps = {
     opacity: {
       key: "opacity",
       rel: "o"
-    },
-    transition: {
-      key: "transition",
-      rel: "o"
-    },
-    transform: {
-      key: "transform",
-      rel: "o"
-    },
-    top: {
-      key: "top",
-      rel: "d"
     },
     right: {
       key: "right",
@@ -776,10 +788,6 @@ export const precalculatedCssProps = {
     backfaceVisibility: {
       key: "backface-visibility",
       rel: "o"
-    },
-    background: {
-      key: "background",
-      rel: "c"
     },
     backgroundAttachment: {
       key: "background-attachment",
@@ -2005,10 +2013,6 @@ export const precalculatedCssProps = {
       key: "paint-order",
       rel: "o"
     },
-    perspective: {
-      key: "perspective",
-      rel: "d"
-    },
     perspectiveOrigin: {
       key: "perspective-origin",
       rel: "c"
@@ -2508,10 +2512,6 @@ export const precalculatedCssProps = {
     transitionTimingFunction: {
       key: "transition-timing-function",
       rel: "o"
-    },
-    translate: {
-      key: "translate",
-      rel: "d"
     },
     types: {
       key: "types",

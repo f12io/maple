@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { supportedCssProperties } from '../supported-css-properties';
-import { propertiesOverrideMap } from '../../src/engines/maple/properties-override-map';
+import { propertiesWordShortMap } from '../../src/engines/maple/properties-word-short-map';
 import { propertiesWeightMap } from '../properties-weight-map';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,7 +16,7 @@ export function generateSortedSupportedCssProps() {
       const sortedProps = supportedCssProperties
         .split(',')
         .sort((a, b) =>
-          propertiesOverrideMap[a]
+          propertiesWordShortMap[a]
             ? -1
             : Number(propertiesWeightMap[b] ?? 0) -
               Number(propertiesWeightMap[a] ?? 0),
