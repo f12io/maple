@@ -1,5 +1,5 @@
 import { ParsedMediaQuery } from './types';
-import { getBreakpoints } from '../helpers/get-breakpoints';
+import { getBreakpoints } from '../helpers/breakpoint.helper';
 
 // --- Internal State (Encapsulated in the module) ---
 const ID = 'runtime-maple-styles';
