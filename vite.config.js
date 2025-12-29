@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
           inlineDynamicImports: isRuntime,
         },
       },
-      target: 'es2018',
+      target: 'es2024',
       minify: true,
       emptyOutDir: false,
     },
