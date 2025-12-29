@@ -7,7 +7,7 @@ import { registerVariant } from '../../core/registry';
 import { darkMode } from './selectors/dark';
 import { containerVariant } from './selectors/container';
 import { Variant } from '../../core/types';
-import { getBreakpoints } from '../../helpers/get-breakpoints';
+import { getBreakpoints } from '../../helpers/breakpoint.helper';
 
 // register built-in handlers (tree-shakable alternative: consumer registers only needed ones)
 export function registerDefaultVariants() {
