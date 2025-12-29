@@ -1,4 +1,4 @@
-import { SORTED_CSS_PROPS } from '../../generated/sorted-css-props';
+import { SORTED_CSS_PROPS } from '../../generated/sorted-supported-css-props';
 import { predefinedUtilityMap } from './predefined-utility-map';
 import { propertiesWordShortMap } from './properties-word-short-map';
 import { propertiesShortMap } from '../../../build/properties-short-map';

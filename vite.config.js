@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import { playwright } from '@vitest/browser-playwright';
-import { generateSortedCssProps } from './build/plugins/generate-sorted-css-props';
+import { generateSortedSupportedCssProps } from './build/plugins/generate-sorted-supported-css-props';
 import { generatePrecalculatedCssProps } from './build/plugins/generate-precalculated-css-props';
 
 export default defineConfig(({ mode }) => {
@@ -35,7 +35,10 @@ export default defineConfig(({ mode }) => {
       minify: true,
       emptyOutDir: false,
     },
-    plugins: [generateSortedCssProps(), generatePrecalculatedCssProps()],
+    plugins: [
+      generateSortedSupportedCssProps(),
+      generatePrecalculatedCssProps(),
+    ],
     test: {
       browser: {
         provider: playwright(),

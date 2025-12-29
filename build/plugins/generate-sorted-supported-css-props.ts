@@ -8,9 +8,9 @@ import { propertiesWeightMap } from '../properties-weight-map';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export function generateSortedCssProps() {
+export function generateSortedSupportedCssProps() {
   return {
-    name: 'generate-sorted-css-props',
+    name: 'generate-sorted-supported-css-props',
     apply: 'build',
     buildStart() {
       const sortedProps = supportedCssProperties
@@ -26,7 +26,7 @@ export const SORTED_CSS_PROPS = ${JSON.stringify(sortedProps, null, 2)} as const
   `;
       const outFile = path.resolve(
         __dirname,
-        '../../src/generated/sorted-css-props.ts',
+        '../../src/generated/sorted-supported-css-props.ts',
       );
 
       fs.mkdirSync(path.dirname(outFile), { recursive: true });
