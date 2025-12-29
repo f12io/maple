@@ -1,4 +1,4 @@
-import { resolveColor } from '../../helpers/color-resolver';
+import { resolveColor } from '../../helpers/color.helper';
 import { resolveFraction } from '../../helpers/fraction.helper';
 import { predefinedUtilityMap } from './predefined-utility-map';
 import maple from './property-extraction';
