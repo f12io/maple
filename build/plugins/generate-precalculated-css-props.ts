@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { defaultUtilities } from '../default-utilities';
+import { supportedCssProperties } from '../supported-css-properties';
 import { propertiesShortMap } from '../properties-short-map';
 import { propertiesWeightMap } from '../properties-weight-map';
 
@@ -18,7 +18,7 @@ export function generatePrecalculatedCssProps() {
       const { propertiesWordShortMap } =
         await import('../../src/engines/maple/properties-word-short-map');
 
-      const sortedProps = defaultUtilities
+      const sortedProps = supportedCssProperties
         .split(',')
         .sort((a, b) =>
           propertiesShortMap[a]

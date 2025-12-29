@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { defaultUtilities } from '../default-utilities';
+import { supportedCssProperties } from '../supported-css-properties';
 import { propertiesShortMap } from '../properties-short-map';
 import { propertiesWeightMap } from '../properties-weight-map';
 
@@ -13,7 +13,7 @@ export function generateSortedCssProps() {
     name: 'generate-sorted-css-props',
     apply: 'build',
     buildStart() {
-      const sortedProps = defaultUtilities
+      const sortedProps = supportedCssProperties
         .split(',')
         .sort((a, b) =>
           propertiesShortMap[a]
