@@ -14,13 +14,13 @@ export default defineConfig(({ mode }) => {
       port: 3000,
     },
     build: {
-      outDir: isRuntime ? 'dist/runtime' : 'dist/module',
+      outDir: isRuntime ? 'dist' : 'dist/module',
       lib: isRuntime
         ? {
             entry: path.resolve(__dirname, 'src/runtime.ts'),
             name: 'Maple',
             formats: ['iife'],
-            fileName: () => 'maple.runtime.js',
+            fileName: () => 'maple.js',
           }
         : {
             entry: path.resolve(__dirname, 'src/index.ts'),
