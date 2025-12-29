@@ -35,7 +35,7 @@ jobs:
 
       - name: Verify Artifacts
         run: |
-          ls -lh dist/runtime/maple.runtime.js
+          ls -lh dist/maple.js
           ls -lh dist/module/index.js
 
       - name: Upload Distribution Artifacts
@@ -89,7 +89,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/runtime/maple.runtime.js
+            dist/maple.js
             dist/module/index.js
           generate_release_notes: true
           fail_on_unmatched_files: true
