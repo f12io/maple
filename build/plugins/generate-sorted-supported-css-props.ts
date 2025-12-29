@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { supportedCssProperties } from '../supported-css-properties';
-import { propertiesWordShortMap } from '../../src/engines/maple/properties-word-short-map';
+import { propertiesShortMap } from '../../src/engines/maple/properties-short-map';
 import { propertiesWeightMap } from '../properties-weight-map';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,7 +16,7 @@ export function generateSortedSupportedCssProps() {
       const sortedProps = supportedCssProperties
         .split(',')
         .sort((a, b) =>
-          propertiesWordShortMap[a]
+          propertiesShortMap[a]
             ? -1
             : Number(propertiesWeightMap[b] ?? 0) -
               Number(propertiesWeightMap[a] ?? 0),

@@ -1,6 +1,6 @@
 import { SORTED_CSS_PROPS } from '../../generated/sorted-supported-css-props';
 import { predefinedUtilityMap } from './predefined-utility-map';
-import { propertiesWordShortMap } from './properties-word-short-map';
+import { propertiesShortMap } from './properties-short-map';
 
 type WordPart = {
   text: string; // actual text used in output
@@ -65,8 +65,8 @@ function getAllCssProperties() {
     }
     const rawWords = prop.match(/([A-Z]?[a-z]+|[XY])/g) || [];
     const words = normalizeWords(rawWords);
-    if ((propertiesWordShortMap as any)[prop]) {
-      result.shortMap[(propertiesWordShortMap as any)[prop]] = prop;
+    if (propertiesShortMap[prop]) {
+      result.shortMap[propertiesShortMap[prop]] = prop;
       result.utilityMap[prop] = findRelationAndKeyInternal(words);
       continue;
     }
@@ -123,9 +123,9 @@ function getAllCssProperties() {
 function normalizeWords(words: string[]): WordPart[] {
   return words.map((w) => {
     const key = w.toLowerCase();
-    if ((propertiesWordShortMap as any)[key]) {
+    if ((propertiesShortMap as any)[key]) {
       return {
-        text: (propertiesWordShortMap as any)[key],
+        text: (propertiesShortMap as any)[key],
         fixed: true,
         original: key,
       };

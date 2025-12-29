@@ -14,13 +14,13 @@ export function generatePrecalculatedCssProps() {
     async buildStart() {
       const { chromium } = await import('playwright');
       // Import relative to this file
-      const { propertiesWordShortMap } =
-        await import('../../src/engines/maple/properties-word-short-map');
+      const { propertiesShortMap } =
+        await import('../../src/engines/maple/properties-short-map');
 
       const sortedProps = supportedCssProperties
         .split(',')
         .sort((a, b) =>
-          propertiesWordShortMap[a]
+          propertiesShortMap[a]
             ? -1
             : Number(propertiesWeightMap[b] ?? 0) -
               Number(propertiesWeightMap[a] ?? 0),
@@ -30,7 +30,7 @@ export function generatePrecalculatedCssProps() {
       const page = await browser.newPage();
 
       const result = await page.evaluate(
-        ({ sortedProps, propertiesWordShortMap }) => {
+        ({ sortedProps, propertiesShortMap }) => {
           const element = document.createElement('div');
 
           type WordPart = {
@@ -42,9 +42,9 @@ export function generatePrecalculatedCssProps() {
           function normalizeWords(words: string[]): WordPart[] {
             return words.map((w) => {
               const key = w.toLowerCase();
-              if (propertiesWordShortMap[key]) {
+              if (propertiesShortMap[key]) {
                 return {
-                  text: propertiesWordShortMap[key],
+                  text: propertiesShortMap[key],
                   fixed: true,
                   original: key,
                 };
@@ -81,8 +81,8 @@ export function generatePrecalculatedCssProps() {
             const rawWords = prop.match(/([A-Z]?[a-z]+|[XY])/g) || [];
             const words = normalizeWords(rawWords);
 
-            if (propertiesWordShortMap[prop]) {
-              res.shortMap[propertiesWordShortMap[prop]] = prop;
+            if (propertiesShortMap[prop]) {
+              res.shortMap[propertiesShortMap[prop]] = prop;
               res.utilityMap[prop] = findRelationAndKey(words);
               continue;
             }
@@ -130,7 +130,7 @@ export function generatePrecalculatedCssProps() {
         },
         {
           sortedProps,
-          propertiesWordShortMap,
+          propertiesShortMap,
         },
       );
 

@@ -1,4 +1,4 @@
-export const propertiesWordShortMap: Record<string, string> = {
+export const propertiesShortMap: Record<string, string> = {
   min: 'mn',
   max: 'mx',
   width: 'w',
