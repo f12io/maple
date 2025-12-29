@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
       },
       target: 'es2018',
       minify: true,
-      emptyOutDir: true,
+      emptyOutDir: false,
     },
     plugins: [
       {
