@@ -1,4 +1,4 @@
-export const propertiesWeightMap = {
+export const propertiesWeightMap: Record<string, number> = {
   display: 100,
   width: 98,
   height: 97,
