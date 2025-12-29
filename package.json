@@ -25,7 +25,7 @@
     "build": "rm -rf dist && BUILD_TYPE=lib vite build && BUILD_TYPE=runtime vite build && tsc -p tsconfig.build.json && find dist/module/types -name '*.d.ts' -exec sh -c 'cp \"$1\" \"${1%.d.ts}.d.cts\"' _ {} \\;",
     "preview": "vite preview",
     "test": "vitest --browser",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write . --ignore-path .gitignore"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
