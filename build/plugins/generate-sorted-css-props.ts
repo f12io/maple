@@ -8,9 +8,9 @@ import { propertiesWeightMap } from '../properties-weight-map';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export function generateCssPropsMap() {
+export function generateSortedCssProps() {
   return {
-    name: 'generate-css-props-map',
+    name: 'generate-sorted-css-props',
     apply: 'build',
     buildStart() {
       const sortedProps = defaultUtilities

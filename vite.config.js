@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import { playwright } from '@vitest/browser-playwright';
-import { generateCssPropsMap } from './build/plugins/generate-css-props-map';
-import { generateRuntimeProperties } from './build/plugins/generate-runtime-properties';
+import { generateSortedCssProps } from './build/plugins/generate-sorted-css-props';
+import { generatePrecalculatedCssProps } from './build/plugins/generate-precalculated-css-props';
 
 export default defineConfig(({ mode }) => {
   const isRuntime = process.env.BUILD_TYPE === 'runtime';
@@ -28,14 +28,14 @@ export default defineConfig(({ mode }) => {
           },
       rollupOptions: {
         output: {
-          inlineDynamicImports: true,
+          inlineDynamicImports: isRuntime,
         },
       },
       target: 'es2018',
       minify: true,
       emptyOutDir: false,
     },
-    plugins: [generateCssPropsMap(), generateRuntimeProperties()],
+    plugins: [generateSortedCssProps(), generatePrecalculatedCssProps()],
     test: {
       browser: {
         provider: playwright(),

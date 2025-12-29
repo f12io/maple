@@ -8,9 +8,9 @@ import { propertiesWeightMap } from '../properties-weight-map';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export function generateRuntimeProperties() {
+export function generatePrecalculatedCssProps() {
   return {
-    name: 'generate-runtime-properties',
+    name: 'generate-precalculated-css-props',
     apply: 'build',
     async buildStart() {
       const { chromium } = await import('playwright');
@@ -143,7 +143,10 @@ export function generateRuntimeProperties() {
         '../../src/generated/precalculated-css-props.ts',
       );
       const content = `// ⚠️ AUTO-GENERATED — DO NOT EDIT
-export const precalculatedCssProps = ${JSON.stringify(result, null, 2)} as const;
+export const precalculatedCssProps = ${JSON.stringify(result, null, 2).replace(
+        /"([a-zA-Z_$][a-zA-Z0-9_$]*)":/g,
+        '$1:',
+      )} as const;
 `;
       fs.writeFileSync(outFile, content);
     },
