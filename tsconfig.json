@@ -7,7 +7,9 @@
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "declaration": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "noEmit": true
   },
-  "include": ["src"]
+  "include": ["src", "tests", "scripts", "*.config.js"]
 }
