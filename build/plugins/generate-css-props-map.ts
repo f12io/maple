@@ -22,12 +22,11 @@ export function generateCssPropsMap() {
               Number(propertiesWeightMap[a] ?? 0),
         );
       const content = `// ⚠️ AUTO-GENERATED — DO NOT EDIT
-export const CSS_PROP_MAP = ${JSON.stringify(sortedProps, null, 2)} as const;
+export const SORTED_CSS_PROPS = ${JSON.stringify(sortedProps, null, 2)} as const;
   `;
-      // Resolve path relative to project root (assuming this file is in build/plugins)
       const outFile = path.resolve(
         __dirname,
-        '../../src/generated/css-props.ts',
+        '../../src/generated/sorted-css-props.ts',
       );
 
       fs.mkdirSync(path.dirname(outFile), { recursive: true });

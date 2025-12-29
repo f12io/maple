@@ -1,4 +1,4 @@
-import { CSS_PROP_MAP } from '../../generated/css-props';
+import { SORTED_CSS_PROPS } from '../../generated/sorted-css-props';
 import { predefinedUtilityMap } from './predefined-utility-map';
 import { propertiesWordShortMap } from './properties-word-short-map';
 import { propertiesShortMap } from '../../../build/properties-short-map';
@@ -23,7 +23,6 @@ function getAllCssProperties() {
   }
 
   const element = doc.createElement('div');
-  const props = CSS_PROP_MAP;
 
   const result: {
     shortMap: Record<string, string>;
@@ -61,7 +60,7 @@ function getAllCssProperties() {
     return { key, rel };
   };
 
-  for (const prop of props) {
+  for (const prop of SORTED_CSS_PROPS) {
     if (result.shortMap[prop]) {
       continue;
     }
@@ -164,8 +163,9 @@ function mapleMatcher() {
 export async function loadPrecalculatedProperties() {
   if (cachedProperties) return cachedProperties;
   try {
-    const data = await import('../../generated/properties-runtime.json');
-    cachedProperties = data.default || data;
+    const { precalculatedCssProps } =
+      await import('../../generated/precalculated-css-props');
+    cachedProperties = precalculatedCssProps;
     return cachedProperties;
   } catch (e) {
     console.error('Failed to load pre-calculated properties:', e);

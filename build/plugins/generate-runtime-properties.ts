@@ -140,9 +140,12 @@ export function generateRuntimeProperties() {
 
       const outFile = path.resolve(
         __dirname,
-        '../../src/generated/properties-runtime.json',
+        '../../src/generated/precalculated-css-props.ts',
       );
-      fs.writeFileSync(outFile, JSON.stringify(result, null, 2));
+      const content = `// ⚠️ AUTO-GENERATED — DO NOT EDIT
+export const precalculatedCssProps = ${JSON.stringify(result, null, 2)} as const;
+`;
+      fs.writeFileSync(outFile, content);
     },
   };
 }
