@@ -4,7 +4,8 @@
     "outDir": "./dist/module",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "./dist/module/types"
+    "declarationDir": "./dist/module/types",
+    "noEmit": false
   },
   "include": ["src"]
 }
