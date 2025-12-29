@@ -3,20 +3,17 @@ export const precalculatedCssProps = {
   shortMap: {
     d: "display",
     w: "width",
-    p: "padding",
-    pos: "position",
-    rgap: "rowGap",
-    zi: "zIndex",
-    ofy: "overflowY",
-    ofx: "overflowX",
     h: "height",
+    p: "padding",
     m: "margin",
+    pos: "position",
     c: "color",
     fs: "fontSize",
     fw: "fontWeight",
     f: "flex",
     jc: "justifyContent",
     cgap: "columnGap",
+    rgap: "rowGap",
     gap: "gap",
     shadow: "boxShadow",
     bgc: "backgroundColor",
@@ -26,6 +23,7 @@ export const precalculatedCssProps = {
     bc: "borderColor",
     bs: "borderStyle",
     bw: "borderWidth",
+    zi: "zIndex",
     of: "overflow",
     mxw: "maxWidth",
     mnw: "minWidth",
@@ -347,6 +345,8 @@ export const precalculatedCssProps = {
     ofcm: "overflowClipMargin",
     ofin: "overflowInline",
     ofw: "overflowWrap",
+    ofx: "overflowX",
+    ofy: "overflowY",
     ov: "overlay",
     oco: "overrideColors",
     ob: "overscrollBehavior",
@@ -533,37 +533,21 @@ export const precalculatedCssProps = {
       key: "width",
       rel: "d"
     },
-    padding: {
-      key: "padding",
-      rel: "d"
-    },
-    position: {
-      key: "position",
-      rel: "o"
-    },
-    rowGap: {
-      key: "row-gap",
-      rel: "d"
-    },
-    zIndex: {
-      key: "z-index",
-      rel: "o"
-    },
-    overflowY: {
-      key: "overflow-y",
-      rel: "o"
-    },
-    overflowX: {
-      key: "overflow-x",
-      rel: "o"
-    },
     height: {
       key: "height",
+      rel: "d"
+    },
+    padding: {
+      key: "padding",
       rel: "d"
     },
     margin: {
       key: "margin",
       rel: "d"
+    },
+    position: {
+      key: "position",
+      rel: "o"
     },
     color: {
       key: "color",
@@ -587,6 +571,10 @@ export const precalculatedCssProps = {
     },
     columnGap: {
       key: "column-gap",
+      rel: "d"
+    },
+    rowGap: {
+      key: "row-gap",
       rel: "d"
     },
     gap: {
@@ -624,6 +612,10 @@ export const precalculatedCssProps = {
     borderWidth: {
       key: "border-width",
       rel: "d"
+    },
+    zIndex: {
+      key: "z-index",
+      rel: "o"
     },
     overflow: {
       key: "overflow",
@@ -1907,6 +1899,14 @@ export const precalculatedCssProps = {
     },
     overflowWrap: {
       key: "overflow-wrap",
+      rel: "o"
+    },
+    overflowX: {
+      key: "overflow-x",
+      rel: "o"
+    },
+    overflowY: {
+      key: "overflow-y",
       rel: "o"
     },
     overlay: {

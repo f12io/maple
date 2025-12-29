@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
+import { propertiesOverrideMap } from '../../src/engines/maple/properties-override-map';
 import { fileURLToPath } from 'url';
 import { supportedCssProperties } from '../supported-css-properties';
-import { propertiesShortMap } from '../properties-short-map';
 import { propertiesWeightMap } from '../properties-weight-map';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +21,7 @@ export function generatePrecalculatedCssProps() {
       const sortedProps = supportedCssProperties
         .split(',')
         .sort((a, b) =>
-          propertiesShortMap[a]
+          propertiesOverrideMap[a]
             ? -1
             : Number(propertiesWeightMap[b] ?? 0) -
               Number(propertiesWeightMap[a] ?? 0),
@@ -31,7 +31,7 @@ export function generatePrecalculatedCssProps() {
       const page = await browser.newPage();
 
       const result = await page.evaluate(
-        ({ sortedProps, propertiesShortMap, propertiesWordShortMap }) => {
+        ({ sortedProps, propertiesOverrideMap, propertiesWordShortMap }) => {
           const element = document.createElement('div');
 
           type WordPart = {
@@ -82,8 +82,8 @@ export function generatePrecalculatedCssProps() {
             const rawWords = prop.match(/([A-Z]?[a-z]+|[XY])/g) || [];
             const words = normalizeWords(rawWords);
 
-            if (propertiesShortMap[prop]) {
-              res.shortMap[propertiesShortMap[prop]] = prop;
+            if (propertiesOverrideMap[prop]) {
+              res.shortMap[propertiesOverrideMap[prop]] = prop;
               res.utilityMap[prop] = findRelationAndKey(words);
               continue;
             }
@@ -131,7 +131,7 @@ export function generatePrecalculatedCssProps() {
         },
         {
           sortedProps,
-          propertiesShortMap,
+          propertiesOverrideMap,
           propertiesWordShortMap,
         },
       );

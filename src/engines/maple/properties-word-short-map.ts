@@ -7,8 +7,6 @@ export const propertiesWordShortMap: Record<string, string> = {
   transition: 'trnst',
   translate: 'trnsl',
   overflow: 'of',
-  overflowX: 'ofx',
-  overflowY: 'ofy',
   background: 'bg',
   position: 'pos',
   perspective: 'per',
