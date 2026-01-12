@@ -1,189 +1,119 @@
-import { ParsedMediaQuery } from './types';
-import { getBreakpoints } from '../helpers/breakpoint.helper';
+import { MEDIA_BUCKET_TYPE_ORDER, REGEX_NUMBER_WITH_UNIT } from './constants';
+import { Bucket, BucketType, ParsedMediaQuery } from './types';
 
-// --- Internal State (Encapsulated in the module) ---
-const ID = 'runtime-maple-styles';
-const customBreakpointMatcher = /@(min|max)/;
-const rawClassCache = new Map<string, boolean>();
-let breakpoints: Record<string, string> = getBreakpoints();
-const containerRules = new Map<string, CSSContainerRule | undefined>();
-const breakpointRules = new Map<string, CSSMediaRule | undefined>();
-
+const REM_SIZE = 16;
+const buckets: Array<Bucket> = [];
 let sheet: CSSStyleSheet | null = null;
-let el: HTMLStyleElement | null = null;
-let baseRules: CSSLayerBlockRule | undefined;
 
-const parseMedia = (mediaText: string): ParsedMediaQuery => {
-  const min = mediaText.match(/min-width\s*:\s*(\d+)px/);
-  const max = mediaText.match(/max-width\s*:\s*(\d+)px/);
-  return {
-    raw: mediaText,
-    min: min ? Number(min[1]) : 0,
-    max: max ? Number(max[1]) : 0,
-    type: min ? 'min' : max ? 'max' : 'other',
-  };
-};
+function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
+  const { bucketValue } = parsedMediaQuery;
 
-const compareMedia = (a: ParsedMediaQuery, b: ParsedMediaQuery): number => {
-  const order = { other: 0, min: 1, max: 2 };
-  if (a.type !== b.type) return order[a.type] - order[b.type];
-  if (a.type === 'max') return b.max - a.max;
-  if (a.type === 'min') return a.min - b.min;
-  return a.raw.localeCompare(b.raw);
-};
+  const match = REGEX_NUMBER_WITH_UNIT.exec(bucketValue);
 
-const bpQueryBuilder = (bp: string, size?: string) => {
-  const type = bp.match(customBreakpointMatcher)?.[1] || 'min';
-  const resolvedSize =
-    breakpoints[bp] ||
-    (!isNaN(parseInt(size || ''))
-      ? size
-      : size
-        ? breakpoints[size]
-        : breakpoints[bp]);
+  if (!match) return 0;
 
-  return resolvedSize
-    ? `(${type === 'min' ? 'min-width' : 'max-width'}: ${resolvedSize})`
-    : null;
-};
+  const rawValue = parseFloat(match[1]);
+  const unit = match[2];
+  let normalized = rawValue;
 
-export const init = () => {
-  if (sheet) return;
-  el =
-    (document.getElementById(ID) as HTMLStyleElement) ||
-    document.createElement('style');
-  if (!el.parentNode) {
-    el.id = ID;
-    document.head.appendChild(el);
-    breakpoints = getBreakpoints();
-    // Initial media rules insertion
-    const sortedBps = Object.entries(breakpoints).sort(
-      (prev, curr) => parseInt(prev[1]) - parseInt(curr[1]),
-    );
-
-    sortedBps.forEach(([key, size]) => {
-      const query = bpQueryBuilder(key, size);
-      el!.sheet?.insertRule(`@media ${query}{}`, el!.sheet.cssRules.length);
-      breakpointRules.set(
-        key,
-        el!.sheet?.cssRules[el!.sheet.cssRules.length - 1] as CSSMediaRule,
-      );
-    });
+  if (unit === 'rem' || unit === 'em') {
+    normalized = rawValue * REM_SIZE;
   }
 
-  el.sheet?.insertRule('@layer base {}', 0);
-  baseRules = el.sheet?.cssRules[0] as CSSLayerBlockRule;
-  sheet = el.sheet as CSSStyleSheet;
-};
+  return normalized;
+}
 
-const findMediaRuleOrInsert = (
-  bp: string,
-  mediaQuery?: string,
-): CSSMediaRule | undefined => {
-  const key = mediaQuery ? `${bp}-${mediaQuery}` : bp;
-  let mediaRule = breakpointRules.get(key);
-  const query = bpQueryBuilder(bp, mediaQuery);
+function compareBuckets(
+  a: { type: BucketType; val: number },
+  b: { type: BucketType; val: number },
+) {
+  const orderA = MEDIA_BUCKET_TYPE_ORDER[a.type];
+  const orderB = MEDIA_BUCKET_TYPE_ORDER[b.type];
 
-  if (!mediaRule && breakpointRules.size > 0) {
-    const parsedQuery = parseMedia(query || '');
-    for (let i = 1; i < sheet!.cssRules.length; i++) {
-      const rule = sheet!.cssRules[i];
-      if (
-        rule instanceof CSSMediaRule &&
-        compareMedia(parsedQuery, parseMedia(rule.conditionText)) < 0
-      ) {
-        sheet!.insertRule(`@media ${query} {}`, i);
-        mediaRule = sheet!.cssRules[i] as CSSMediaRule;
-        breakpointRules.set(key, mediaRule);
-        return mediaRule;
-      }
+  if (orderA !== orderB) return orderA - orderB;
+  if (a.type === 'mnw' || a.type === 'mnh') return a.val - b.val;
+
+  return b.val - a.val;
+}
+
+function insertBucket(key: string, parsedMediaQuery: ParsedMediaQuery) {
+  if (!sheet) return;
+
+  const val = parsePriority(parsedMediaQuery);
+  const type = parsedMediaQuery.bucketType;
+  const compareParam = { type, val };
+  let insertIndex = 0;
+
+  for (let i = 0; i < buckets.length; i++) {
+    if (compareBuckets(compareParam, buckets[i]) < 0) {
+      insertIndex = i;
+      break;
     }
+    insertIndex = i + 1;
   }
 
-  if (!mediaRule) {
-    const pos = breakpointRules.size + 1;
-    sheet!.insertRule(`@media ${query} {}`, pos);
-    mediaRule = sheet!.cssRules[pos] as CSSMediaRule;
-    breakpointRules.set(key, mediaRule);
-  }
-  return mediaRule;
-};
-
-const findContainerOrInsert = (
-  bp: string,
-  container: string,
-  mediaQuery?: string,
-): CSSContainerRule => {
-  const query = bpQueryBuilder(bp, mediaQuery);
-  const key = `${container}-${query}`.trim();
-  let containerRule = containerRules.get(key);
-
-  if (!containerRule && containerRules.size > 0) {
-    const parsedQuery = parseMedia(query || '');
-    for (let i = breakpointRules.size + 1; i < sheet!.cssRules.length; i++) {
-      const rule = sheet!.cssRules[i];
-      if (
-        rule instanceof CSSContainerRule &&
-        compareMedia(parsedQuery, parseMedia(rule.conditionText)) < 0
-      ) {
-        sheet!.insertRule(
-          `@container ${
-            container === 'none' ? '' : container + ' '
-          }${query} {}`,
-          i,
-        );
-        containerRule = sheet!.cssRules[i] as CSSContainerRule;
-        containerRules.set(key, containerRule);
-        return containerRule;
-      }
-    }
-  }
-
-  if (!containerRule) {
-    const pos = breakpointRules.size + containerRules.size + 1;
-    sheet!.insertRule(
-      `@container ${container === 'none' ? '' : container + ' '}${query} {}`,
-      pos,
-    );
-    containerRule = sheet!.cssRules[pos] as CSSContainerRule;
-    containerRules.set(key, containerRule);
-  }
-  return containerRule!;
-};
-
-// --- Exported API ---
-
-/**
- * Checks if a selector is already in the runtime cache.
- */
-export const hasCache = (selector: string) => rawClassCache.has(selector);
-
-/**
- * Marks a selector as cached.
- */
-export const setCache = (rawClassName: string) =>
-  rawClassCache.set(rawClassName, true);
-
-/**
- * Inserts a CSS rule into the stylesheet with optional breakpoint/container support.
- */
-export const insert = (
-  rule: string,
-  resolved?: { bp?: string; container?: string; mediaQuery?: string },
-) => {
   try {
-    const { bp, container, mediaQuery } = resolved || {};
-    if (bp) {
-      if (container) {
-        findContainerOrInsert(bp, container, mediaQuery).insertRule(rule);
-      } else {
-        findMediaRuleOrInsert(bp, mediaQuery)?.insertRule(rule);
-      }
-    } else {
-      baseRules?.insertRule(rule);
-    }
-  } catch (e) {
-    // Fallback for environments where insertRule fails or during SSR hydration mismatches
-    el?.appendChild(document.createTextNode(rule));
+    const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
+
+    utilsLayer.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
+
+    const rule = utilsLayer.cssRules[insertIndex] as CSSGroupingRule;
+
+    buckets.splice(insertIndex, 0, {
+      key,
+      type,
+      val,
+      rule,
+    });
+  } catch (ignoreError) {
+    console.error(ignoreError);
   }
-};
+}
+
+function initStyleSheet() {
+  // Do nothing if we're not in a browser
+  if (typeof document === 'undefined') return;
+
+  // Do nothing if we've already initialized
+  if (sheet) return;
+
+  const el =
+    document.getElementById('mapleStyles') ?? document.createElement('style');
+
+  if (!el.isConnected) {
+    el.id = 'mapleStyles';
+    document.head.appendChild(el);
+  }
+
+  sheet = (el as HTMLStyleElement).sheet;
+
+  if (!sheet) return;
+
+  sheet.insertRule('@layer utils {}', 0);
+
+  const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
+
+  utilsLayer.insertRule('@layer base {}', 0);
+
+  buckets.push({
+    key: 'base',
+    type: 'base',
+    val: 0,
+    rule: utilsLayer.cssRules[0] as CSSGroupingRule,
+  });
+}
+
+export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
+  if (!sheet) initStyleSheet();
+  if (!sheet) return;
+
+  const targetKey = parsedMediaQuery?.bucketKey ?? 'base';
+  let bucket = buckets.find((b) => b.key === targetKey);
+
+  if (!bucket && parsedMediaQuery) {
+    insertBucket(targetKey, parsedMediaQuery);
+    bucket = buckets.find((b) => b.key === targetKey);
+  }
+
+  bucket?.rule.insertRule(cssRule, bucket.rule.cssRules.length);
+}

@@ -1,12 +1,12 @@
-import { generateForClass } from './generator';
+import { generateStylesFromClass } from './generator';
 
 export function startObserver() {
   const observer = new MutationObserver((muts) => {
-    for (let mut of muts) {
-      const el = mut.target as Element;
-      if (!el.classList) return;
-      for (const raw of el.classList) {
-        generateForClass(raw);
+    for (const { target } of muts) {
+      if (!(target instanceof Element)) continue;
+
+      for (const sourceClass of target.classList) {
+        generateStylesFromClass(sourceClass);
       }
     }
   });
@@ -17,5 +17,6 @@ export function startObserver() {
     attributes: true,
     attributeFilter: ['class'],
   });
+
   return () => observer.disconnect();
 }

@@ -1,9 +1,10 @@
 {
-  "editor.formatOnSave": true,
   "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.fixAll.tslint": "explicit",
-    "source.fixAll.stylelint": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
   },
   "workbench.colorCustomizations": {
     "activityBar.background": "#0000f1",

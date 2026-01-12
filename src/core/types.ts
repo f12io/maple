@@ -1,31 +1,66 @@
-export type VariantMatcher = {
-  pattern: RegExp;
-  apply(groups: string[]): Record<string, string> | null;
-};
+export type Modifiers = Record<
+  string,
+  undefined | ((parsed: ParsedClass) => string | undefined)
+>;
+export type ValueModifiers = Record<
+  string,
+  | undefined
+  | ((
+      parsed: ParsedClass,
+      valueItem: string,
+      index: number,
+      length: number,
+    ) => string | undefined)
+>;
+export type ModifierType = 'custom' | 'predefined';
 
-export type VariantHandler = {
-  name?: string;
-  apply(
-    css: Record<string, string> | string,
-    config?: any,
-    variant?: string | Record<string, string>,
-  ): Record<string, any> | boolean | string;
-};
+export type BucketType =
+  | 'base'
+  | 'supports'
+  | 'mnw'
+  | 'mxw'
+  | 'mnh'
+  | 'mxh'
+  | 'orientation'
+  | 'stuck'
+  | 'scrollable'
+  | 'snapped'
+  | 'prefers'
+  | 'initial'
+  | 'other';
 
-export type Variant = string | Record<string, string>;
+export interface Bucket {
+  key: string;
+  type: BucketType;
+  val: number;
+  rule: CSSGroupingRule;
+}
 
-export type ParsedClass = {
-  raw: string;
-  variants: Variant[];
-  parentSelector: string | null;
-  childSelector: string | null;
-  utility: string;
-  important: boolean;
-};
+export interface ParsedMediaQuery {
+  bucketKey: string;
+  bucketQuery: string;
+  bucketType: BucketType;
+  bucketValue: string;
+  innerBlockOpen: string;
+  innerBlockClose: string;
+}
 
-export type ParsedMediaQuery = {
-  raw: string;
-  min: number;
-  max: number;
-  type: 'min' | 'max' | 'other';
-};
+export interface ParsedClass {
+  sourceClass: string;
+  sourceSelector: string;
+  isImportant: boolean;
+  isUtilityNegative: boolean;
+  mediaQuery?: string;
+  parentSelector?: string;
+  selfSelector?: string;
+  childSelector?: string;
+  utilityKey: string;
+  utilityValue: string;
+  utilityOperator: '-' | '=';
+  propType: number;
+  propValue: string;
+  propKeyCamel: string;
+  propKeyKebab: string;
+  validVariableValue: string;
+  variableCategory?: string;
+}
