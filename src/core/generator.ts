@@ -9,6 +9,7 @@ import { parseClass } from './parser-class';
 import { parseMediaQuery } from './parser-media-query';
 import {
   applyModifier,
+  PART_MODIFIERS,
   serializeProp,
   serializeSelector,
   TYPE_MODIFIERS,
@@ -79,17 +80,30 @@ function buildProp(parsed: ParsedClass) {
   const serializedParts: Array<string> = [];
   const parts = utilityValue.split(REF_CHAR_VALUE_PARTS);
 
-  for (const part of parts) {
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    const modifierResult = PART_MODIFIERS[utilityKey]?.(
+      parsed,
+      part,
+      i,
+      parts.length,
+    );
+
+    if (modifierResult) {
+      serializedParts.push(modifierResult);
+      continue;
+    }
+
     const valueItems = part.split(REF_CHAR_SPACE);
     const serializedValue = [];
 
-    for (let i = 0; i < valueItems.length; i++) {
-      const valueItem = valueItems[i];
+    for (let j = 0; j < valueItems.length; j++) {
+      const valueItem = valueItems[j];
       const value =
         VALUE_MODIFIERS[utilityKey]?.(
           parsed,
           valueItem,
-          i,
+          j,
           valueItems.length,
         ) ??
         TYPE_MODIFIERS[propType]?.({

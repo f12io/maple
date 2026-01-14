@@ -50,6 +50,18 @@ describe('Color', () => {
     );
   });
 
+  it('background', () => {
+    expect(convert('bg-blue-600')).toBe(
+      '.bg-blue-600 { background: oklch(from var(--bgc-blue, var(--color-blue, var(--blue, blue))) calc((l + l * -0.2) * var(--bgc-blue-lightness-factor, var(--blue-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--bgc-blue-chroma-factor, var(--blue-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--bgc-blue-hue-rotate, var(--blue-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
+    );
+  });
+
+  it('background with extra params (no-repeat should be omitted)', () => {
+    expect(convert('bg-blue-600__no-repeat')).toBe(
+      '.bg-blue-600__no-repeat { background: oklch(from var(--bgc-blue, var(--color-blue, var(--blue, blue))) calc((l + l * -0.2) * var(--bgc-blue-lightness-factor, var(--blue-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--bgc-blue-chroma-factor, var(--blue-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--bgc-blue-hue-rotate, var(--blue-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
+    );
+  });
+
   it('border color', () => {
     expect(convert('brc-gray-300')).toBe(
       '.brc-gray-300 { border-color: oklch(from var(--brc-gray, var(--color-gray, var(--gray, gray))) calc((l + (1 - l) * 0.4) * var(--brc-gray-lightness-factor, var(--gray-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--brc-gray-chroma-factor, var(--gray-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--brc-gray-hue-rotate, var(--gray-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',

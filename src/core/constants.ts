@@ -20,6 +20,9 @@ export const REF_CHAR_PREDEFINED = '-';
 export const REF_CHAR_CUSTOM = '=';
 export const REF_CHAR_CUSTOM_NOT = '!=';
 export const REF_CHAR_VALUE_PARTS = ',';
+export const REF_CHAR_FUNCTION_START = '-';
+export const REF_CHAR_FUNCTION_COMMA = '|';
+export const REF_CHAR_NON_FUNCTION_START = '__';
 
 export const CHAR_SINGLE_QUOTE = 39; // '
 export const CHAR_DOUBLE_QUOTE = 34; // "
@@ -39,6 +42,7 @@ export const REGEX_UNSAFE_CLASS_CHARS = /([^a-zA-Z0-9_-])/g;
 export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
 export const REGEX_COLOR_TOKEN = /^([a-z]+)-?(\d{1,3})?(?:\/(\d{1,3}))?$/i;
 export const REGEX_NUMBER_WITH_UNIT = /^([\d.]+)([a-z]*)/;
+export const REGEX_NON_FUNCTION_PARAM_SPLITTER = /(?<=[^|]["'\])])__/;
 
 export const MEDIA_NOT = 'not-';
 export const MEDIA_SUPPORTS = 'supports-';
@@ -165,8 +169,13 @@ export const ALL_UNITS = [
 ].sort((a, b) => b.length - a.length);
 
 // This creates a pattern like: /^([0-9]*\.?[0-9]+)?(px|rem|vmin|vmax|...)?$/i
-export const REGEX_CSS_NUMBER_VALUE = new RegExp(
+export const REGEX_NUMBER_VALUE = new RegExp(
   `^([0-9]*\\.?[0-9]+)?(${ALL_UNITS.join('|')})?$`,
+  'i',
+);
+
+export const REGEX_ANGLE_VALUE = new RegExp(
+  `^([0-9]*\\.?[0-9]+)?(${ANGLE_UNITS.join('|')})?$`,
   'i',
 );
 
@@ -190,8 +199,22 @@ export const CSS_VARIABLE_CATEGORY: Record<string, string> = {
   tshadow: 'shadow',
   bshadow: 'shadow',
   color: 'color',
+  gradient: 'gradient',
   prop: 'prop',
 };
+
+export const FUNCTION_KEYS: Record<string, string> = {
+  url: 'url',
+  linear: 'linear-gradient',
+  radial: 'radial-gradient',
+  conic: 'conic-gradient',
+  rlinear: 'repeating-linear-gradient',
+  rradial: 'repeating-radial-gradient',
+  rconic: 'repeating-conic-gradient',
+};
+
+export const REGEX_GRADIENT_DIRECTION =
+  /^(to|from|at|in|circle|ellipse|closest-side|closest-corner|farthest-corner|farthest-side)$/i;
 
 export const TRANSFORM_KEYS: Record<string, string> = {
   tl: 'translate',

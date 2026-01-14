@@ -3,22 +3,34 @@ import {
   COVER_UNITS,
   CSS_VARIABLE_CATEGORY,
   DEFAULT_SPACE_UNIT,
+  FUNCTION_KEYS,
   ONE_UNITS,
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
   PROP_UNIT_MAP,
   REF_CHAR_CUSTOM,
+  REF_CHAR_FUNCTION_COMMA,
+  REF_CHAR_FUNCTION_START,
+  REF_CHAR_NON_FUNCTION_START,
   REF_CHAR_SPACE,
   REF_CHAR_VALUE_PARTS,
   REGEX_COLOR_TOKEN,
+  REGEX_NON_FUNCTION_PARAM_SPLITTER,
   REGEX_SELECTOR_REPLACEMENTS,
   SELECTOR_REPLACEMENTS,
   TRANSFORM_KEYS,
 } from './constants';
-import { isKnownNumberValue, isKnownProperty } from './helpers/property.helper';
+import {
+  isGradientDirection,
+  isKnownAngleValue,
+  isKnownNumberValue,
+  isKnownProperty,
+} from './helpers/property.helper';
 import {
   escapeVariable,
+  removeBrackets,
+  splitAtFirstOccurrence,
   startsWithNegative,
   toCamelCase,
   toKebabCase,
@@ -54,6 +66,11 @@ export const VALUE_MODIFIERS: ValueModifiers = {
   ts: serializeTransitionValue,
   bshadow: serializeShadowValue,
   tshadow: serializeShadowValue,
+};
+
+export const PART_MODIFIERS: ValueModifiers = {
+  bgimg: serializeBackgroundImageParts,
+  bg: serializeBackgroundImageParts,
 };
 
 const INTERNAL_DECISION_MODIFIERS: Modifiers = {
@@ -222,6 +239,14 @@ function serializeColorValue({
   utilityValue,
   utilityKey,
 }: ParsedClass): string {
+  if (
+    utilityValue === 'transparent' ||
+    utilityValue === 'none' ||
+    utilityValue === 'unset'
+  ) {
+    return utilityValue;
+  }
+
   const ts = REGEX_COLOR_TOKEN.exec(utilityValue);
 
   if (!ts) {
@@ -512,4 +537,118 @@ function serializeShadowValue(
     propValue: valueItem,
     validVariableValue: escapeVariable(valueItem),
   });
+}
+
+function serializeBackgroundImageParts(
+  parsed: ParsedClass,
+  partItem: string,
+): string | undefined {
+  let cssFunction;
+  let nonFunctionParams;
+
+  if (parsed.utilityKey === abbreviationReverseMap.background) {
+    [cssFunction, nonFunctionParams] = partItem.split(
+      REGEX_NON_FUNCTION_PARAM_SPLITTER,
+    );
+
+    partItem = cssFunction;
+
+    if (!nonFunctionParams) {
+      [cssFunction, nonFunctionParams] = partItem.split(
+        REF_CHAR_NON_FUNCTION_START,
+      );
+
+      partItem = cssFunction;
+    }
+  }
+
+  const [functionKey, params] = splitAtFirstOccurrence(
+    partItem,
+    REF_CHAR_FUNCTION_START,
+  );
+
+  const parts = (params || partItem).split(REF_CHAR_FUNCTION_COMMA);
+  const functionName = FUNCTION_KEYS[functionKey];
+
+  if (!functionName) {
+    return TYPE_MODIFIERS[parsed.propType]?.({
+      ...parsed,
+      utilityValue: partItem,
+      utilityKey:
+        parsed.propType === PROP_TYPE_COLOR
+          ? abbreviationReverseMap.backgroundColor
+          : abbreviationReverseMap.backgroundImage,
+      propValue: partItem,
+      validVariableValue: escapeVariable(partItem),
+    });
+  }
+
+  partItem = params || partItem;
+  const serializedParams: Array<string> = [];
+
+  if (parts.length < 2) {
+    const isUrlFunction = functionName === 'url';
+    const isUrlValue = isUrlFunction && partItem.includes('/');
+    if (isUrlValue) {
+      serializedParams.push(removeBrackets(partItem));
+    } else {
+      const propValue =
+        functionKey && functionKey !== partItem
+          ? `${functionKey}-${partItem}`
+          : partItem;
+
+      serializedParams.push(
+        serializeValueAsVariable(
+          abbreviationReverseMap.backgroundImage,
+          escapeVariable(propValue),
+          propValue,
+          undefined,
+          isUrlFunction ? undefined : CSS_VARIABLE_CATEGORY.gradient,
+        ),
+      );
+    }
+  } else {
+    const direction = parts[0];
+
+    if (
+      isKnownAngleValue(direction) ||
+      isGradientDirection(splitAtFirstOccurrence(direction, REF_CHAR_SPACE)[0])
+    ) {
+      serializedParams.push(serializeValue(direction));
+
+      // Remove direction from params
+      parts.shift();
+    }
+
+    for (const part of parts) {
+      const stopParts = part.split(REF_CHAR_SPACE);
+      const colorToken = stopParts.shift() ?? '';
+      const colorValue = serializeColorValue({
+        ...parsed,
+        utilityKey: abbreviationReverseMap.backgroundColor,
+        utilityValue: colorToken,
+      });
+
+      const positionTokens: Array<string> = [];
+
+      for (const positionToken of stopParts) {
+        positionTokens.push(
+          serializeNumberValue({
+            ...parsed,
+            utilityKey: 'stop',
+            utilityValue: positionToken,
+            validVariableValue: escapeVariable(positionToken),
+          }),
+        );
+      }
+
+      serializedParams.push(
+        positionTokens.length
+          ? `${colorValue} ${positionTokens.join(' ')}`
+          : colorValue,
+      );
+    }
+  }
+
+  return `${functionName}(${serializedParams.join(', ')})${nonFunctionParams ? ` ${serializeValue(nonFunctionParams)}` : ''}`;
 }

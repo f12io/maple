@@ -37,3 +37,16 @@ export function removeBrackets(value: string) {
   }
   return value;
 }
+
+export function splitAtFirstOccurrence(
+  str: string,
+  char: string,
+): Array<string> {
+  const index = str.indexOf(char);
+
+  if (index === -1) {
+    return [str];
+  }
+
+  return [str.slice(0, index), str.slice(index + 1)];
+}

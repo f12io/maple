@@ -7,7 +7,9 @@ import {
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
-  REGEX_CSS_NUMBER_VALUE,
+  REGEX_ANGLE_VALUE,
+  REGEX_GRADIENT_DIRECTION,
+  REGEX_NUMBER_VALUE,
 } from '../constants';
 
 let element: HTMLDivElement | undefined;
@@ -81,5 +83,16 @@ export function isKnownNumberValue(unit: string): boolean {
   if (!unit) return false;
 
   unit = unit.charCodeAt(0) === CHAR_DASH ? unit.slice(1) : unit;
-  return REGEX_CSS_NUMBER_VALUE.test(unit);
+  return REGEX_NUMBER_VALUE.test(unit);
+}
+
+export function isKnownAngleValue(unit: string): boolean {
+  if (!unit) return false;
+
+  unit = unit.charCodeAt(0) === CHAR_DASH ? unit.slice(1) : unit;
+  return REGEX_ANGLE_VALUE.test(unit);
+}
+
+export function isGradientDirection(value: string): boolean {
+  return REGEX_GRADIENT_DIRECTION.test(value);
 }
