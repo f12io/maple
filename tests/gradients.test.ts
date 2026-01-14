@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { generateStylesFromClass as convert } from '../src/core/generator';
 
+describe('Custom CSS variable', () => {
+  it('background image', () => {
+    expect(convert('bgimg-hero-gradient')).toBe(
+      `.bgimg-hero-gradient { background-image: var(--bgimg-hero-gradient, var(--hero-gradient, hero-gradient)); }`,
+    );
+  });
+
+  it('background image none', () => {
+    expect(convert('bgimg-none')).toBe(
+      `.bgimg-none { background-image: none; }`,
+    );
+  });
+});
+
 describe('Linear', () => {
   it('function key as variable', () => {
     expect(convert('bgimg-linear')).toBe(
@@ -82,9 +96,9 @@ describe('Linear', () => {
 
   it('linear gradient with rgb', () => {
     expect(
-      convert('bgimg-linear-in_oklab|rgb(0,0,0)|rgb(255,255,255)_50%'),
+      convert('bgimg-linear-in_oklab|rgb(0,0,0)|rgba(255_255_255/0.5)_50%'),
     ).toBe(
-      `.bgimg-linear-in_oklab\\|rgb\\(0\\,0\\,0\\)\\|rgb\\(255\\,255\\,255\\)_50\\% { background-image: linear-gradient(in oklab, rgb(0,0,0), rgb(255,255,255) 50%); }`,
+      `.bgimg-linear-in_oklab\\|rgb\\(0\\,0\\,0\\)\\|rgba\\(255_255_255\\/0\\.5\\)_50\\% { background-image: linear-gradient(in oklab, rgb(0,0,0), rgba(255 255 255/0.5) 50%); }`,
     );
   });
 

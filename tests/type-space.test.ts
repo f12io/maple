@@ -63,9 +63,7 @@ describe('Positive Numbers', () => {
   });
 
   it('padding auto', () => {
-    expect(convert('p-auto')).toBe(
-      '.p-auto { padding: var(--p-auto, var(--space-auto, var(--auto, auto))); }',
-    );
+    expect(convert('p-auto')).toBe('.p-auto { padding: auto; }');
   });
 
   it('padding lg', () => {
@@ -308,7 +306,7 @@ describe('Positive Numbers with Multiple Property Outputs', () => {
 
   it('square auto', () => {
     expect(convert('square-auto')).toBe(
-      '.square-auto { width: var(--square-auto, var(--space-auto, var(--auto, auto)));height: var(--square-auto, var(--space-auto, var(--auto, auto))); }',
+      '.square-auto { width: auto;height: auto; }',
     );
   });
 
@@ -540,9 +538,7 @@ describe('Negative Numbers', () => {
   });
 
   it('margin auto', () => {
-    expect(convert('-m-auto')).toBe(
-      '.-m-auto { margin: calc(var(--m-auto, var(--space-auto, var(--auto, auto))) * -1); }',
-    );
+    expect(convert('-m-auto')).toBe('.-m-auto { margin: auto; }');
   });
 
   it('margin lg', () => {
@@ -825,7 +821,7 @@ describe('Negative Numbers with Multiple Property Outputs', () => {
 
   it('square auto', () => {
     expect(convert('-square-auto')).toBe(
-      '.-square-auto { width: calc(var(--square-auto, var(--space-auto, var(--auto, auto))) * -1);height: calc(var(--square-auto, var(--space-auto, var(--auto, auto))) * -1); }',
+      '.-square-auto { width: auto;height: auto; }',
     );
   });
 

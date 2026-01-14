@@ -24,8 +24,10 @@ import {
 import {
   isGradientDirection,
   isKnownAngleValue,
+  isKnownColorValue,
   isKnownNumberValue,
   isKnownProperty,
+  isReservedKeyword,
 } from './helpers/property.helper';
 import {
   escapeVariable,
@@ -131,6 +133,10 @@ function serializeValueAsVariable(
     return serializeValue(propValueAsIs);
   }
 
+  if (isReservedKeyword(propValue)) {
+    return propValue;
+  }
+
   let variableCategoryFromMap: string | undefined;
 
   fallbackValue ??= propValue;
@@ -191,6 +197,10 @@ function serializeNumberValue({
     return serializeValue(utilityValueAsIs);
   }
 
+  if (isReservedKeyword(utilityValue)) {
+    return utilityValue;
+  }
+
   const numberValue = Number(utilityValue);
 
   if (numberValue === 0) return '0';
@@ -248,28 +258,26 @@ function serializeNumberValue({
   return isUtilityNegative ? `calc(${val} * -1)` : val;
 }
 
-function serializeColorValue({
-  utilityValue,
-  utilityKey,
-}: ParsedClass): string {
+function serializeColorValue(parsed: ParsedClass): string {
+  const { utilityValue, utilityKey } = parsed;
   const utilityValueAsIs = removeBrackets(utilityValue);
 
   if (utilityValue !== utilityValueAsIs) {
     return serializeValue(utilityValueAsIs);
   }
 
-  if (
-    utilityValue === 'transparent' ||
-    utilityValue === 'none' ||
-    utilityValue === 'unset'
-  ) {
+  if (isReservedKeyword(utilityValue)) {
     return utilityValue;
   }
 
   const ts = REGEX_COLOR_TOKEN.exec(utilityValue);
 
   if (!ts) {
-    return utilityValue;
+    const serializedValue = serializeValue(utilityValue);
+
+    return isKnownColorValue(serializedValue)
+      ? serializeValue(utilityValue)
+      : serializeOtherValue(parsed);
   }
 
   const name = ts[1];

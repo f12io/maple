@@ -43,6 +43,13 @@ export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
 export const REGEX_COLOR_TOKEN = /^([a-z]+)-?(\d{1,3})?(?:\/(\d{1,3}))?$/i;
 export const REGEX_NUMBER_WITH_UNIT = /^([\d.]+)([a-z]*)/;
 export const REGEX_NON_FUNCTION_PARAM_SPLITTER = /(?<=[^|]["'\])])__/;
+export const REGEX_COLOR_HEX = /^#(?:[0-9a-f]{3,4}){1,2}$/i;
+export const REGEX_COLOR_FUNCTIONAL =
+  /^(rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\s*\([a-z0-9\s%.,/+-]+\)$/i;
+export const REGEX_GRADIENT_DIRECTION =
+  /^(to|from|at|in|circle|ellipse|closest-side|closest-corner|farthest-corner|farthest-side)$/i;
+export const REGEX_RESERVED_KEYWORDS =
+  /^(initial|inherit|unset|revert|revert-layer|none|auto|transparent|currentColor)$/i;
 
 export const MEDIA_NOT = 'not-';
 export const MEDIA_SUPPORTS = 'supports-';
@@ -212,9 +219,6 @@ export const FUNCTION_KEYS: Record<string, string> = {
   rradial: 'repeating-radial-gradient',
   rconic: 'repeating-conic-gradient',
 };
-
-export const REGEX_GRADIENT_DIRECTION =
-  /^(to|from|at|in|circle|ellipse|closest-side|closest-corner|farthest-corner|farthest-side)$/i;
 
 export const TRANSFORM_KEYS: Record<string, string> = {
   tl: 'translate',

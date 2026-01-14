@@ -8,8 +8,11 @@ import {
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
   REGEX_ANGLE_VALUE,
+  REGEX_COLOR_FUNCTIONAL,
+  REGEX_COLOR_HEX,
   REGEX_GRADIENT_DIRECTION,
   REGEX_NUMBER_VALUE,
+  REGEX_RESERVED_KEYWORDS,
 } from '../constants';
 
 let element: HTMLDivElement | undefined;
@@ -79,18 +82,26 @@ export function isKnownProperty(propKeyCamel: string): boolean {
   return propKeyCamel in element.style;
 }
 
-export function isKnownNumberValue(unit: string): boolean {
-  if (!unit) return false;
+export function isKnownNumberValue(val: string): boolean {
+  if (!val) return false;
 
-  unit = unit.charCodeAt(0) === CHAR_DASH ? unit.slice(1) : unit;
-  return REGEX_NUMBER_VALUE.test(unit);
+  val = val.charCodeAt(0) === CHAR_DASH ? val.slice(1) : val;
+  return REGEX_NUMBER_VALUE.test(val);
 }
 
-export function isKnownAngleValue(unit: string): boolean {
-  if (!unit) return false;
+export function isKnownAngleValue(val: string): boolean {
+  if (!val) return false;
 
-  unit = unit.charCodeAt(0) === CHAR_DASH ? unit.slice(1) : unit;
-  return REGEX_ANGLE_VALUE.test(unit);
+  val = val.charCodeAt(0) === CHAR_DASH ? val.slice(1) : val;
+  return REGEX_ANGLE_VALUE.test(val);
+}
+
+export function isKnownColorValue(val: string): boolean {
+  return REGEX_COLOR_HEX.test(val) || REGEX_COLOR_FUNCTIONAL.test(val);
+}
+
+export function isReservedKeyword(val: string): boolean {
+  return REGEX_RESERVED_KEYWORDS.test(val);
 }
 
 export function isGradientDirection(value: string): boolean {

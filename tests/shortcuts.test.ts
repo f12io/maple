@@ -32,6 +32,14 @@ describe('Shortcuts', () => {
     expect(convert('none')).toBe(`.none { display: none; }`);
   });
 
+  it('d-none', () => {
+    expect(convert('d-none')).toBe(`.d-none { display: none; }`);
+  });
+
+  it('d=none', () => {
+    expect(convert('d=none')).toBe(`.d\\=none { display: none; }`);
+  });
+
   it('table', () => {
     expect(convert('table')).toBe(`.table { display: table; }`);
   });
