@@ -40,7 +40,7 @@ export function generateStylesFromClass(
     const parsedMediaQuery = parseMediaQuery(parsed);
     const block = `${selector} { ${styles} }`;
     const rule = parsedMediaQuery
-      ? `${parsedMediaQuery.innerBlockOpen} ${block} ${parsedMediaQuery.innerBlockClose}`
+      ? `${parsedMediaQuery.innerBlockOpen} ${block} ${parsedMediaQuery.innerBlockClose}`.trim()
       : block;
 
     insert(rule, parsedMediaQuery);

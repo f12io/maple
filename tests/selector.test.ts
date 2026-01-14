@@ -28,6 +28,12 @@ describe('Self', () => {
     );
   });
 
+  it('self selector with class', () => {
+    expect(convert('&.hover:p-2')).toBe(
+      '.\\&\\.hover\\:p-2.hover { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+    );
+  });
+
   it('self selector with important', () => {
     expect(convert('!&:hover:c=red')).toBe(
       '.\\!\\&\\:hover\\:c\\=red:hover { color: red !important; }',
