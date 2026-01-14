@@ -4,7 +4,7 @@ import {
   REF_CHAR_VALUE_PARTS,
   SHORTCUTS,
 } from './constants';
-import { escapeVariable } from './helpers/string.helper';
+import { escapeVariable, split } from './helpers/string.helper';
 import { parseClass } from './parser-class';
 import { parseMediaQuery } from './parser-media-query';
 import {
@@ -78,7 +78,7 @@ function buildProp(parsed: ParsedClass) {
   }
 
   const serializedParts: Array<string> = [];
-  const parts = utilityValue.split(REF_CHAR_VALUE_PARTS);
+  const parts = split(utilityValue, REF_CHAR_VALUE_PARTS);
 
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
@@ -94,7 +94,7 @@ function buildProp(parsed: ParsedClass) {
       continue;
     }
 
-    const valueItems = part.split(REF_CHAR_SPACE);
+    const valueItems = split(part, REF_CHAR_SPACE);
     const serializedValue = [];
 
     for (let j = 0; j < valueItems.length; j++) {

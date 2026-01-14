@@ -116,15 +116,15 @@ describe('Child', () => {
 });
 
 describe('Parser Stress Tests', () => {
-  it('colon in utility value with brackets', () => {
-    expect(convert('content-[Time:12:00]')).toBe(
-      '.content-\\[Time\\:12\\:00\\] { content: var(--content-Time\\:12\\:00, var(--Time\\:12\\:00, Time:12:00)); }',
+  it('colon in utility value with brackets (invalid css is expected)', () => {
+    expect(convert('content-[Time=12:00]')).toBe(
+      '.content-\\[Time\\=12\\:00\\] { content: Time=12:00; }',
     );
   });
 
   it('colon in utility value with brackets and single quotes', () => {
     expect(convert("content-['Time:12:00']")).toBe(
-      ".content-\\[\\'Time\\:12\\:00\\'\\] { content: var(--content-\\'Time\\:12\\:00\\', var(--\\'Time\\:12\\:00\\', 'Time:12:00')); }",
+      ".content-\\[\\'Time\\:12\\:00\\'\\] { content: 'Time:12:00'; }",
     );
   });
 
@@ -147,8 +147,14 @@ describe('Parser Stress Tests', () => {
   });
 
   it('colon in custom utility value with double quotes', () => {
-    expect(convert('content="Time:12:00"')).toBe(
-      '.content\\=\\"Time\\:12\\:00\\" { content: "Time:12:00"; }',
+    expect(convert('content="Time=12:00"')).toBe(
+      '.content\\=\\"Time\\=12\\:00\\" { content: "Time=12:00"; }',
+    );
+  });
+
+  it('colon in custom utility value with brackets (invalid css is expected)', () => {
+    expect(convert('content=[Time=12:00]')).toBe(
+      '.content\\=\\[Time\\=12\\:00\\] { content: Time=12:00; }',
     );
   });
 

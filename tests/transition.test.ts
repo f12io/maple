@@ -62,6 +62,24 @@ describe('Transition', () => {
     );
   });
 
+  it('transition with custom duration, custom delay, custom property and custom timing function', () => {
+    expect(
+      convert(
+        'ts-300ms_200ms_[background-color]_[cubic-bezier(0.42,0,0.58,1)]',
+      ),
+    ).toBe(
+      `.ts-300ms_200ms_\\[background-color\\]_\\[cubic-bezier\\(0\\.42\\,0\\,0\\.58\\,1\\)\\] { transition: 300ms 200ms background-color cubic-bezier(0.42,0,0.58,1); }`,
+    );
+  });
+
+  it('transition with duration, delay, property and custom timing function', () => {
+    expect(
+      convert('ts-[300ms_200ms_background-color_cubic-bezier(0.42,0,0.58,1)]'),
+    ).toBe(
+      `.ts-\\[300ms_200ms_background-color_cubic-bezier\\(0\\.42\\,0\\,0\\.58\\,1\\)\\] { transition: 300ms 200ms background-color cubic-bezier(0.42,0,0.58,1); }`,
+    );
+  });
+
   it('transition with duration, delay, property with dash and timing function', () => {
     expect(convert('ts-300_200_background-color_ease')).toBe(
       `.ts-300_200_background-color_ease { transition: var(--ts-300, var(--time-300, 300ms)) var(--ts-200, var(--time-200, 200ms)) var(--ts-bgc, var(--time-bgc, var(--prop-bgc, var(--bgc, background-color)))) var(--ts-ease, var(--time-ease, var(--ease, ease))); }`,

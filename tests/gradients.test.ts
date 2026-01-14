@@ -14,6 +14,12 @@ describe('Linear', () => {
     );
   });
 
+  it('linear with custom value in predefined syntax', () => {
+    expect(convert('bgimg-linear-[to_top,red,blue]')).toBe(
+      `.bgimg-linear-\\[to_top\\,red\\,blue\\] { background-image: linear-gradient(to top,red,blue); }`,
+    );
+  });
+
   it('linear with mulitple predefined variable (function key is not available)', () => {
     expect(convert('bgimg-linear-primary,radial-primary')).toBe(
       `.bgimg-linear-primary\\,radial-primary { background-image: linear-gradient(var(--bgimg-linear-primary, var(--gradient-linear-primary, var(--linear-primary, linear-primary)))), radial-gradient(var(--bgimg-radial-primary, var(--gradient-radial-primary, var(--radial-primary, radial-primary)))); }`,
@@ -23,6 +29,26 @@ describe('Linear', () => {
   it('linear with two stops without direction', () => {
     expect(convert('bgimg-linear-red|blue')).toBe(
       `.bgimg-linear-red\\|blue { background-image: linear-gradient(oklch(from var(--bgc-red, var(--color-red, var(--red, red))) calc(l * var(--bgc-red-lightness-factor, var(--red-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--bgc-red-chroma-factor, var(--red-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--bgc-red-hue-rotate, var(--red-hue-rotate, var(--hue-rotate, 0)))) / alpha), oklch(from var(--bgc-blue, var(--color-blue, var(--blue, blue))) calc(l * var(--bgc-blue-lightness-factor, var(--blue-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--bgc-blue-chroma-factor, var(--blue-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--bgc-blue-hue-rotate, var(--blue-hue-rotate, var(--hue-rotate, 0)))) / alpha)); }`,
+    );
+  });
+
+  it('linear with two custom stops without direction', () => {
+    expect(convert('bgimg-linear-[red]|[blue]')).toBe(
+      `.bgimg-linear-\\[red\\]\\|\\[blue\\] { background-image: linear-gradient(red, blue); }`,
+    );
+  });
+
+  it('linear with two custom stops without direction', () => {
+    expect(convert('bgimg-linear-[red]|[blue_50%]')).toBe(
+      `.bgimg-linear-\\[red\\]\\|\\[blue_50\\%\\] { background-image: linear-gradient(red, blue 50%); }`,
+    );
+  });
+
+  it('linear with two custom stops without direction and custom variable', () => {
+    expect(
+      convert('bgimg-linear-[red]|[blue]_[var(--custom-stop-variable)]'),
+    ).toBe(
+      `.bgimg-linear-\\[red\\]\\|\\[blue\\]_\\[var\\(--custom-stop-variable\\)\\] { background-image: linear-gradient(red, blue var(--custom-stop-variable)); }`,
     );
   });
 
@@ -51,6 +77,14 @@ describe('Linear', () => {
   it('linear gradient with hex', () => {
     expect(convert('bgimg-linear-in_oklab|#000|#fff_50%')).toBe(
       `.bgimg-linear-in_oklab\\|\\#000\\|\\#fff_50\\% { background-image: linear-gradient(in oklab, #000, #fff 50%); }`,
+    );
+  });
+
+  it('linear gradient with rgb', () => {
+    expect(
+      convert('bgimg-linear-in_oklab|rgb(0,0,0)|rgb(255,255,255)_50%'),
+    ).toBe(
+      `.bgimg-linear-in_oklab\\|rgb\\(0\\,0\\,0\\)\\|rgb\\(255\\,255\\,255\\)_50\\% { background-image: linear-gradient(in oklab, rgb(0,0,0), rgb(255,255,255) 50%); }`,
     );
   });
 

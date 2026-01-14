@@ -250,9 +250,9 @@ describe('Positive Numbers', () => {
     );
   });
 
-  it('padding with predefined values in brackets', () => {
+  it('padding with predefined values in brackets (invalid css is expected)', () => {
     expect(convert('p-[1/2_1/4_4_rem]')).toBe(
-      '.p-\\[1\\/2_1\\/4_4_rem\\] { padding: 50% 25% var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) 1rem; }',
+      '.p-\\[1\\/2_1\\/4_4_rem\\] { padding: 1/2 1/4 4 rem; }',
     );
   });
 
@@ -453,12 +453,6 @@ describe('Positive Numbers with Multiple Property Outputs', () => {
   it('square 100cqmax', () => {
     expect(convert('square-cqmax')).toBe(
       `.square-cqmax { width: 100cqmax;height: 100cqmax; }`,
-    );
-  });
-
-  it('square with predefined value in brackets', () => {
-    expect(convert('square-[1/2]')).toBe(
-      '.square-\\[1\\/2\\] { width: 50%;height: 50%; }',
     );
   });
 
@@ -745,9 +739,9 @@ describe('Negative Numbers', () => {
     );
   });
 
-  it('margin with predefined values in brackets', () => {
+  it('margin with predefined values in brackets (invalid css is expected)', () => {
     expect(convert('-m-[1/2_1/4_4_rem]')).toBe(
-      '.-m-\\[1\\/2_1\\/4_4_rem\\] { margin: -50% -25% calc(var(--m-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1) -1rem; }',
+      '.-m-\\[1\\/2_1\\/4_4_rem\\] { margin: 1/2 1/4 4 rem; }',
     );
   });
 
@@ -980,12 +974,6 @@ describe('Negative Numbers with Multiple Property Outputs', () => {
   it('square 100cqmax', () => {
     expect(convert('-square-cqmax')).toBe(
       `.-square-cqmax { width: -100cqmax;height: -100cqmax; }`,
-    );
-  });
-
-  it('square with predefined value in brackets', () => {
-    expect(convert('-square-[1/2]')).toBe(
-      `.-square-\\[1\\/2\\] { width: -50%;height: -50%; }`,
     );
   });
 

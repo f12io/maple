@@ -74,14 +74,30 @@ describe('Color', () => {
     );
   });
 
+  it('border color multiple values with custom value', () => {
+    expect(convert('brc-gray-300_[red]')).toBe(
+      '.brc-gray-300_\\[red\\] { border-color: oklch(from var(--brc-gray, var(--color-gray, var(--gray, gray))) calc((l + (1 - l) * 0.4) * var(--brc-gray-lightness-factor, var(--gray-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--brc-gray-chroma-factor, var(--gray-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--brc-gray-hue-rotate, var(--gray-hue-rotate, var(--hue-rotate, 0)))) / alpha) red; }',
+    );
+  });
+
   it('color hex', () => {
     expect(convert('c-#ff0000')).toBe('.c-\\#ff0000 { color: #ff0000; }');
   });
 
   it('color rgba', () => {
     expect(convert('c-rgba(255,0,0,1)')).toBe(
-      '.c-rgba\\(255\\,0\\,0\\,1\\) { color: rgba(255, 0, 0, 1); }',
+      '.c-rgba\\(255\\,0\\,0\\,1\\) { color: rgba(255,0,0,1); }',
     );
+  });
+
+  it('color custom hex in predefined syntax', () => {
+    expect(convert('c-[#ff0000]')).toBe(
+      '.c-\\[\\#ff0000\\] { color: #ff0000; }',
+    );
+  });
+
+  it('color custom hex in predefined syntax', () => {
+    expect(convert('c-[red]')).toBe('.c-\\[red\\] { color: red; }');
   });
 
   it('color custom hex value', () => {

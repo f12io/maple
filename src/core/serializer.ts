@@ -30,6 +30,7 @@ import {
 import {
   escapeVariable,
   removeBrackets,
+  split,
   splitAtFirstOccurrence,
   startsWithNegative,
   toCamelCase,
@@ -124,6 +125,12 @@ function serializeValueAsVariable(
   variableCategoryAsIs?: string,
   variableCategoryForMap?: string,
 ) {
+  const propValueAsIs = removeBrackets(propValue);
+
+  if (propValue !== propValueAsIs) {
+    return serializeValue(propValueAsIs);
+  }
+
   let variableCategoryFromMap: string | undefined;
 
   fallbackValue ??= propValue;
@@ -154,7 +161,7 @@ function serializeValueAsVariable(
 function serializeFraction(value: string): string | undefined {
   if (!value.includes('/')) return;
 
-  const [num, den] = value.split('/').map(Number);
+  const [num, den] = split(value, '/').map(Number);
   const val = Math.round((num / den) * 1000000) / 10000;
 
   if (!num || !den) return;
@@ -178,6 +185,12 @@ function serializeNumberValue({
   isUtilityNegative,
   variableCategory,
 }: ParsedClass): string {
+  const utilityValueAsIs = removeBrackets(utilityValue);
+
+  if (utilityValueAsIs !== utilityValue) {
+    return serializeValue(utilityValueAsIs);
+  }
+
   const numberValue = Number(utilityValue);
 
   if (numberValue === 0) return '0';
@@ -239,6 +252,12 @@ function serializeColorValue({
   utilityValue,
   utilityKey,
 }: ParsedClass): string {
+  const utilityValueAsIs = removeBrackets(utilityValue);
+
+  if (utilityValue !== utilityValueAsIs) {
+    return serializeValue(utilityValueAsIs);
+  }
+
   if (
     utilityValue === 'transparent' ||
     utilityValue === 'none' ||
@@ -299,7 +318,7 @@ function serializeContainer({
   }
 
   // Container type
-  if (CONTAINER_TYPES.includes(utilityValue.split(REF_CHAR_SPACE)[0])) {
+  if (CONTAINER_TYPES.includes(split(utilityValue, REF_CHAR_SPACE)[0])) {
     propKeyKebab = 'container-type';
   }
 
@@ -348,7 +367,7 @@ function serializeTransform(parsed: ParsedClass): string {
   if (utilityOperator == REF_CHAR_CUSTOM) {
     value = propValue;
   } else {
-    const valueItems = utilityValue.split(REF_CHAR_SPACE);
+    const valueItems = split(utilityValue, REF_CHAR_SPACE);
     const serializedValue = [];
 
     for (const valueItem of valueItems) {
@@ -382,11 +401,11 @@ function serializeGridTemplate(parsed: ParsedClass): string | undefined {
     validVariableValue,
     isImportant,
   } = parsed;
-  const valueItems = utilityValue.split(REF_CHAR_SPACE);
+  const valueItems = split(utilityValue, REF_CHAR_SPACE);
 
   if (valueItems.length === 1) {
     if (isNaN(Number(valueItems[0]))) {
-      const frItems = utilityValue.split('/');
+      const frItems = split(utilityValue, '/');
 
       if (frItems.length > 1) {
         return serializeProp(
@@ -429,7 +448,7 @@ function serializeGridTemplate(parsed: ParsedClass): string | undefined {
 
 function serializeGridItem(parsed: ParsedClass): string | undefined {
   const { utilityValue, propKeyKebab, isImportant } = parsed;
-  const frItems = utilityValue.split('/');
+  const frItems = split(utilityValue, '/');
 
   if (frItems.length === 1 && isKnownNumberValue(frItems[0])) {
     const numberValue = Number(frItems[0]);
@@ -443,7 +462,7 @@ function serializeGridItem(parsed: ParsedClass): string | undefined {
 
 function serializePropsInValue(parsed: ParsedClass): string | undefined {
   const { utilityValue, propKeyKebab, isImportant } = parsed;
-  const parts = utilityValue.split(REF_CHAR_VALUE_PARTS);
+  const parts = split(utilityValue, REF_CHAR_VALUE_PARTS);
   const propNames = [];
 
   for (const part of parts) {
@@ -567,7 +586,7 @@ function serializeBackgroundImageParts(
     REF_CHAR_FUNCTION_START,
   );
 
-  const parts = (params || partItem).split(REF_CHAR_FUNCTION_COMMA);
+  const parts = split(params || partItem, REF_CHAR_FUNCTION_COMMA);
   const functionName = FUNCTION_KEYS[functionKey];
 
   if (!functionName) {
@@ -592,20 +611,26 @@ function serializeBackgroundImageParts(
     if (isUrlValue) {
       serializedParams.push(removeBrackets(partItem));
     } else {
-      const propValue =
-        functionKey && functionKey !== partItem
-          ? `${functionKey}-${partItem}`
-          : partItem;
+      const partItemAsIs = removeBrackets(partItem);
 
-      serializedParams.push(
-        serializeValueAsVariable(
-          abbreviationReverseMap.backgroundImage,
-          escapeVariable(propValue),
-          propValue,
-          undefined,
-          isUrlFunction ? undefined : CSS_VARIABLE_CATEGORY.gradient,
-        ),
-      );
+      if (partItem !== partItemAsIs) {
+        serializedParams.push(serializeValue(partItemAsIs));
+      } else {
+        const propValue =
+          functionKey && functionKey !== partItem
+            ? `${functionKey}-${partItem}`
+            : partItem;
+
+        serializedParams.push(
+          serializeValueAsVariable(
+            abbreviationReverseMap.backgroundImage,
+            escapeVariable(propValue),
+            propValue,
+            undefined,
+            isUrlFunction ? undefined : CSS_VARIABLE_CATEGORY.gradient,
+          ),
+        );
+      }
     }
   } else {
     const direction = parts[0];
@@ -621,7 +646,7 @@ function serializeBackgroundImageParts(
     }
 
     for (const part of parts) {
-      const stopParts = part.split(REF_CHAR_SPACE);
+      const stopParts = split(part, REF_CHAR_SPACE);
       const colorToken = stopParts.shift() ?? '';
       const colorValue = serializeColorValue({
         ...parsed,
