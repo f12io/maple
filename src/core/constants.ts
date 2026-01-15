@@ -67,7 +67,9 @@ export const REGEX_RESERVED_KEYWORDS =
   /^(initial|inherit|unset|revert|revert-layer|none|auto|transparent|currentColor)$/i;
 
 export const MEDIA_NOT = 'not-';
-export const MEDIA_SUPPORTS = 'supports-';
+
+export const MEDIA_SUPPORTS = 'supports';
+export const MEDIA_SUPPORTS_CUSTOM = 'supports' + REF_CHAR_CUSTOM;
 
 export const MEDIA_MIN_WIDTH = 'mnw' + REF_CHAR_PREDEFINED;
 export const MEDIA_MIN_WIDTH_CUSTOM = 'mnw' + REF_CHAR_CUSTOM;
@@ -81,23 +83,25 @@ export const MEDIA_MIN_HEIGHT_CUSTOM = 'mnh' + REF_CHAR_CUSTOM;
 export const MEDIA_MAX_HEIGHT = 'mxh' + REF_CHAR_PREDEFINED;
 export const MEDIA_MAX_HEIGHT_CUSTOM = 'mxh' + REF_CHAR_CUSTOM;
 
+export const MEDIA_STYLE_CUSTOM = 'style' + REF_CHAR_CUSTOM;
 export const MEDIA_STUCK_CUSTOM = 'stuck' + REF_CHAR_CUSTOM;
 export const MEDIA_SCROLLABLE_CUSTOM = 'scrollable' + REF_CHAR_CUSTOM;
 export const MEDIA_SNAPPED_CUSTOM = 'snapped' + REF_CHAR_CUSTOM;
 
 export const MEDIA_BUCKET_TYPE_ORDER: Record<BucketType, number> = {
   base: 1,
-  supports: 10,
+  supports: 2,
+  other: 10,
   mnw: 20,
   mxw: 30,
   mnh: 40,
   mxh: 50,
   orientation: 60,
-  stuck: 70,
-  scrollable: 80,
-  snapped: 90,
-  prefers: 100,
-  other: 9998,
+  style: 70,
+  stuck: 80,
+  scrollable: 90,
+  snapped: 100,
+  prefers: 110,
   initial: 9999,
 };
 

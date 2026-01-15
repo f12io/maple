@@ -22,6 +22,7 @@ export type BucketType =
   | 'mnh'
   | 'mxh'
   | 'orientation'
+  | 'style'
   | 'stuck'
   | 'scrollable'
   | 'snapped'

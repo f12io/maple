@@ -40,12 +40,14 @@ export function generateStylesFromClass(
     const parsedMediaQuery = parseMediaQuery(parsed);
     const block = `${selector} { ${styles} }`;
     const rule = parsedMediaQuery
-      ? `${parsedMediaQuery.innerBlockOpen} ${block} ${parsedMediaQuery.innerBlockClose}`.trim()
+      ? `${parsedMediaQuery.innerBlockOpen}${block} ${parsedMediaQuery.innerBlockClose}`.trim()
       : block;
 
     insert(rule, parsedMediaQuery);
 
-    return rule;
+    return parsedMediaQuery?.bucketQuery
+      ? `${parsedMediaQuery.bucketQuery} { ${rule} }`
+      : rule;
   } catch (error) {
     console.error(error);
   }
