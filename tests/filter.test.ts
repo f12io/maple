@@ -43,6 +43,12 @@ describe('Blur', () => {
     );
   });
 
+  it('blur with px', () => {
+    expect(convert('blur-px')).toBe(
+      `.blur-px { --filter-blur: blur(1px);${vars}; }`,
+    );
+  });
+
   it('blur with variable', () => {
     expect(convert('blur-lg')).toBe(
       `.blur-lg { --filter-blur: blur(var(--blur-lg, var(--space-lg, var(--lg, lg))));${vars}; }`,
