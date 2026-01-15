@@ -6,37 +6,43 @@ describe('Variables', () => {
     expect(convert('--bg=black')).toBe('.--bg\\=black { --bg: black; }');
   });
 
-  it('utility only name with multiple dashes', () => {
+  it('name with multiple dashes', () => {
     expect(convert('--bg-hero-gradient=linear-gradient(blue,red)')).toBe(
       '.--bg-hero-gradient\\=linear-gradient\\(blue\\,red\\) { --bg-hero-gradient: linear-gradient(blue,red); }',
     );
   });
 
-  it('utility only name with another variable', () => {
+  it('with another variable', () => {
     expect(convert('--bg-hero-gradient=var(--another-variable)')).toBe(
       '.--bg-hero-gradient\\=var\\(--another-variable\\) { --bg-hero-gradient: var(--another-variable); }',
     );
   });
 
-  it('utility only with important', () => {
+  it('with spaces in value', () => {
+    expect(convert('--bg-logo=url(/path/logo.png)_no-repeat')).toBe(
+      '.--bg-logo\\=url\\(\\/path\\/logo\\.png\\)_no-repeat { --bg-logo: url(/path/logo.png) no-repeat; }',
+    );
+  });
+
+  it('with important', () => {
     expect(convert('!--bg=black')).toBe(
       '.\\!--bg\\=black { --bg: black !important; }',
     );
   });
 
-  it('utility only with long important', () => {
+  it('with long important', () => {
     expect(convert('--bg=black_!important')).toBe(
       '.--bg\\=black_\\!important { --bg: black !important; }',
     );
   });
 
-  it('utility with selector', () => {
+  it('with selector', () => {
     expect(convert('&[data-foo]:--bg=black')).toBe(
       '.\\&\\[data-foo\\]\\:--bg\\=black[data-foo] { --bg: black; }',
     );
   });
 
-  it('utility with selector and long-name', () => {
+  it('with selector and dashed name', () => {
     expect(
       convert('&[data-foo]:--bg-hero-gradient=linear-gradient(blue,red)'),
     ).toBe(
