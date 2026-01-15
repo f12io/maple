@@ -14,6 +14,12 @@ describe('Color', () => {
     );
   });
 
+  it('background with custom variable', () => {
+    expect(convert('bg-primary')).toBe(
+      '.bg-primary { background: oklch(from var(--bgc-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--bgc-primary-lightness-factor, var(--primary-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--bgc-primary-chroma-factor, var(--primary-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--bgc-primary-hue-rotate, var(--primary-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
+    );
+  });
+
   it('text color', () => {
     expect(convert('c-red')).toBe(
       '.c-red { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc(l * var(--c-red-lightness-factor, var(--red-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--c-red-chroma-factor, var(--red-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--c-red-hue-rotate, var(--red-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
@@ -35,6 +41,30 @@ describe('Color', () => {
   it('text color', () => {
     expect(convert('c-red-500')).toBe(
       '.c-red-500 { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc(l * var(--c-red-lightness-factor, var(--red-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--c-red-chroma-factor, var(--red-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--c-red-hue-rotate, var(--red-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
+    );
+  });
+
+  it('text color with dashed custom variable', () => {
+    expect(convert('c-brand-blue')).toBe(
+      '.c-brand-blue { color: oklch(from var(--c-brand-blue, var(--color-brand-blue, var(--brand-blue, brand-blue))) calc(l * var(--c-brand-blue-lightness-factor, var(--brand-blue-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--c-brand-blue-chroma-factor, var(--brand-blue-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--c-brand-blue-hue-rotate, var(--brand-blue-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
+    );
+  });
+
+  it('text color with dashed custom variable and alpha', () => {
+    expect(convert('c-brand-blue/50')).toBe(
+      '.c-brand-blue\\/50 { color: oklch(from var(--c-brand-blue, var(--color-brand-blue, var(--brand-blue, brand-blue))) calc(l * var(--c-brand-blue-lightness-factor, var(--brand-blue-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--c-brand-blue-chroma-factor, var(--brand-blue-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--c-brand-blue-hue-rotate, var(--brand-blue-hue-rotate, var(--hue-rotate, 0)))) / 50%); }',
+    );
+  });
+
+  it('text color with dashed custom variable and lightness', () => {
+    expect(convert('c-brand-blue-600')).toBe(
+      '.c-brand-blue-600 { color: oklch(from var(--c-brand-blue, var(--color-brand-blue, var(--brand-blue, brand-blue))) calc((l + l * -0.2) * var(--c-brand-blue-lightness-factor, var(--brand-blue-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--c-brand-blue-chroma-factor, var(--brand-blue-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--c-brand-blue-hue-rotate, var(--brand-blue-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
+    );
+  });
+
+  it('text color with dashed custom variable, lightness and alpha', () => {
+    expect(convert('c-brand-blue-600/50')).toBe(
+      '.c-brand-blue-600\\/50 { color: oklch(from var(--c-brand-blue, var(--color-brand-blue, var(--brand-blue, brand-blue))) calc((l + l * -0.2) * var(--c-brand-blue-lightness-factor, var(--brand-blue-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--c-brand-blue-chroma-factor, var(--brand-blue-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--c-brand-blue-hue-rotate, var(--brand-blue-hue-rotate, var(--hue-rotate, 0)))) / 50%); }',
     );
   });
 

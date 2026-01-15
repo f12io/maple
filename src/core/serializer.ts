@@ -1,4 +1,5 @@
 import {
+  COLOR_MID_TONE,
   CONTAINER_TYPES,
   COVER_UNITS,
   CSS_VARIABLE_CATEGORY,
@@ -11,8 +12,8 @@ import {
   PROP_UNIT_MAP,
   REF_CHAR_CUSTOM,
   REF_CHAR_FUNCTION_COMMA,
-  REF_CHAR_FUNCTION_START,
   REF_CHAR_NON_FUNCTION_START,
+  REF_CHAR_PREDEFINED,
   REF_CHAR_SPACE,
   REF_CHAR_VALUE_PARTS,
   REGEX_COLOR_TOKEN,
@@ -270,20 +271,20 @@ function serializeColorValue(parsed: ParsedClass): string {
     return utilityValue;
   }
 
-  const ts = REGEX_COLOR_TOKEN.exec(utilityValue);
+  const tokenParts = REGEX_COLOR_TOKEN.exec(utilityValue);
 
-  if (!ts) {
+  if (!tokenParts) {
     const serializedValue = serializeValue(utilityValue);
 
     return isKnownColorValue(serializedValue)
-      ? serializeValue(utilityValue)
+      ? serializedValue
       : serializeOtherValue(parsed);
   }
 
-  const name = ts[1];
-  const tone = Number(ts[2]) || 500;
-  const opacity = ts[3] ? Number(ts[3]) : null;
-  const amount = (500 - tone) / 500;
+  const name = tokenParts[1];
+  const tone = Number(tokenParts[2]) || COLOR_MID_TONE;
+  const opacity = tokenParts[3] ? Number(tokenParts[3]) : null;
+  const amount = (COLOR_MID_TONE - tone) / COLOR_MID_TONE;
 
   const nameVar = serializeValueAsVariable(
     utilityKey,
@@ -589,45 +590,57 @@ function serializeBackgroundImageParts(
     }
   }
 
-  const [functionKey, params] = splitAtFirstOccurrence(
-    partItem,
-    REF_CHAR_FUNCTION_START,
-  );
-
-  const parts = split(params || partItem, REF_CHAR_FUNCTION_COMMA);
+  const parts = split(partItem, REF_CHAR_FUNCTION_COMMA);
+  const functionKey = parts[0];
   const functionName = FUNCTION_KEYS[functionKey];
 
   if (!functionName) {
-    return TYPE_MODIFIERS[parsed.propType]?.({
-      ...parsed,
-      utilityValue: partItem,
-      utilityKey:
-        parsed.propType === PROP_TYPE_COLOR
-          ? abbreviationReverseMap.backgroundColor
-          : abbreviationReverseMap.backgroundImage,
-      propValue: partItem,
-      validVariableValue: escapeVariable(partItem),
-    });
+    // Check if the value starts with a known function name
+    if (FUNCTION_KEYS[split(partItem, REF_CHAR_PREDEFINED)[0]]) {
+      return serializeValueAsVariable(
+        parsed.utilityKey,
+        escapeVariable(partItem),
+        partItem,
+        undefined,
+        CSS_VARIABLE_CATEGORY.gradient,
+      );
+    } else {
+      return TYPE_MODIFIERS[parsed.propType]?.({
+        ...parsed,
+        utilityValue: partItem,
+        utilityKey:
+          parsed.propType === PROP_TYPE_COLOR
+            ? abbreviationReverseMap.backgroundColor
+            : abbreviationReverseMap.backgroundImage,
+        propValue: partItem,
+        validVariableValue: escapeVariable(partItem),
+      });
+    }
   }
 
-  partItem = params || partItem;
+  // Remove function key
+  parts.shift();
+
   const serializedParams: Array<string> = [];
 
   if (parts.length < 2) {
     const isUrlFunction = functionName === 'url';
-    const isUrlValue = isUrlFunction && partItem.includes('/');
-    if (isUrlValue) {
-      serializedParams.push(removeBrackets(partItem));
-    } else {
-      const partItemAsIs = removeBrackets(partItem);
+    const value =
+      splitAtFirstOccurrence(partItem, REF_CHAR_FUNCTION_COMMA)[1] || partItem;
+    const isUrlValue = isUrlFunction && value.includes('/');
 
-      if (partItem !== partItemAsIs) {
-        serializedParams.push(serializeValue(partItemAsIs));
+    if (isUrlValue) {
+      serializedParams.push(removeBrackets(value));
+    } else {
+      const valueAsIs = removeBrackets(value);
+
+      if (value !== valueAsIs) {
+        serializedParams.push(serializeValue(valueAsIs));
       } else {
         const propValue =
-          functionKey && functionKey !== partItem
-            ? `${functionKey}-${partItem}`
-            : partItem;
+          functionKey && functionKey !== value
+            ? `${functionKey}${REF_CHAR_PREDEFINED}${value}`
+            : value;
 
         serializedParams.push(
           serializeValueAsVariable(

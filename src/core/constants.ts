@@ -8,6 +8,8 @@ export const DEFAULT_BREAKPOINTS: Record<string, string> = {
   '2xl': '1536px',
 };
 
+export const COLOR_MID_TONE = 500;
+
 export const PROP_TYPE_OTHER = 0;
 export const PROP_TYPE_SPACE = 1;
 export const PROP_TYPE_COLOR = 2;
@@ -16,6 +18,8 @@ export const REF_CHAR_SPACE = '_';
 export const REF_CHAR_IMPORTANT = '!';
 export const REF_CHAR_UTILITY_DELIMITER = ':';
 export const REF_CHAR_MEDIA_QUERY_DELIMITER = ':';
+export const REF_CHAR_COLOR_ALPHA = '/';
+export const REF_CHAR_COLOR_SHADE = '-';
 export const REF_CHAR_PREDEFINED = '-';
 export const REF_CHAR_CUSTOM = '=';
 export const REF_CHAR_CUSTOM_NOT = '!=';
@@ -40,7 +44,8 @@ export const CHAR_SLASH = 47; // / (Child)
 
 export const REGEX_UNSAFE_CLASS_CHARS = /([^a-zA-Z0-9_-])/g;
 export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
-export const REGEX_COLOR_TOKEN = /^([a-z]+)-?(\d{1,3})?(?:\/(\d{1,3}))?$/i;
+export const REGEX_COLOR_TOKEN =
+  /^([a-z]+(?:-[a-z]+)*)(?:-(\d{1,4}))?(?:\/(\d{1,3}))?$/i;
 export const REGEX_NUMBER_WITH_UNIT = /^([\d.]+)([a-z]*)/;
 export const REGEX_NON_FUNCTION_PARAM_SPLITTER = /(?<=[^|]["'\])])__/;
 export const REGEX_COLOR_HEX = /^#(?:[0-9a-f]{3,4}){1,2}$/i;
