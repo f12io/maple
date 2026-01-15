@@ -1,4 +1,13 @@
+import { PRECALCULATED_PROP_ABBREVIATIONS } from '../generated/precalculated-prop-abbreviations';
 import { BucketType } from './types';
+
+export const ABBREVIATIONS: Record<string, string> =
+  PRECALCULATED_PROP_ABBREVIATIONS;
+export const ABBREVIATIONS_REVERSE: Record<string, string> = {};
+
+Object.entries(PRECALCULATED_PROP_ABBREVIATIONS).forEach(([alias, prop]) => {
+  ABBREVIATIONS_REVERSE[prop] = alias;
+});
 
 export const DEFAULT_BREAKPOINTS: Record<string, string> = {
   sm: '640px',
@@ -48,6 +57,7 @@ export const REGEX_COLOR_TOKEN =
   /^([a-z]+(?:-[a-z]+)*)(?:-(\d{1,4}))?(?:\/(\d{1,3}))?$/i;
 export const REGEX_NUMBER_WITH_UNIT = /^([\d.]+)([a-z]*)/;
 export const REGEX_NON_FUNCTION_PARAM_SPLITTER = /(?<=[^|]["'\])])__/;
+export const REGEX_BACKDROP_PREFIX = /^bd/;
 export const REGEX_COLOR_HEX = /^#(?:[0-9a-f]{3,4}){1,2}$/i;
 export const REGEX_COLOR_FUNCTIONAL =
   /^(rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\s*\([a-z0-9\s%.,/+-]+\)$/i;
@@ -210,6 +220,12 @@ export const CSS_VARIABLE_CATEGORY: Record<string, string> = {
   [DEFAULT_ANGLE_UNIT]: 'angle',
   tshadow: 'shadow',
   bshadow: 'shadow',
+  dshadow: 'shadow',
+  bdshadow: 'shadow',
+  blur: 'space',
+  bdblur: 'space',
+  hue: 'angle',
+  bdhue: 'angle',
   color: 'color',
   gradient: 'gradient',
   prop: 'prop',
@@ -248,6 +264,30 @@ export const TRANSFORM_KEYS: Record<string, string> = {
   mtx3: 'matrix3d',
 };
 
+export const FILTER_KEYS: Record<string, string> = {
+  blur: 'blur',
+  brightness: 'brightness',
+  contrast: 'contrast',
+  dshadow: 'drop-shadow',
+  grayscale: 'grayscale',
+  hue: 'hue-rotate',
+  invert: 'invert',
+  saturate: 'saturate',
+  sepia: 'sepia',
+};
+
+export const BACKDROP_FILTER_KEYS: Record<string, string> = {
+  bdblur: 'blur',
+  bdbrightness: 'brightness',
+  bdcontrast: 'contrast',
+  bdshadow: 'drop-shadow',
+  bdgrayscale: 'grayscale',
+  bdhue: 'hue-rotate',
+  bdinvert: 'invert',
+  bdsaturate: 'saturate',
+  bdsepia: 'sepia',
+};
+
 export const PROP_UNIT_MAP: Record<string, string> = {
   animation: DEFAULT_TIME_UNIT,
   animationDelay: DEFAULT_TIME_UNIT,
@@ -274,4 +314,18 @@ export const PROP_UNIT_MAP: Record<string, string> = {
   scale3d: '',
   matrix: '',
   matrix3d: '',
+  brightness: '',
+  contrast: '',
+  grayscale: '',
+  invert: '',
+  saturate: '',
+  sepia: '',
+  hue: DEFAULT_ANGLE_UNIT,
+  bdbrightness: '',
+  bdcontrast: '',
+  bdgrayscale: '',
+  bdinvert: '',
+  bdsaturate: '',
+  bdsepia: '',
+  bdhue: DEFAULT_ANGLE_UNIT,
 };

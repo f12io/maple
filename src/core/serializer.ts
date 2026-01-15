@@ -1,9 +1,13 @@
 import {
+  ABBREVIATIONS,
+  ABBREVIATIONS_REVERSE,
+  BACKDROP_FILTER_KEYS,
   COLOR_MID_TONE,
   CONTAINER_TYPES,
   COVER_UNITS,
   CSS_VARIABLE_CATEGORY,
   DEFAULT_SPACE_UNIT,
+  FILTER_KEYS,
   FUNCTION_KEYS,
   ONE_UNITS,
   PROP_TYPE_COLOR,
@@ -16,6 +20,7 @@ import {
   REF_CHAR_PREDEFINED,
   REF_CHAR_SPACE,
   REF_CHAR_VALUE_PARTS,
+  REGEX_BACKDROP_PREFIX,
   REGEX_COLOR_TOKEN,
   REGEX_NON_FUNCTION_PARAM_SPLITTER,
   REGEX_SELECTOR_REPLACEMENTS,
@@ -39,7 +44,6 @@ import {
   toCamelCase,
   toKebabCase,
 } from './helpers/string.helper';
-import { abbreviationMap, abbreviationReverseMap } from './parser-class';
 import { Modifiers, ParsedClass, ValueModifiers } from './types';
 
 // Applied to classes usign strict equality (as is utility values)
@@ -77,6 +81,15 @@ export const PART_MODIFIERS: ValueModifiers = {
   bg: serializeBackgroundImageParts,
 };
 
+const TRANSFORM_VARIABLES = createVariables(
+  TRANSFORM_KEYS,
+  ABBREVIATIONS_REVERSE.transform,
+);
+const FILTER_VARIABLES = createVariables(FILTER_KEYS, 'filter');
+const BACKDROP_FILTER_VARIABLES = createVariables(
+  BACKDROP_FILTER_KEYS,
+  'filter',
+);
 const INTERNAL_DECISION_MODIFIERS: Modifiers = {
   square: (p) =>
     serializeRepeat({ ...p, propType: PROP_TYPE_SPACE }, 'width', 'height'),
@@ -84,11 +97,28 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
     (acc, key) => ({ ...acc, [key]: serializeTransform }),
     {},
   ),
+  ...Object.keys(FILTER_KEYS).reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: (p: ParsedClass) =>
+        serializeFilter(p, 'filter', FILTER_VARIABLES, FILTER_KEYS),
+    }),
+    {},
+  ),
+  ...Object.keys(BACKDROP_FILTER_KEYS).reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: (p: ParsedClass) =>
+        serializeFilter(
+          p,
+          'backdrop-filter',
+          BACKDROP_FILTER_VARIABLES,
+          BACKDROP_FILTER_KEYS,
+        ),
+    }),
+    {},
+  ),
 };
-
-const TRANSFORM_VARIABLES = Object.keys(TRANSFORM_KEYS)
-  .map((key) => `var(--tf-${key},)`)
-  .join(' ');
 
 export function applyModifier(parsed: ParsedClass): string | undefined {
   const { utilityKey, utilityOperator } = parsed;
@@ -118,6 +148,12 @@ export function serializeProp(
 
 export function serializeValue(value: string) {
   return value.replaceAll(REF_CHAR_SPACE, ' ').trim();
+}
+
+function createVariables(keys: Record<string, string>, prefix: string) {
+  return Object.keys(keys)
+    .map((key) => `var(--${prefix}-${key},)`)
+    .join(' ');
 }
 
 function serializeValueAsVariable(
@@ -401,6 +437,72 @@ function serializeTransform(parsed: ParsedClass): string {
   );
 }
 
+function serializeFilter(
+  parsed: ParsedClass,
+  propKey: 'filter' | 'backdrop-filter',
+  variables: string,
+  abbreviationKeys: Record<string, string>,
+): string {
+  const { utilityKey, utilityValue, utilityOperator, propValue, isImportant } =
+    parsed;
+
+  let value;
+
+  if (utilityOperator == REF_CHAR_CUSTOM) {
+    value = `${abbreviationKeys[utilityKey]}(${propValue})`;
+  } else {
+    const parts = split(utilityValue, REF_CHAR_VALUE_PARTS);
+    const serializedParts = [];
+
+    for (const part of parts) {
+      const valueItems = split(part, REF_CHAR_SPACE);
+      const serializedValue = [];
+
+      for (let i = 0; i < valueItems.length; i++) {
+        const valueItem = valueItems[i];
+
+        if (utilityKey === 'dshadow' || utilityKey === 'bdshadow') {
+          serializedValue.push(
+            serializeShadowValue(
+              { ...parsed, utilityKey: 'dshadow' },
+              valueItem,
+              i,
+              valueItems.length,
+            ),
+          );
+        } else if (isKnownNumberValue(valueItem)) {
+          serializedValue.push(
+            serializeNumberValue({
+              ...parsed,
+              utilityValue: valueItem,
+              utilityKey: parsed.utilityKey.replace(REGEX_BACKDROP_PREFIX, ''),
+              validVariableValue: escapeVariable(valueItem),
+            }),
+          );
+        } else {
+          serializedValue.push(
+            serializeOtherValue({
+              ...parsed,
+              utilityKey: parsed.utilityKey.replace(REGEX_BACKDROP_PREFIX, ''),
+            }),
+          );
+        }
+      }
+
+      serializedParts.push(
+        `${abbreviationKeys[utilityKey]}(${serializedValue.join(' ')})`,
+      );
+    }
+
+    value = serializedParts.join(' ');
+  }
+
+  return (
+    serializeProp(`--filter-${utilityKey}`, value, false) +
+    serializeProp(propKey, variables, isImportant)
+  );
+}
+
 function serializeGridTemplate(parsed: ParsedClass): string | undefined {
   const {
     utilityKey,
@@ -476,11 +578,11 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
 
   for (const part of parts) {
     const propName =
-      abbreviationReverseMap[part] ||
-      abbreviationReverseMap[toCamelCase(part)] ||
+      ABBREVIATIONS_REVERSE[part] ||
+      ABBREVIATIONS_REVERSE[toCamelCase(part)] ||
       part;
-    const mappedPropKeyKebab = abbreviationMap[propName]
-      ? toKebabCase(abbreviationMap[propName])
+    const mappedPropKeyKebab = ABBREVIATIONS[propName]
+      ? toKebabCase(ABBREVIATIONS[propName])
       : propName;
     const mappedPropKeyCamel = toCamelCase(mappedPropKeyKebab);
 
@@ -522,11 +624,11 @@ function serializeTransitionValue(
   let variableCategory;
 
   valueItem =
-    abbreviationReverseMap[valueItem] ||
-    abbreviationReverseMap[toCamelCase(valueItem)] ||
+    ABBREVIATIONS_REVERSE[valueItem] ||
+    ABBREVIATIONS_REVERSE[toCamelCase(valueItem)] ||
     valueItem;
-  mappedValueItem = abbreviationMap[valueItem]
-    ? toKebabCase(abbreviationMap[valueItem])
+  mappedValueItem = ABBREVIATIONS[valueItem]
+    ? toKebabCase(ABBREVIATIONS[valueItem])
     : valueItem;
 
   if (isKnownProperty(mappedValueItem)) {
@@ -574,7 +676,7 @@ function serializeBackgroundImageParts(
   let cssFunction;
   let nonFunctionParams;
 
-  if (parsed.utilityKey === abbreviationReverseMap.background) {
+  if (parsed.utilityKey === ABBREVIATIONS_REVERSE.background) {
     [cssFunction, nonFunctionParams] = partItem.split(
       REGEX_NON_FUNCTION_PARAM_SPLITTER,
     );
@@ -610,8 +712,8 @@ function serializeBackgroundImageParts(
         utilityValue: partItem,
         utilityKey:
           parsed.propType === PROP_TYPE_COLOR
-            ? abbreviationReverseMap.backgroundColor
-            : abbreviationReverseMap.backgroundImage,
+            ? ABBREVIATIONS_REVERSE.backgroundColor
+            : ABBREVIATIONS_REVERSE.backgroundImage,
         propValue: partItem,
         validVariableValue: escapeVariable(partItem),
       });
@@ -644,7 +746,7 @@ function serializeBackgroundImageParts(
 
         serializedParams.push(
           serializeValueAsVariable(
-            abbreviationReverseMap.backgroundImage,
+            ABBREVIATIONS_REVERSE.backgroundImage,
             escapeVariable(propValue),
             propValue,
             undefined,
@@ -671,7 +773,7 @@ function serializeBackgroundImageParts(
       const colorToken = stopParts.shift() ?? '';
       const colorValue = serializeColorValue({
         ...parsed,
-        utilityKey: abbreviationReverseMap.backgroundColor,
+        utilityKey: ABBREVIATIONS_REVERSE.backgroundColor,
         utilityValue: colorToken,
       });
 

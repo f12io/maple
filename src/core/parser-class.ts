@@ -1,6 +1,7 @@
 import { escapeClass } from 'internal:escape-class';
-import { PRECALCULATED_PROP_ABBREVIATIONS } from '../generated/precalculated-prop-abbreviations';
 import {
+  ABBREVIATIONS,
+  ABBREVIATIONS_REVERSE,
   CHAR_AMPERSAND,
   CHAR_CARET,
   CHAR_CLOSE_BRACKET,
@@ -27,14 +28,6 @@ import {
 } from './helpers/string.helper';
 import { serializeValue } from './serializer';
 import { ParsedClass } from './types';
-
-export const abbreviationMap: Record<string, string> =
-  PRECALCULATED_PROP_ABBREVIATIONS;
-export const abbreviationReverseMap: Record<string, string> = {};
-
-Object.entries(PRECALCULATED_PROP_ABBREVIATIONS).forEach(([alias, prop]) => {
-  abbreviationReverseMap[prop] = alias;
-});
 
 export function parseClass(sourceClass: string): ParsedClass {
   const originalClass = sourceClass;
@@ -103,13 +96,13 @@ function parseUtility(utilityRaw: string): {
     }
   }
 
-  let propKeyCamel = abbreviationMap[utilityKey];
+  let propKeyCamel = ABBREVIATIONS[utilityKey];
 
   if (!propKeyCamel) {
-    const abbrFromCamel = abbreviationReverseMap[utilityKey] ?? utilityKey;
+    const abbrFromCamel = ABBREVIATIONS_REVERSE[utilityKey] ?? utilityKey;
 
     utilityKey = abbrFromCamel;
-    propKeyCamel = abbreviationMap[abbrFromCamel] ?? utilityKey;
+    propKeyCamel = ABBREVIATIONS[abbrFromCamel] ?? utilityKey;
   }
 
   const propKeyKebab = toKebabCase(propKeyCamel);
