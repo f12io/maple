@@ -31,6 +31,6 @@ export const MEDIA_BUCKET_TYPE_ORDER: Record<BucketType, number> = {
   stuck: 80,
   scrollable: 90,
   snapped: 100,
-  prefers: 110,
+  prefers: 1000,
   initial: 9999,
 };
