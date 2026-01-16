@@ -63,7 +63,7 @@ export default defineConfig(({ mode }) => {
           isRuntime || isTest
             ? path.resolve(
                 __dirname,
-                'src/core/helpers/precalculated-prop-types.ts',
+                'src/core/constants/precalculated-prop-types.ts',
               )
             : path.resolve(
                 __dirname,

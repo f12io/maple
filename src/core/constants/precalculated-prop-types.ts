@@ -1,4 +1,4 @@
-import { PROP_TYPE_COLOR } from '../constants/config';
+import { PROP_TYPE_COLOR } from './config';
 
 /**
  * This map will be used in the browser build. Only include
