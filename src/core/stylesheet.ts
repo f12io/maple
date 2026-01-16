@@ -4,6 +4,8 @@ import { Bucket, BucketType, ParsedMediaQuery } from './types';
 
 const buckets: Array<Bucket> = [];
 let sheet: CSSStyleSheet | null = null;
+let refsLayer: CSSGroupingRule | null = null;
+let utilsLayer: CSSGroupingRule | null = null;
 
 export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
   if (!sheet) initStyleSheet();
@@ -22,10 +24,7 @@ export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
 
 export function insertRefVar(key: string, val: string) {
   if (!sheet) initStyleSheet();
-  if (!sheet) return;
-
-  const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
-  const refsLayer = utilsLayer.cssRules[0] as CSSGroupingRule;
+  if (!sheet || !refsLayer) return;
 
   if (refsLayer.cssRules.length === 0) {
     refsLayer.insertRule(':root {}', 0);
@@ -67,7 +66,7 @@ function compareBuckets(
 }
 
 function insertBucket(key: string, parsedMediaQuery: ParsedMediaQuery) {
-  if (!sheet) return;
+  if (!sheet || !utilsLayer) return;
 
   const val = parsePriority(parsedMediaQuery);
   const type = parsedMediaQuery.bucketType;
@@ -83,8 +82,6 @@ function insertBucket(key: string, parsedMediaQuery: ParsedMediaQuery) {
   }
 
   try {
-    const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
-
     utilsLayer.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
 
     const rule = utilsLayer.cssRules[insertIndex] as CSSGroupingRule;
@@ -119,17 +116,17 @@ function initStyleSheet() {
 
   if (!sheet) return;
 
-  sheet.insertRule('@layer utils {}', 0);
+  sheet.insertRule('@layer refs {}', 0);
+  sheet.insertRule('@layer utils {}', 1);
 
-  const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
-
-  utilsLayer.insertRule('@layer refs {}', 0);
-  utilsLayer.insertRule('@layer base {}', 1);
+  refsLayer = sheet.cssRules[0] as CSSGroupingRule;
+  utilsLayer = sheet.cssRules[1] as CSSGroupingRule;
+  utilsLayer.insertRule('@layer base {}', 0);
 
   buckets.push({
     key: 'base',
     type: 'base',
     val: 0,
-    rule: utilsLayer.cssRules[1] as CSSGroupingRule,
+    rule: utilsLayer.cssRules[0] as CSSGroupingRule,
   });
 }
