@@ -452,7 +452,7 @@ function serializeFilter(
               { ...parsed, utilKey: 'dshadow' },
               valueItem,
               i,
-              valueItems.length,
+              valueItems,
             ),
           );
         } else if (isKnownNumberValue(valueItem)) {
@@ -595,9 +595,12 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
 function serializeTransitionValue(
   parsed: ParsedClass,
   valueItem: string,
+  index: number,
+  items: Array<string>,
 ): string | undefined {
   let mappedValueItem = valueItem;
   let varCat;
+  let utilKey = parsed.utilKey;
 
   valueItem =
     ABBREVIATIONS_REVERSE[valueItem] ||
@@ -609,10 +612,28 @@ function serializeTransitionValue(
 
   if (isKnownProperty(mappedValueItem)) {
     varCat = CSS_VARIABLE_CATEGORY.prop;
+    utilKey = ABBREVIATIONS_REVERSE.transitionProperty;
+  } else if (isKnownNumberValue(valueItem)) {
+    let numberCount = 0;
+
+    for (let i = 0; i <= index; i++) {
+      if (isKnownNumberValue(items[i])) {
+        numberCount++;
+      }
+    }
+
+    if (numberCount === 1) {
+      utilKey = ABBREVIATIONS_REVERSE.transitionDuration;
+    } else if (numberCount === 2) {
+      utilKey = ABBREVIATIONS_REVERSE.transitionDelay;
+    }
+  } else if (items.length > 1) {
+    utilKey = ABBREVIATIONS_REVERSE.transitionTimingFunction;
   }
 
   return serializeNumberValue({
     ...parsed,
+    utilKey,
     utilVal: mappedValueItem,
     validVarVal: escapeVariable(valueItem),
     varCat,
@@ -623,7 +644,7 @@ function serializeShadowValue(
   parsed: ParsedClass,
   valueItem: string,
   index: number,
-  length: number,
+  items: Array<string>,
 ): string | undefined {
   if (valueItem === 'inset') {
     return 'inset';
@@ -633,7 +654,7 @@ function serializeShadowValue(
 
   if (isKnownNumberValue(valueItem)) {
     type = PROP_TYPE_SPACE;
-  } else if (index === length - 1 && length > 1) {
+  } else if (items.length > 1 && index === items.length - 1) {
     type = PROP_TYPE_COLOR;
   }
 

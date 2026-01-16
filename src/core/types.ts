@@ -9,7 +9,7 @@ export type ValueModifiers = Record<
       parsed: ParsedClass,
       valueItem: string,
       index: number,
-      length: number,
+      items: Array<string>,
     ) => string | undefined)
 >;
 export type ModifierType = 'custom' | 'predefined';

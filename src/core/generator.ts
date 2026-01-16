@@ -108,12 +108,7 @@ function buildProp(parsed: ParsedClass) {
 
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
-    const modifierResult = PART_MODIFIERS[utilKey]?.(
-      parsed,
-      part,
-      i,
-      parts.length,
-    );
+    const modifierResult = PART_MODIFIERS[utilKey]?.(parsed, part, i, parts);
 
     if (modifierResult) {
       serializedParts.push(modifierResult);
@@ -126,7 +121,7 @@ function buildProp(parsed: ParsedClass) {
     for (let j = 0; j < valueItems.length; j++) {
       const valueItem = valueItems[j];
       const value =
-        VALUE_MODIFIERS[utilKey]?.(parsed, valueItem, j, valueItems.length) ??
+        VALUE_MODIFIERS[utilKey]?.(parsed, valueItem, j, valueItems) ??
         TYPE_MODIFIERS[propType]?.({
           ...parsed,
           utilVal: valueItem,
