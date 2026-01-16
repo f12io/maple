@@ -19,11 +19,7 @@ import {
   REF_CHAR_CUSTOM_NOT,
   REF_CHAR_MEDIA_QUERY_DELIMITER,
 } from './constants';
-import {
-  removeBrackets,
-  split,
-  splitAtFirstOccurrence,
-} from './helpers/string.helper';
+import { removeBrackets, split } from './helpers/string.helper';
 import { serializeValue } from './serializer';
 import { BucketType, ParsedClass, ParsedMediaQuery } from './types';
 
@@ -51,6 +47,7 @@ export function parseMediaQuery({
 
   for (let mq of mediaQueries) {
     const bucketKey = mq;
+
     // Check if it's a viewport query, by default we use container queries
     const isViewportQuery = mq.charCodeAt(0) === CHAR_AT;
     const scope = isViewportQuery ? prefixMedia : prefixContainer;
@@ -69,27 +66,32 @@ export function parseMediaQuery({
 
     // Extract container name if it exists
     if (!isViewportQuery) {
-      const mqKey = splitAtFirstOccurrence(mq, REF_CHAR_CUSTOM)[0];
-      const openIdx = mqKey.indexOf('(');
+      const openIdx = mq.indexOf('(');
 
       if (openIdx !== -1) {
-        const closeIdx = mqKey.indexOf(')', openIdx);
+        const closeIdx = mq.indexOf(')', openIdx);
 
         if (closeIdx !== -1) {
-          containerName = mq.slice(openIdx + 1, closeIdx);
-          mq = mq.slice(0, openIdx) + mq.slice(closeIdx + 1);
+          // Check if parentheses are before any '=' (custom value indicator)
+          const eqIdx = mq.indexOf(REF_CHAR_CUSTOM);
+
+          if (eqIdx === -1 || openIdx < eqIdx) {
+            containerName = mq.substring(openIdx + 1, closeIdx);
+            mq = mq.substring(0, openIdx) + mq.substring(closeIdx + 1);
+          }
         }
       }
     }
 
     const prefix = containerName ? `${scope} ${containerName}` : scope;
+    const prefixWithNot = not ? `${prefix} ${not}` : `${prefix} `;
 
     if (BREAKPOINTS[mq]) {
       updateParsedMediaQuery(
         'mnw',
         bucketKey,
         BREAKPOINTS[mq],
-        `${prefix} ${not}(min-width: ${BREAKPOINTS[mq]})`,
+        `${prefixWithNot}(min-width: ${BREAKPOINTS[mq]})`,
         parsedMediaQuery,
       );
 
@@ -158,7 +160,7 @@ export function parseMediaQuery({
           'mnw',
           bucketKey,
           value,
-          `${prefix} ${not}(min-width: ${value})`,
+          `${prefixWithNot}(min-width: ${value})`,
           parsedMediaQuery,
         );
       }
@@ -174,7 +176,7 @@ export function parseMediaQuery({
           'mnh',
           bucketKey,
           value,
-          `${prefix} ${not}(min-height: ${value})`,
+          `${prefixWithNot}(min-height: ${value})`,
           parsedMediaQuery,
         );
       }
@@ -190,7 +192,7 @@ export function parseMediaQuery({
           'mxw',
           bucketKey,
           value,
-          `${prefix} ${not}(max-width: ${value})`,
+          `${prefixWithNot}(max-width: ${value})`,
           parsedMediaQuery,
         );
       }
@@ -206,7 +208,7 @@ export function parseMediaQuery({
           'mxh',
           bucketKey,
           value,
-          `${prefix} ${not}(max-height: ${value})`,
+          `${prefixWithNot}(max-height: ${value})`,
           parsedMediaQuery,
         );
       }
@@ -219,7 +221,7 @@ export function parseMediaQuery({
         'orientation',
         bucketKey,
         mq,
-        `${prefix} ${not}(orientation: ${mq})`,
+        `${prefixWithNot}(orientation: ${mq})`,
         parsedMediaQuery,
       );
 
@@ -264,7 +266,7 @@ export function parseMediaQuery({
           'prefers',
           bucketKey,
           mq,
-          `${prefixMedia} ${not}(prefers-color-scheme: ${mq})`,
+          `${prefixWithNot}(prefers-color-scheme: ${mq})`,
           parsedMediaQuery,
         );
 
@@ -276,7 +278,7 @@ export function parseMediaQuery({
           'prefers',
           bucketKey,
           'reduce',
-          `${prefixMedia} ${not}(prefers-reduced-motion: reduce)`,
+          `${prefixWithNot}(prefers-reduced-motion: reduce)`,
           parsedMediaQuery,
         );
 
@@ -288,7 +290,7 @@ export function parseMediaQuery({
           'prefers',
           bucketKey,
           'no-preference',
-          `${prefixMedia} ${not}(prefers-reduced-motion: no-preference)`,
+          `${prefixWithNot}(prefers-reduced-motion: no-preference)`,
           parsedMediaQuery,
         );
 
@@ -302,7 +304,7 @@ export function parseMediaQuery({
           'prefers',
           bucketKey,
           value,
-          `${prefixMedia} ${not}(prefers-${prefers}: ${value})`,
+          `${prefixWithNot}(prefers-${prefers}: ${value})`,
           parsedMediaQuery,
         );
 
@@ -319,7 +321,7 @@ export function parseMediaQuery({
             'style',
             bucketKey,
             value,
-            `${prefix} ${not}style(${value})`,
+            `${prefixWithNot}style(${value})`,
             parsedMediaQuery,
           );
         }
@@ -335,7 +337,7 @@ export function parseMediaQuery({
             'stuck',
             bucketKey,
             value,
-            `${prefix} ${not}scroll-state(stuck: ${value})`,
+            `${prefixWithNot}scroll-state(stuck: ${value})`,
             parsedMediaQuery,
           );
         }
@@ -351,7 +353,7 @@ export function parseMediaQuery({
             'scrollable',
             bucketKey,
             value,
-            `${prefix} ${not}scroll-state(scrollable: ${value})`,
+            `${prefixWithNot}scroll-state(scrollable: ${value})`,
             parsedMediaQuery,
           );
         }
@@ -367,7 +369,7 @@ export function parseMediaQuery({
             'snapped',
             bucketKey,
             value,
-            `${prefix} ${not}scroll-state(snapped: ${value})`,
+            `${prefixWithNot}scroll-state(snapped: ${value})`,
             parsedMediaQuery,
           );
         }
