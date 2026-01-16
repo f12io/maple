@@ -11,18 +11,26 @@ export default defineConfig(({ mode }) => {
 
   if (!isTest) {
     plugins.push(precalculatePropAbbreviations());
-
     if (!isRuntime) {
       plugins.push(precalculatePropTypes());
     }
   }
 
   return {
-    server: {
-      port: 3000,
-    },
+    server: { port: 3000 },
     build: {
       outDir: isRuntime ? 'dist' : 'dist/module',
+      target: 'es2024',
+      minify: 'terser',
+      emptyOutDir: false,
+      terserOptions: {
+        compress: {
+          defaults: true,
+          passes: 2,
+          drop_console: !isTest,
+        },
+        format: { comments: false },
+      },
       lib: isRuntime
         ? {
             entry: path.resolve(__dirname, 'src/runtime.ts'),
@@ -36,6 +44,11 @@ export default defineConfig(({ mode }) => {
             formats: ['es', 'cjs'],
             fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
           },
+      rollupOptions: {
+        output: {
+          inlineDynamicImports: isRuntime,
+        },
+      },
     },
     resolve: {
       alias: {
@@ -57,14 +70,6 @@ export default defineConfig(({ mode }) => {
                 'src/generated/precalculated-prop-types.ts',
               ),
       },
-      rollupOptions: {
-        output: {
-          inlineDynamicImports: isRuntime,
-        },
-      },
-      target: 'es2024',
-      minify: true,
-      emptyOutDir: false,
     },
     plugins,
     test: {
