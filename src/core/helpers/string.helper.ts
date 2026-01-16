@@ -8,40 +8,50 @@ import {
   CHAR_OPEN_PAREN,
   CHAR_SINGLE_QUOTE,
   REGEX_LOWERCASE_UPPERCASE,
+  REGEX_TO_CAMEL_CASE,
 } from '../constants';
 
 export function split(source: string, separator: string): Array<string> {
   const sepCode = separator.charCodeAt(0);
   const result: Array<string> = [];
+  const len = source.length;
+
   let depth = 0;
   let quote = 0;
-  let lastIndex = source.length;
-  let i = source.length;
+  let lastIndex = len;
+  let i = len;
 
   while (i--) {
     const code = source.charCodeAt(i);
 
-    if (code === CHAR_SINGLE_QUOTE || code === CHAR_DOUBLE_QUOTE) {
-      if (quote === code) {
+    // If we are inside a quote, we ONLY care about finding the matching quote.
+    // We can skip all bracket and separator checks.
+    if (quote !== 0) {
+      if (code === quote) {
         quote = 0;
-      } else if (quote === 0) {
-        quote = code;
       }
-    } else if (quote === 0) {
-      if (code === CHAR_CLOSE_PAREN || code === CHAR_CLOSE_BRACKET) {
-        depth++;
-      } else if (code === CHAR_OPEN_PAREN || code === CHAR_OPEN_BRACKET) {
-        depth--;
-      } else if (depth === 0 && code === sepCode) {
-        result.unshift(source.slice(i + 1, lastIndex));
-        lastIndex = i;
-      }
+      continue;
+    }
+
+    // If we are NOT inside a quote, check for structure.
+    if (code === CHAR_SINGLE_QUOTE || code === CHAR_DOUBLE_QUOTE) {
+      quote = code;
+    } else if (code === CHAR_CLOSE_PAREN || code === CHAR_CLOSE_BRACKET) {
+      depth++;
+    } else if (code === CHAR_OPEN_PAREN || code === CHAR_OPEN_BRACKET) {
+      depth--;
+    } else if (depth === 0 && code === sepCode) {
+      // We capture the segment to the right of the current separator
+      result.push(source.slice(i + 1, lastIndex));
+      lastIndex = i;
     }
   }
 
-  result.unshift(source.slice(0, lastIndex));
+  // Push the final segment (the start of the string)
+  result.push(source.slice(0, lastIndex));
 
-  return result;
+  // Restore the correct order
+  return result.reverse();
 }
 
 export function toKebabCase(str: string | undefined) {
@@ -52,7 +62,7 @@ export function toCamelCase(str: string | undefined) {
   return (
     str
       ?.toLowerCase()
-      .replace(/[^a-zA-Z0-9]+(.)/g, (match, chr: string) =>
+      .replace(REGEX_TO_CAMEL_CASE, (match, chr: string) =>
         chr.toUpperCase(),
       ) ?? ''
   );

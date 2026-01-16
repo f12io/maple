@@ -9,6 +9,8 @@ Object.entries(PRECALCULATED_PROP_ABBREVIATIONS).forEach(([alias, prop]) => {
   ABBREVIATIONS_REVERSE[prop] = alias;
 });
 
+export const CACHE_MAX_SIZE = 1000;
+
 export const DEFAULT_BREAKPOINTS: Record<string, string> = {
   sm: '640px',
   md: '768px',
@@ -53,6 +55,7 @@ export const CHAR_SLASH = 47; // / (Child)
 
 export const REGEX_UNSAFE_CLASS_CHARS = /([^a-zA-Z0-9_-])/g;
 export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
+export const REGEX_TO_CAMEL_CASE = /[^a-zA-Z0-9]+(.)/g;
 export const REGEX_COLOR_TOKEN =
   /^([a-z]+(?:-[a-z]+)*)(?:-(\d{1,4}))?(?:\/(\d{1,3}))?$/i;
 export const REGEX_NUMBER_WITH_UNIT = /^([\d.]+)([a-z]*)/;

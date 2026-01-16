@@ -1,5 +1,6 @@
 import { BREAKPOINTS } from './breakpoint';
 import {
+  CACHE_MAX_SIZE,
   CHAR_AT,
   MEDIA_BUCKET_TYPE_ORDER,
   MEDIA_MAX_HEIGHT,
@@ -22,6 +23,14 @@ import {
 import { removeBrackets, split } from './helpers/string.helper';
 import { serializeValue } from './serializer';
 import { BucketType, ParsedClass, ParsedMediaQuery } from './types';
+
+type MediaQueryBucketParams = [
+  bucketType: BucketType,
+  bucketKey: string,
+  bucketValue: string,
+  bucketQuery: string,
+];
+const queryCache = new Map<string, MediaQueryBucketParams>();
 
 export function parseMediaQuery({
   mediaQuery,
@@ -47,11 +56,26 @@ export function parseMediaQuery({
 
   for (let mq of mediaQueries) {
     const bucketKey = mq;
-
-    // Check if it's a viewport query, by default we use container queries
     const isViewportQuery = mq.charCodeAt(0) === CHAR_AT;
     const scope = isViewportQuery ? prefixMedia : prefixContainer;
+
     mq = isViewportQuery ? mq.slice(1) : mq;
+
+    const cacheKey =
+      isViewportQuery &&
+      (mq === MEDIA_SUPPORTS || mq === MEDIA_NOT + MEDIA_SUPPORTS)
+        ? bucketKey + propKeyKebab + propValue
+        : bucketKey;
+
+    if (queryCache.has(cacheKey)) {
+      updateParsedMediaQuery(
+        queryCache.get(cacheKey),
+        parsedMediaQuery,
+        cacheKey,
+      );
+
+      continue;
+    }
 
     const isNotQuery = mq.startsWith(MEDIA_NOT);
     const isNotEqual = !isNotQuery && mq.includes(REF_CHAR_CUSTOM_NOT);
@@ -88,11 +112,14 @@ export function parseMediaQuery({
 
     if (BREAKPOINTS[mq]) {
       updateParsedMediaQuery(
-        'mnw',
-        bucketKey,
-        BREAKPOINTS[mq],
-        `${prefixWithNot}(min-width: ${BREAKPOINTS[mq]})`,
+        [
+          'mnw',
+          bucketKey,
+          BREAKPOINTS[mq],
+          `${prefixWithNot}(min-width: ${BREAKPOINTS[mq]})`,
+        ],
         parsedMediaQuery,
+        cacheKey,
       );
 
       continue;
@@ -105,19 +132,15 @@ export function parseMediaQuery({
       if (value) {
         if (not) {
           updateParsedMediaQuery(
-            'mnw',
-            bucketKey,
-            value,
-            `${prefix} (min-width: ${value})`,
+            ['mxw', bucketKey, value, `${prefix} (min-width: ${value})`],
             parsedMediaQuery,
+            cacheKey,
           );
         } else {
           updateParsedMediaQuery(
-            'mxw',
-            bucketKey,
-            value,
-            `${prefix} not (min-width: ${value})`,
+            ['mxw', bucketKey, value, `${prefix} not (min-width: ${value})`],
             parsedMediaQuery,
+            cacheKey,
           );
         }
       }
@@ -132,19 +155,15 @@ export function parseMediaQuery({
       if (value) {
         if (not) {
           updateParsedMediaQuery(
-            'mnh',
-            bucketKey,
-            value,
-            `${prefix} (min-height: ${value})`,
+            ['mnh', bucketKey, value, `${prefix} (min-height: ${value})`],
             parsedMediaQuery,
+            cacheKey,
           );
         } else {
           updateParsedMediaQuery(
-            'mxh',
-            bucketKey,
-            value,
-            `${prefix} not (min-height: ${value})`,
+            ['mxh', bucketKey, value, `${prefix} not (min-height: ${value})`],
             parsedMediaQuery,
+            cacheKey,
           );
         }
       }
@@ -157,11 +176,9 @@ export function parseMediaQuery({
 
       if (value) {
         updateParsedMediaQuery(
-          'mnw',
-          bucketKey,
-          value,
-          `${prefixWithNot}(min-width: ${value})`,
+          ['mnw', bucketKey, value, `${prefixWithNot}(min-width: ${value})`],
           parsedMediaQuery,
+          cacheKey,
         );
       }
 
@@ -173,11 +190,9 @@ export function parseMediaQuery({
 
       if (value) {
         updateParsedMediaQuery(
-          'mnh',
-          bucketKey,
-          value,
-          `${prefixWithNot}(min-height: ${value})`,
+          ['mnh', bucketKey, value, `${prefixWithNot}(min-height: ${value})`],
           parsedMediaQuery,
+          cacheKey,
         );
       }
 
@@ -189,11 +204,9 @@ export function parseMediaQuery({
 
       if (value) {
         updateParsedMediaQuery(
-          'mxw',
-          bucketKey,
-          value,
-          `${prefixWithNot}(max-width: ${value})`,
+          ['mxw', bucketKey, value, `${prefixWithNot}(max-width: ${value})`],
           parsedMediaQuery,
+          cacheKey,
         );
       }
 
@@ -205,11 +218,9 @@ export function parseMediaQuery({
 
       if (value) {
         updateParsedMediaQuery(
-          'mxh',
-          bucketKey,
-          value,
-          `${prefixWithNot}(max-height: ${value})`,
+          ['mxh', bucketKey, value, `${prefixWithNot}(max-height: ${value})`],
           parsedMediaQuery,
+          cacheKey,
         );
       }
 
@@ -218,11 +229,9 @@ export function parseMediaQuery({
 
     if (mq === 'landscape' || mq === 'portrait') {
       updateParsedMediaQuery(
-        'orientation',
-        bucketKey,
-        mq,
-        `${prefixWithNot}(orientation: ${mq})`,
+        ['orientation', bucketKey, mq, `${prefixWithNot}(orientation: ${mq})`],
         parsedMediaQuery,
+        cacheKey,
       );
 
       continue;
@@ -233,11 +242,14 @@ export function parseMediaQuery({
         propValue = serializeValue(propValue);
 
         updateParsedMediaQuery(
-          'supports',
-          bucketKey,
-          propValue,
-          `@supports ${not}(${propKeyKebab}:${propValue})`,
+          [
+            'supports',
+            bucketKey,
+            propValue,
+            `@supports ${not}(${propKeyKebab}:${propValue})`,
+          ],
           parsedMediaQuery,
+          cacheKey,
         );
 
         continue;
@@ -250,11 +262,9 @@ export function parseMediaQuery({
 
         if (value) {
           updateParsedMediaQuery(
-            'supports',
-            bucketKey,
-            value,
-            `@supports ${not}(${value})`,
+            ['supports', bucketKey, value, `@supports ${not}(${value})`],
             parsedMediaQuery,
+            cacheKey,
           );
         }
 
@@ -263,11 +273,14 @@ export function parseMediaQuery({
 
       if (mq === 'dark' || mq === 'light') {
         updateParsedMediaQuery(
-          'prefers',
-          bucketKey,
-          mq,
-          `${prefixWithNot}(prefers-color-scheme: ${mq})`,
+          [
+            'prefers',
+            bucketKey,
+            mq,
+            `${prefixWithNot}(prefers-color-scheme: ${mq})`,
+          ],
           parsedMediaQuery,
+          cacheKey,
         );
 
         continue;
@@ -275,11 +288,14 @@ export function parseMediaQuery({
 
       if (mq === 'motion-reduce') {
         updateParsedMediaQuery(
-          'prefers',
-          bucketKey,
-          'reduce',
-          `${prefixWithNot}(prefers-reduced-motion: reduce)`,
+          [
+            'prefers',
+            bucketKey,
+            'reduce',
+            `${prefixWithNot}(prefers-reduced-motion: reduce)`,
+          ],
           parsedMediaQuery,
+          cacheKey,
         );
 
         continue;
@@ -287,11 +303,14 @@ export function parseMediaQuery({
 
       if (mq === 'motion-safe') {
         updateParsedMediaQuery(
-          'prefers',
-          bucketKey,
-          'no-preference',
-          `${prefixWithNot}(prefers-reduced-motion: no-preference)`,
+          [
+            'prefers',
+            bucketKey,
+            'no-preference',
+            `${prefixWithNot}(prefers-reduced-motion: no-preference)`,
+          ],
           parsedMediaQuery,
+          cacheKey,
         );
 
         continue;
@@ -301,11 +320,14 @@ export function parseMediaQuery({
 
       if (value) {
         updateParsedMediaQuery(
-          'prefers',
-          bucketKey,
-          value,
-          `${prefixWithNot}(prefers-${prefers}: ${value})`,
+          [
+            'prefers',
+            bucketKey,
+            value,
+            `${prefixWithNot}(prefers-${prefers}: ${value})`,
+          ],
           parsedMediaQuery,
+          cacheKey,
         );
 
         continue;
@@ -318,11 +340,9 @@ export function parseMediaQuery({
 
         if (value) {
           updateParsedMediaQuery(
-            'style',
-            bucketKey,
-            value,
-            `${prefixWithNot}style(${value})`,
+            ['style', bucketKey, value, `${prefixWithNot}style(${value})`],
             parsedMediaQuery,
+            cacheKey,
           );
         }
 
@@ -334,11 +354,14 @@ export function parseMediaQuery({
 
         if (value) {
           updateParsedMediaQuery(
-            'stuck',
-            bucketKey,
-            value,
-            `${prefixWithNot}scroll-state(stuck: ${value})`,
+            [
+              'stuck',
+              bucketKey,
+              value,
+              `${prefixWithNot}scroll-state(stuck: ${value})`,
+            ],
             parsedMediaQuery,
+            cacheKey,
           );
         }
 
@@ -350,11 +373,14 @@ export function parseMediaQuery({
 
         if (value) {
           updateParsedMediaQuery(
-            'scrollable',
-            bucketKey,
-            value,
-            `${prefixWithNot}scroll-state(scrollable: ${value})`,
+            [
+              'scrollable',
+              bucketKey,
+              value,
+              `${prefixWithNot}scroll-state(scrollable: ${value})`,
+            ],
             parsedMediaQuery,
+            cacheKey,
           );
         }
 
@@ -366,11 +392,14 @@ export function parseMediaQuery({
 
         if (value) {
           updateParsedMediaQuery(
-            'snapped',
-            bucketKey,
-            value,
-            `${prefixWithNot}scroll-state(snapped: ${value})`,
+            [
+              'snapped',
+              bucketKey,
+              value,
+              `${prefixWithNot}scroll-state(snapped: ${value})`,
+            ],
             parsedMediaQuery,
+            cacheKey,
           );
         }
 
@@ -379,11 +408,9 @@ export function parseMediaQuery({
     }
 
     updateParsedMediaQuery(
-      'other',
-      bucketKey,
-      mq,
-      `${prefixMedia} ${not}${mq}`,
+      ['other', bucketKey, mq, `${prefixMedia} ${not}${mq}`],
       parsedMediaQuery,
+      cacheKey,
     );
   }
 
@@ -391,12 +418,29 @@ export function parseMediaQuery({
 }
 
 function updateParsedMediaQuery(
-  bucketType: BucketType,
-  bucketKey: string,
-  bucketValue: string,
-  bucketQuery: string,
+  params: MediaQueryBucketParams | undefined,
   parsedMediaQuery: ParsedMediaQuery,
+  cacheKey: string,
 ) {
+  if (!params) {
+    return;
+  }
+
+  if (!queryCache.has(cacheKey)) {
+    if (queryCache.size >= CACHE_MAX_SIZE) {
+      // The first key is the oldest
+      const oldestKey = queryCache.keys().next().value;
+
+      if (oldestKey !== undefined) {
+        queryCache.delete(oldestKey);
+      }
+    }
+
+    queryCache.set(cacheKey, params);
+  }
+
+  const [bucketType, bucketKey, bucketValue, bucketQuery] = params;
+
   if (parsedMediaQuery.bucketKey === bucketKey) {
     return;
   }
