@@ -121,13 +121,11 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
 };
 
 export function applyModifier(parsed: ParsedClass): string | undefined {
-  const { utilityKey, utilityOperator } = parsed;
-
   return (
-    INTERNAL_DECISION_MODIFIERS[utilityKey] ??
-    (utilityOperator === REF_CHAR_CUSTOM
+    INTERNAL_DECISION_MODIFIERS[parsed.utilityKey] ??
+    (parsed.utilityOperator === REF_CHAR_CUSTOM
       ? CUSTOM_MODIFIERS
-      : PREDEFINED_MODIFIERS)[utilityKey]
+      : PREDEFINED_MODIFIERS)[parsed.utilityKey]
   )?.(parsed);
 }
 
@@ -375,15 +373,14 @@ function serializeRepeat(
   validPropKey1: string,
   validPropKey2: string,
 ): string {
-  const { utilityOperator, propValue, isImportant } = parsed;
   const value =
-    utilityOperator == REF_CHAR_CUSTOM
-      ? propValue
+    parsed.utilityOperator == REF_CHAR_CUSTOM
+      ? parsed.propValue
       : serializeNumberValue(parsed);
 
   return (
-    serializeProp(validPropKey1, value, isImportant) +
-    serializeProp(validPropKey2, value, isImportant)
+    serializeProp(validPropKey1, value, parsed.isImportant) +
+    serializeProp(validPropKey2, value, parsed.isImportant)
   );
 }
 
@@ -558,22 +555,20 @@ function serializeGridTemplate(parsed: ParsedClass): string | undefined {
 }
 
 function serializeGridItem(parsed: ParsedClass): string | undefined {
-  const { utilityValue, propKeyKebab, isImportant } = parsed;
-  const frItems = split(utilityValue, '/');
+  const frItems = split(parsed.utilityValue, '/');
 
   if (frItems.length === 1 && isKnownNumberValue(frItems[0])) {
     const numberValue = Number(frItems[0]);
     return serializeProp(
-      propKeyKebab,
+      parsed.propKeyKebab,
       `span ${numberValue} / span ${numberValue}`,
-      isImportant,
+      parsed.isImportant,
     );
   }
 }
 
 function serializePropsInValue(parsed: ParsedClass): string | undefined {
-  const { utilityValue, propKeyKebab, isImportant } = parsed;
-  const parts = split(utilityValue, REF_CHAR_VALUE_PARTS);
+  const parts = split(parsed.utilityValue, REF_CHAR_VALUE_PARTS);
   const propNames = [];
 
   for (const part of parts) {
@@ -610,9 +605,9 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
   }
 
   return serializeProp(
-    propKeyKebab,
+    parsed.propKeyKebab,
     propNames.join(REF_CHAR_VALUE_PARTS + ' '),
-    isImportant,
+    parsed.isImportant,
   );
 }
 

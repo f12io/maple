@@ -4,6 +4,7 @@ import {
   REF_CHAR_VALUE_PARTS,
   SHORTCUTS,
 } from './constants';
+import { setCacheItem } from './helpers/cache.helper';
 import { escapeVariable, split } from './helpers/string.helper';
 import { parseClass } from './parser-class';
 import { parseMediaQuery } from './parser-media-query';
@@ -18,14 +19,14 @@ import {
 import { insert } from './stylesheet';
 import { ParsedClass } from './types';
 
-const cache = new Map<string, 1>();
+const classCache = new Map<string, 1>();
 
 export function generateStylesFromClass(
   sourceClass: string,
 ): string | undefined {
-  if (cache.has(sourceClass)) return;
+  const isNewClass = setCacheItem(classCache, sourceClass, 1);
 
-  cache.set(sourceClass, 1);
+  if (!isNewClass) return;
 
   try {
     const parsed = parseClass(sourceClass);

@@ -2,10 +2,10 @@ import { generateStylesFromClass } from './generator';
 
 export function startObserver() {
   const observer = new MutationObserver((muts) => {
-    for (const { target } of muts) {
-      if (!(target instanceof Element)) continue;
+    for (const mut of muts) {
+      if (!(mut.target instanceof Element)) continue;
 
-      for (const sourceClass of target.classList) {
+      for (const sourceClass of mut.target.classList) {
         generateStylesFromClass(sourceClass);
       }
     }

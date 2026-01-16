@@ -4,9 +4,9 @@ export function setCacheItem<T>(
   cache: Map<string, T>,
   cacheKey: string,
   value: T,
-) {
+): boolean {
   if (cache.has(cacheKey)) {
-    return;
+    return false;
   }
 
   if (cache.size >= CACHE_MAX_SIZE) {
@@ -24,4 +24,6 @@ export function setCacheItem<T>(
 
   // Add the new item
   cache.set(cacheKey, value);
+
+  return true;
 }
