@@ -7,9 +7,11 @@ import {
   CHAR_OPEN_BRACKET,
   CHAR_OPEN_PAREN,
   CHAR_SINGLE_QUOTE,
+} from '../constants/chars';
+import {
   REGEX_LOWERCASE_UPPERCASE,
   REGEX_TO_CAMEL_CASE,
-} from '../constants';
+} from '../constants/regex';
 
 export function split(source: string, separator: string): Array<string> {
   const sepCode = separator.charCodeAt(0);

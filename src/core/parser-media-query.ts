@@ -1,24 +1,12 @@
 import { BREAKPOINTS } from './breakpoint';
 import {
   CHAR_AT,
-  MEDIA_BUCKET_TYPE_ORDER,
-  MEDIA_MAX_HEIGHT,
-  MEDIA_MAX_HEIGHT_CUSTOM,
-  MEDIA_MAX_WIDTH,
-  MEDIA_MAX_WIDTH_CUSTOM,
-  MEDIA_MIN_HEIGHT_CUSTOM,
-  MEDIA_MIN_WIDTH_CUSTOM,
-  MEDIA_NOT,
-  MEDIA_SCROLLABLE_CUSTOM,
-  MEDIA_SNAPPED_CUSTOM,
-  MEDIA_STUCK_CUSTOM,
-  MEDIA_STYLE_CUSTOM,
-  MEDIA_SUPPORTS,
-  MEDIA_SUPPORTS_CUSTOM,
   REF_CHAR_CUSTOM,
   REF_CHAR_CUSTOM_NOT,
   REF_CHAR_MEDIA_QUERY_DELIMITER,
-} from './constants';
+  REF_CHAR_PREDEFINED,
+} from './constants/chars';
+import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
 import { setCacheItem } from './helpers/cache.helper';
 import { removeBrackets, split } from './helpers/string.helper';
 import { serializeValue } from './serializer';
@@ -31,6 +19,25 @@ type MediaQueryBucketParams = [
   bucketQuery: string,
 ];
 const queryCache = new Map<string, MediaQueryBucketParams>();
+
+const MEDIA_NOT = 'not-';
+
+const MEDIA_SUPPORTS = 'supports';
+const MEDIA_SUPPORTS_CUSTOM = 'supports' + REF_CHAR_CUSTOM;
+
+const MEDIA_MIN_WIDTH_CUSTOM = 'mnw' + REF_CHAR_CUSTOM;
+const MEDIA_MIN_HEIGHT_CUSTOM = 'mnh' + REF_CHAR_CUSTOM;
+
+const MEDIA_MAX_WIDTH = 'mxw' + REF_CHAR_PREDEFINED;
+const MEDIA_MAX_WIDTH_CUSTOM = 'mxw' + REF_CHAR_CUSTOM;
+
+const MEDIA_MAX_HEIGHT = 'mxh' + REF_CHAR_PREDEFINED;
+const MEDIA_MAX_HEIGHT_CUSTOM = 'mxh' + REF_CHAR_CUSTOM;
+
+const MEDIA_STYLE_CUSTOM = 'style' + REF_CHAR_CUSTOM;
+const MEDIA_STUCK_CUSTOM = 'stuck' + REF_CHAR_CUSTOM;
+const MEDIA_SCROLLABLE_CUSTOM = 'scrollable' + REF_CHAR_CUSTOM;
+const MEDIA_SNAPPED_CUSTOM = 'snapped' + REF_CHAR_CUSTOM;
 
 export function parseMediaQuery({
   mediaQuery,

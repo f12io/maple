@@ -1,4 +1,4 @@
-import { CACHE_EVICTION_BATCH, CACHE_MAX_SIZE } from '../constants';
+import { CACHE_EVICTION_BATCH, CACHE_MAX_SIZE } from '../constants/config';
 
 export function setCacheItem<T>(
   cache: Map<string, T>,

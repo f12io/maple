@@ -2,8 +2,8 @@ import {
   REF_CHAR_CUSTOM,
   REF_CHAR_SPACE,
   REF_CHAR_VALUE_PARTS,
-  SHORTCUTS,
-} from './constants';
+} from './constants/chars';
+import { SHORTCUTS } from './constants/dictionaries';
 import { setCacheItem } from './helpers/cache.helper';
 import { escapeVariable, split } from './helpers/string.helper';
 import { parseClass } from './parser-class';

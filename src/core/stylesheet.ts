@@ -1,4 +1,5 @@
-import { MEDIA_BUCKET_TYPE_ORDER, REGEX_NUMBER_WITH_UNIT } from './constants';
+import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
+import { REGEX_NUMBER_WITH_UNIT } from './constants/regex';
 import { Bucket, BucketType, ParsedMediaQuery } from './types';
 
 const REM_SIZE = 16;

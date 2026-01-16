@@ -1,7 +1,5 @@
 import { escapeClass } from 'internal:escape-class';
 import {
-  ABBREVIATIONS,
-  ABBREVIATIONS_REVERSE,
   CHAR_AMPERSAND,
   CHAR_CARET,
   CHAR_CLOSE_BRACKET,
@@ -16,7 +14,8 @@ import {
   REF_CHAR_PREDEFINED,
   REF_CHAR_SPACE,
   REF_CHAR_UTILITY_DELIMITER,
-} from './constants';
+} from './constants/chars';
+import { ABBREVIATIONS, ABBREVIATIONS_REVERSE } from './constants/dictionaries';
 import { resolveType } from './helpers/property.helper';
 import {
   escapeVariable,

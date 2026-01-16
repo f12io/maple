@@ -1,19 +1,23 @@
 import { PRECALCULATED_PROP_TYPES } from 'internal:precalculated-prop-types';
+import { CHAR_DASH } from '../constants/chars';
 import {
-  CHAR_DASH,
-  DEFAULT_ANGLE_UNIT,
-  DEFAULT_SPACE_UNIT,
-  DEFAULT_TIME_UNIT,
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
+} from '../constants/config';
+import {
   REGEX_ANGLE_VALUE,
   REGEX_COLOR_FUNCTIONAL,
   REGEX_COLOR_HEX,
   REGEX_GRADIENT_DIRECTION,
   REGEX_NUMBER_VALUE,
   REGEX_RESERVED_KEYWORDS,
-} from '../constants';
+} from '../constants/regex';
+import {
+  DEFAULT_ANGLE_UNIT,
+  DEFAULT_SPACE_UNIT,
+  DEFAULT_TIME_UNIT,
+} from '../constants/units';
 
 let element: HTMLDivElement | undefined;
 

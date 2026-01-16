@@ -1,11 +1,13 @@
 import {
-  DEFAULT_ANGLE_UNIT,
-  DEFAULT_SPACE_UNIT,
-  DEFAULT_TIME_UNIT,
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
-} from '../../../src/core/constants';
+} from '../../../src/core/constants/config';
+import {
+  DEFAULT_ANGLE_UNIT,
+  DEFAULT_SPACE_UNIT,
+  DEFAULT_TIME_UNIT,
+} from '../../../src/core/constants/units';
 import { supportedCssProperties } from '../data/supported-css-properties.data';
 import { prepareContent, writeFile } from '../helpers/file.helper';
 
