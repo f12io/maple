@@ -1,4 +1,4 @@
-import { BREAKPOINTS } from './breakpoint';
+import { BREAKPOINTS } from './constants/breakpoints';
 import { MEDIA_QUERY_CACHE } from './constants/caches';
 import {
   CHAR_AT,

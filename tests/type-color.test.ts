@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateStylesFromClass as convert } from '../src/core/generator';
+import { convert } from '../src/core/generator';
 
 describe('Color', () => {
   it('text color with custom variable', () => {

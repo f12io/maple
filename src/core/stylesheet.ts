@@ -1,8 +1,7 @@
-import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
+import { MEDIA_BUCKET_TYPE_ORDER, REM_SIZE } from './constants/config';
 import { REGEX_NUMBER_WITH_UNIT } from './constants/regex';
 import { Bucket, BucketType, ParsedMediaQuery } from './types';
 
-const REM_SIZE = 16;
 const buckets: Array<Bucket> = [];
 let sheet: CSSStyleSheet | null = null;
 

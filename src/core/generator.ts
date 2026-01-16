@@ -5,7 +5,6 @@ import {
   REF_CHAR_VALUE_PARTS,
 } from './constants/chars';
 import { SHORTCUTS } from './constants/dictionaries';
-import { setCacheItem } from './helpers/cache.helper';
 import { escapeVariable, split } from './helpers/string.helper';
 import { parseClass } from './parser-class';
 import { parseMediaQuery } from './parser-media-query';
@@ -18,39 +17,64 @@ import {
   VALUE_MODIFIERS,
 } from './serializer';
 import { insert } from './stylesheet';
-import { ParsedClass } from './types';
+import { ParsedClass, ParsedMediaQuery } from './types';
 
-export function generateStylesFromClass(
-  sourceClass: string,
-): string | undefined {
-  const isNewClass = setCacheItem(CLASS_CACHE, sourceClass, 1);
+export function generateStylesFromClass(sourceClass: string): void {
+  /**
+   * The class cache should leave as long as the
+   * application is running. This will prevent the
+   * same class from being parsed and inserted multiple times.
+   */
+  if (CLASS_CACHE.has(sourceClass)) return;
 
-  if (!isNewClass) return;
+  CLASS_CACHE.add(sourceClass);
 
   try {
-    const parsed = parseClass(sourceClass);
-    const styles = buildProp(parsed);
+    const result = buildRule(sourceClass);
 
-    if (!styles) return;
-
-    const selector = buildSelector(parsed);
-
-    if (!selector) return;
-
-    const parsedMediaQuery = parseMediaQuery(parsed);
-    const block = `${selector} { ${styles} }`;
-    const rule = parsedMediaQuery
-      ? `${parsedMediaQuery.innerBlockOpen}${block} ${parsedMediaQuery.innerBlockClose}`.trim()
-      : block;
-
-    insert(rule, parsedMediaQuery);
-
-    return parsedMediaQuery?.bucketQuery
-      ? `${parsedMediaQuery.bucketQuery} { ${rule} }`
-      : rule;
+    if (result) {
+      insert(result.rule, result.parsedMediaQuery);
+    }
   } catch (error) {
     console.error(error);
   }
+}
+
+export function convert(sourceClass: string): string | undefined {
+  const result = buildRule(sourceClass);
+
+  if (!result) return;
+
+  const { rule, parsedMediaQuery } = result;
+
+  insert(rule, parsedMediaQuery);
+
+  return parsedMediaQuery?.bucketQuery
+    ? `${parsedMediaQuery.bucketQuery} { ${rule} }`
+    : rule;
+}
+
+function buildRule(
+  sourceClass: string,
+):
+  | { rule: string; parsedMediaQuery: ParsedMediaQuery | undefined }
+  | undefined {
+  const parsed = parseClass(sourceClass);
+  const styles = buildProp(parsed);
+
+  if (!styles) return;
+
+  const selector = buildSelector(parsed);
+
+  if (!selector) return;
+
+  const parsedMediaQuery = parseMediaQuery(parsed);
+  const block = `${selector} { ${styles} }`;
+  const rule = parsedMediaQuery
+    ? `${parsedMediaQuery.innerBlockOpen}${block} ${parsedMediaQuery.innerBlockClose}`.trim()
+    : block;
+
+  return { rule, parsedMediaQuery };
 }
 
 function buildProp(parsed: ParsedClass) {

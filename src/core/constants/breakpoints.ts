@@ -1,4 +1,4 @@
-import { DEFAULT_BREAKPOINTS } from './constants/config';
+import { DEFAULT_BREAKPOINTS } from './config';
 
 function getBreakpoints() {
   const url = new URL(import.meta.url);

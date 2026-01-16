@@ -1,9 +1,11 @@
 import { escapeClass } from 'internal:escape-class';
+import { SELECTOR_CACHE } from './constants/caches';
 import {
   CHAR_AMPERSAND,
   CHAR_CARET,
   CHAR_CLOSE_BRACKET,
   CHAR_CLOSE_PAREN,
+  CHAR_COLON,
   CHAR_DOUBLE_QUOTE,
   CHAR_OPEN_BRACKET,
   CHAR_OPEN_PAREN,
@@ -16,6 +18,7 @@ import {
   REF_CHAR_UTILITY_DELIMITER,
 } from './constants/chars';
 import { ABBREVIATIONS, ABBREVIATIONS_REVERSE } from './constants/dictionaries';
+import { setCacheItem } from './helpers/cache.helper';
 import { resolveType } from './helpers/property.helper';
 import {
   escapeVariable,
@@ -26,7 +29,7 @@ import {
   toKebabCase,
 } from './helpers/string.helper';
 import { serializeValue } from './serializer';
-import { ParsedClass } from './types';
+import { ParsedClass, ParsedSelector } from './types';
 
 export function parseClass(sourceClass: string): ParsedClass {
   const originalClass = sourceClass;
@@ -105,9 +108,6 @@ function parseUtility(utilityRaw: string): {
   }
 
   const propKeyKebab = toKebabCase(propKeyCamel);
-  const propType = resolveType(propKeyKebab, propKeyCamel);
-  const propValue = serializeValue(utilityValue);
-  const validVariableValue = escapeVariable(utilityValue);
 
   return {
     utilityKey,
@@ -116,99 +116,115 @@ function parseUtility(utilityRaw: string): {
     isUtilityNegative,
     propKeyCamel,
     propKeyKebab,
-    propType,
-    propValue,
-    validVariableValue,
+    propType: resolveType(propKeyKebab, propKeyCamel),
+    propValue: serializeValue(utilityValue),
+    validVariableValue: escapeVariable(utilityValue),
   };
 }
 
-function parseSelectors(contextRaw: string): {
-  mediaQuery?: string;
-  parentSelector?: string;
-  selfSelector?: string;
-  childSelector?: string;
-} {
+export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
+  if (SELECTOR_CACHE.has(contextRaw)) {
+    return SELECTOR_CACHE.get(contextRaw);
+  }
+
   let mediaQuery: string | undefined;
   let parentSelector: string | undefined;
   let selfSelector: string | undefined;
   let childSelector: string | undefined;
 
-  if (contextRaw) {
-    let depth = 0;
-    let quote = 0;
-    let lastAnchorIndex = 0;
-    let lastAnchorType: string | null = null;
+  if (!contextRaw) {
+    return;
+  }
 
-    // If the string starts with ^, &, /, then breakpoint stays null/empty
+  let depth = 0;
+  let quote = 0;
+  let lastAnchorIndex = 0;
+  let lastAnchorType = 0;
 
-    // Scan Left to Right
-    for (let i = 0; i <= contextRaw.length; i++) {
-      // Logic: We iterate up to length (inclusive) to handle the final flush
-      const code = i < contextRaw.length ? contextRaw.charCodeAt(i) : NaN;
+  const len = contextRaw.length;
 
-      // Handle Quotes
-      if (code === CHAR_SINGLE_QUOTE || code === CHAR_DOUBLE_QUOTE) {
-        if (quote === 0) {
-          quote = code;
-        } else if (quote === code) {
-          quote = 0;
-        }
+  for (let i = 0; i <= len; i++) {
+    const code = i < len ? contextRaw.charCodeAt(i) : 0;
 
-        continue;
-      }
+    // Handle Quotes (Skip all logic inside quotes)
+    if (code === CHAR_SINGLE_QUOTE || code === CHAR_DOUBLE_QUOTE) {
+      if (quote === 0) quote = code;
+      else if (quote === code) quote = 0;
+      continue;
+    }
 
-      if (quote !== 0) continue;
+    if (quote !== 0) continue;
 
-      // Handle Brackets
-      if (code === CHAR_OPEN_BRACKET || code === CHAR_OPEN_PAREN) {
-        depth++;
-      } else if (code === CHAR_CLOSE_BRACKET || code === CHAR_CLOSE_PAREN) {
-        depth--;
-      }
+    // Handle Brackets
+    if (code === CHAR_OPEN_BRACKET || code === CHAR_OPEN_PAREN) {
+      depth++;
+      continue;
+    }
+    if (code === CHAR_CLOSE_BRACKET || code === CHAR_CLOSE_PAREN) {
+      depth--;
+      continue;
+    }
 
-      // Handle Anchors
+    // Handle Anchors (Only at root depth)
+    if (depth === 0) {
       const isAnchor =
-        depth === 0 &&
-        (code === CHAR_CARET || code === CHAR_AMPERSAND || code === CHAR_SLASH);
+        code === CHAR_CARET ||
+        code === CHAR_AMPERSAND ||
+        code === CHAR_SLASH ||
+        code === 0;
 
-      if (isAnchor || Number.isNaN(code)) {
-        // FLUSH PREVIOUS SEGMENT
-        const segment = contextRaw.slice(lastAnchorIndex, i);
+      if (isAnchor) {
+        // --- FLUSH SEGMENT ---
+        if (lastAnchorType === 0) {
+          // Parse Media Query (0 to i)
+          if (i > 0) {
+            const endIndex =
+              contextRaw.charCodeAt(i - 1) === CHAR_COLON ? i - 1 : i;
 
-        if (lastAnchorType === null) {
-          // Everything before the first anchor is the Breakpoint
-          // e.g. "md:^..." -> segment="md:" -> trim colon
-          if (segment.length > 0) {
-            mediaQuery = segment.endsWith(REF_CHAR_UTILITY_DELIMITER)
-              ? segment.slice(0, -1)
-              : segment;
+            if (endIndex > 0) {
+              mediaQuery = contextRaw.slice(0, endIndex);
+            }
           }
         } else {
-          const value = segment.slice(1).replaceAll(REF_CHAR_SPACE, ' ');
-          const charCode = lastAnchorType.charCodeAt(0);
+          // Parse Selectors (start + 1 to i)
+          const start = lastAnchorIndex + 1;
 
-          if (charCode === CHAR_CARET) {
-            parentSelector = value;
-          } else if (charCode === CHAR_AMPERSAND) {
-            selfSelector = value;
-          } else if (charCode === CHAR_SLASH) {
-            childSelector = value;
+          // Only slice if there is actual content
+          if (i > start) {
+            // We only allocate the string slice exactly when needed for assignment
+            const value = contextRaw
+              .slice(start, i)
+              .replaceAll(REF_CHAR_SPACE, ' ');
+
+            switch (lastAnchorType) {
+              case CHAR_CARET:
+                parentSelector = value;
+                break;
+              case CHAR_AMPERSAND:
+                selfSelector = value;
+                break;
+              case CHAR_SLASH:
+                childSelector = value;
+                break;
+            }
           }
         }
 
-        // SET UP NEXT SEGMENT
-        if (!Number.isNaN(code)) {
-          lastAnchorType = String.fromCharCode(code);
-          lastAnchorIndex = i; // The next segment starts HERE (including the anchor)
-        }
+        // Update State
+        lastAnchorType = code;
+        lastAnchorIndex = i;
       }
     }
   }
 
-  return {
+  const parsedSelector: ParsedSelector = {
     mediaQuery,
     parentSelector,
     selfSelector,
     childSelector,
   };
+
+  setCacheItem(SELECTOR_CACHE, contextRaw, parsedSelector);
+
+  return parsedSelector;
 }

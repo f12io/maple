@@ -53,6 +53,13 @@ export interface ParsedMediaQuery {
   innerBlockClose: string;
 }
 
+export interface ParsedSelector {
+  mediaQuery?: string;
+  parentSelector?: string;
+  selfSelector?: string;
+  childSelector?: string;
+}
+
 export interface ParsedClass {
   sourceClass: string;
   sourceSelector: string;

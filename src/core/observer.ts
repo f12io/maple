@@ -1,6 +1,8 @@
 import { generateStylesFromClass } from './generator';
 
 export function startObserver() {
+  if (typeof document === 'undefined') return;
+
   const observer = new MutationObserver((muts) => {
     for (const mut of muts) {
       if (!(mut.target instanceof Element)) continue;
