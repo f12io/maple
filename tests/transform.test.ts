@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convert } from '../src/core/generator';
+import { convert } from './helpers/convert.helper';
 
 const vars =
   'transform: var(--tf-tl,) var(--tf-tlx,) var(--tf-tly,) var(--tf-tlz,) var(--tf-tl3,) var(--tf-scale,) var(--tf-scalex,) var(--tf-scaley,) var(--tf-scalez,) var(--tf-scale3,) var(--tf-rot,) var(--tf-rotx,) var(--tf-roty,) var(--tf-rotz,) var(--tf-rot3,) var(--tf-skew,) var(--tf-skewx,) var(--tf-skewy,) var(--tf-mtx,) var(--tf-mtx3,)';

@@ -40,21 +40,7 @@ export function generateStylesFromClass(srcClass: string): void {
   }
 }
 
-export function convert(srcClass: string): string | undefined {
-  const result = buildRule(srcClass);
-
-  if (!result) return;
-
-  const { rule, parsedMediaQuery } = result;
-
-  insert(rule, parsedMediaQuery);
-
-  return parsedMediaQuery?.bucketQuery
-    ? `${parsedMediaQuery.bucketQuery} { ${rule} }`
-    : rule;
-}
-
-function buildRule(
+export function buildRule(
   srcClass: string,
 ):
   | { rule: string; parsedMediaQuery: ParsedMediaQuery | undefined }

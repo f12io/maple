@@ -20,14 +20,21 @@ export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
   bucket?.rule.insertRule(cssRule, bucket.rule.cssRules.length);
 }
 
-export function insertRefVar(cssRule: string) {
+export function insertRefVar(key: string, val: string) {
   if (!sheet) initStyleSheet();
   if (!sheet) return;
 
   const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
   const refsLayer = utilsLayer.cssRules[0] as CSSGroupingRule;
 
-  refsLayer.insertRule(cssRule, refsLayer.cssRules.length);
+  if (refsLayer.cssRules.length === 0) {
+    refsLayer.insertRule(':root {}', 0);
+  }
+
+  (refsLayer.cssRules[0] as CSSStyleRule).style.setProperty(
+    `--ref-${key}`,
+    val,
+  );
 }
 
 function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {

@@ -52,6 +52,8 @@ import {
 import { insertRefVar } from './stylesheet';
 import { Modifiers, ParsedClass, ValueModifiers } from './types';
 
+let isRefCacheDisabled = false;
+
 // Applied to classes usign strict equality (as is utility values)
 const CUSTOM_MODIFIERS: Modifiers = {
   cnt: serializeContainer,
@@ -154,6 +156,10 @@ export function serializeValue(value: string) {
   return value.replaceAll(REF_CHAR_SPACE, ' ').trim();
 }
 
+export function setDisableCache(disabled: boolean) {
+  isRefCacheDisabled = disabled;
+}
+
 function createVariables(keys: Record<string, string>, prefix: string) {
   return Object.keys(keys)
     .map((key) => `var(--${prefix}-${key},)`)
@@ -195,7 +201,7 @@ function serializeValueAsVariable(
 
   const refKey = `${utilKey}-${validVarVal}`;
 
-  if (!VARIABLE_CACHE.has(refKey)) {
+  if (isRefCacheDisabled || !VARIABLE_CACHE.has(refKey)) {
     let variableCategoryFromMap: string | undefined;
 
     fallbackValue ??= propVal;
@@ -220,9 +226,13 @@ function serializeValueAsVariable(
       fallbackValue = `var(--${variableCategoryFromMap}-${validVarVal}, ${fallbackValue})`;
     }
 
-    insertRefVar(
-      `--ref-${utilKey}-${validVarVal}: var(--${utilKey}-${validVarVal}, ${fallbackValue})`,
-    );
+    const val = `var(--${refKey}, ${fallbackValue})`;
+
+    if (isRefCacheDisabled) {
+      return val;
+    }
+
+    insertRefVar(refKey, val);
     VARIABLE_CACHE.add(refKey);
   }
 
@@ -249,7 +259,7 @@ function serializeNumberValue({
 
   const refKey = `${utilKey}-${validVarVal}`;
 
-  if (!VARIABLE_CACHE.has(refKey)) {
+  if (isRefCacheDisabled || !VARIABLE_CACHE.has(refKey)) {
     const numberValue = Number(utilVal);
 
     if (numberValue === 0) return '0';
@@ -295,7 +305,7 @@ function serializeNumberValue({
           : `${numberValue}${unit}`;
     }
 
-    const val = serializeValueAsVariable(
+    let val = serializeValueAsVariable(
       utilKey,
       validVarVal,
       utilVal,
@@ -303,10 +313,13 @@ function serializeNumberValue({
       varCat,
       unit,
     );
+    val = isUtilNegative ? `calc(${val} * -1)` : val;
 
-    insertRefVar(
-      `--ref-${refKey}: ${isUtilNegative ? `calc(${val} * -1)` : val}`,
-    );
+    if (isRefCacheDisabled) {
+      return val;
+    }
+
+    insertRefVar(refKey, val);
     VARIABLE_CACHE.add(refKey);
   }
 
@@ -327,7 +340,7 @@ function serializeColorValue(parsed: ParsedClass): string {
 
   const refKey = `${utilKey}-${parsed.validVarVal}`;
 
-  if (!VARIABLE_CACHE.has(refKey)) {
+  if (isRefCacheDisabled || !VARIABLE_CACHE.has(refKey)) {
     const tokenParts = REGEX_COLOR_TOKEN.exec(utilVal);
 
     if (!tokenParts) {
@@ -367,10 +380,13 @@ function serializeColorValue(parsed: ParsedClass): string {
     const c = `calc(c * ${chromaFactor})`;
     const h = `calc(h + ${hueRotate})`;
     const alpha = opacity && opacity < 100 ? `${opacity}%` : 'alpha';
+    const val = `oklch(from ${nameVar} ${l} ${c} ${h} / ${alpha})`;
 
-    insertRefVar(
-      `--ref-${refKey}: oklch(from ${nameVar} ${l} ${c} ${h} / ${alpha})`,
-    );
+    if (isRefCacheDisabled) {
+      return val;
+    }
+
+    insertRefVar(refKey, val);
     VARIABLE_CACHE.add(refKey);
   }
 
