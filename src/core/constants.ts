@@ -9,7 +9,8 @@ Object.entries(PRECALCULATED_PROP_ABBREVIATIONS).forEach(([alias, prop]) => {
   ABBREVIATIONS_REVERSE[prop] = alias;
 });
 
-export const CACHE_MAX_SIZE = 1000;
+export const CACHE_MAX_SIZE = 2000;
+export const CACHE_EVICTION_BATCH = Math.floor(CACHE_MAX_SIZE * 0.25);
 
 export const DEFAULT_BREAKPOINTS: Record<string, string> = {
   sm: '640px',

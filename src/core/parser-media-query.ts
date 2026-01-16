@@ -1,6 +1,5 @@
 import { BREAKPOINTS } from './breakpoint';
 import {
-  CACHE_MAX_SIZE,
   CHAR_AT,
   MEDIA_BUCKET_TYPE_ORDER,
   MEDIA_MAX_HEIGHT,
@@ -20,6 +19,7 @@ import {
   REF_CHAR_CUSTOM_NOT,
   REF_CHAR_MEDIA_QUERY_DELIMITER,
 } from './constants';
+import { setCacheItem } from './helpers/cache.helper';
 import { removeBrackets, split } from './helpers/string.helper';
 import { serializeValue } from './serializer';
 import { BucketType, ParsedClass, ParsedMediaQuery } from './types';
@@ -426,18 +426,7 @@ function updateParsedMediaQuery(
     return;
   }
 
-  if (!queryCache.has(cacheKey)) {
-    if (queryCache.size >= CACHE_MAX_SIZE) {
-      // The first key is the oldest
-      const oldestKey = queryCache.keys().next().value;
-
-      if (oldestKey !== undefined) {
-        queryCache.delete(oldestKey);
-      }
-    }
-
-    queryCache.set(cacheKey, params);
-  }
+  setCacheItem(queryCache, cacheKey, params);
 
   const [bucketType, bucketKey, bucketValue, bucketQuery] = params;
 
