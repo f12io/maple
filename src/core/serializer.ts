@@ -158,6 +158,21 @@ function createVariables(keys: Record<string, string>, prefix: string) {
     .join(' ');
 }
 
+function serializeOtherValue({ utilKey, validVarVal, propVal }: ParsedClass) {
+  return serializeValueAsVariable(utilKey, validVarVal, propVal);
+}
+
+function serializeFraction(value: string): string | undefined {
+  if (!value.includes('/')) return;
+
+  const [num, den] = split(value, '/').map(Number);
+  const val = Math.round((num / den) * 1000000) / 10000;
+
+  if (!num || !den) return;
+
+  return `${val}%`;
+}
+
 function serializeValueAsVariable(
   utilKey: string,
   validVarVal: string,
@@ -201,21 +216,6 @@ function serializeValueAsVariable(
   }
 
   return `var(--${utilKey}-${validVarVal}, ${fallbackValue})`;
-}
-
-function serializeFraction(value: string): string | undefined {
-  if (!value.includes('/')) return;
-
-  const [num, den] = split(value, '/').map(Number);
-  const val = Math.round((num / den) * 1000000) / 10000;
-
-  if (!num || !den) return;
-
-  return `${val}%`;
-}
-
-function serializeOtherValue({ utilKey, validVarVal, propVal }: ParsedClass) {
-  return serializeValueAsVariable(utilKey, validVarVal, propVal);
 }
 
 function serializeNumberValue({
