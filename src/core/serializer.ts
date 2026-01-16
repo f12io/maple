@@ -1,3 +1,4 @@
+import { VARIABLE_CACHE } from './constants/caches';
 import {
   REF_CHAR_CUSTOM,
   REF_CHAR_FUNCTION_COMMA,
@@ -48,6 +49,7 @@ import {
   toCamelCase,
   toKebabCase,
 } from './helpers/string.helper';
+import { insertRefVar } from './stylesheet';
 import { Modifiers, ParsedClass, ValueModifiers } from './types';
 
 // Applied to classes usign strict equality (as is utility values)
@@ -191,31 +193,40 @@ function serializeValueAsVariable(
     return propVal;
   }
 
-  let variableCategoryFromMap: string | undefined;
+  const refKey = `${utilKey}-${validVarVal}`;
 
-  fallbackValue ??= propVal;
+  if (!VARIABLE_CACHE.has(refKey)) {
+    let variableCategoryFromMap: string | undefined;
 
-  if (!isKnownNumberValue(propVal)) {
-    fallbackValue = `var(--${validVarVal}, ${fallbackValue})`;
+    fallbackValue ??= propVal;
 
-    if (variableCategoryAsIs) {
-      fallbackValue = `var(--${variableCategoryAsIs}-${validVarVal}, ${fallbackValue})`;
+    if (!isKnownNumberValue(propVal)) {
+      fallbackValue = `var(--${validVarVal}, ${fallbackValue})`;
+
+      if (variableCategoryAsIs) {
+        fallbackValue = `var(--${variableCategoryAsIs}-${validVarVal}, ${fallbackValue})`;
+      }
     }
+
+    if (variableCategoryForMap) {
+      variableCategoryFromMap = CSS_VARIABLE_CATEGORY[variableCategoryForMap];
+    }
+
+    if (!variableCategoryForMap) {
+      variableCategoryFromMap = CSS_VARIABLE_CATEGORY[utilKey];
+    }
+
+    if (variableCategoryFromMap) {
+      fallbackValue = `var(--${variableCategoryFromMap}-${validVarVal}, ${fallbackValue})`;
+    }
+
+    insertRefVar(
+      `--ref-${utilKey}-${validVarVal}: var(--${utilKey}-${validVarVal}, ${fallbackValue})`,
+    );
+    VARIABLE_CACHE.add(refKey);
   }
 
-  if (variableCategoryForMap) {
-    variableCategoryFromMap = CSS_VARIABLE_CATEGORY[variableCategoryForMap];
-  }
-
-  if (!variableCategoryForMap) {
-    variableCategoryFromMap = CSS_VARIABLE_CATEGORY[utilKey];
-  }
-
-  if (variableCategoryFromMap) {
-    fallbackValue = `var(--${variableCategoryFromMap}-${validVarVal}, ${fallbackValue})`;
-  }
-
-  return `var(--${utilKey}-${validVarVal}, ${fallbackValue})`;
+  return `var(--ref-${refKey})`;
 }
 
 function serializeNumberValue({
@@ -236,61 +247,70 @@ function serializeNumberValue({
     return utilVal;
   }
 
-  const numberValue = Number(utilVal);
+  const refKey = `${utilKey}-${validVarVal}`;
 
-  if (numberValue === 0) return '0';
+  if (!VARIABLE_CACHE.has(refKey)) {
+    const numberValue = Number(utilVal);
 
-  const transformFnName = TRANSFORM_KEYS[utilKey];
-  const unit =
-    PROP_UNIT_MAP[transformFnName || propKeyCamel] ?? DEFAULT_SPACE_UNIT;
+    if (numberValue === 0) return '0';
 
-  let fallbackValue = utilVal;
+    const transformFnName = TRANSFORM_KEYS[utilKey];
+    const unit =
+      PROP_UNIT_MAP[transformFnName || propKeyCamel] ?? DEFAULT_SPACE_UNIT;
 
-  if (isNaN(numberValue)) {
-    const isValueNegative = startsWithNegative(utilVal);
+    let fallbackValue = utilVal;
 
-    isUtilNegative = isUtilNegative || isValueNegative;
+    if (isNaN(numberValue)) {
+      const isValueNegative = startsWithNegative(utilVal);
 
-    if (isValueNegative) {
-      utilVal = utilVal.slice(1);
+      isUtilNegative = isUtilNegative || isValueNegative;
+
+      if (isValueNegative) {
+        utilVal = utilVal.slice(1);
+      }
+
+      if (COVER_UNITS.includes(utilVal)) {
+        return `${isUtilNegative ? '-' : ''}100${utilVal}`;
+      }
+
+      if (ONE_UNITS.includes(utilVal)) {
+        return `${isUtilNegative ? '-' : ''}1${utilVal}`;
+      }
+
+      const percentValue = serializeFraction(utilVal);
+
+      if (percentValue) {
+        return `${isUtilNegative ? '-' : ''}${percentValue}`;
+      }
+
+      const float = parseFloat(utilVal);
+
+      if (!isNaN(float) && isKnownNumberValue(utilVal)) {
+        return `${isUtilNegative ? '-' : ''}${utilVal}`;
+      }
+    } else if (isKnownNumberValue(utilVal)) {
+      fallbackValue =
+        unit === DEFAULT_SPACE_UNIT
+          ? `calc(${numberValue}${unit} * var(--spacer, 0.25))`
+          : `${numberValue}${unit}`;
     }
 
-    if (COVER_UNITS.includes(utilVal)) {
-      return `${isUtilNegative ? '-' : ''}100${utilVal}`;
-    }
+    const val = serializeValueAsVariable(
+      utilKey,
+      validVarVal,
+      utilVal,
+      fallbackValue,
+      varCat,
+      unit,
+    );
 
-    if (ONE_UNITS.includes(utilVal)) {
-      return `${isUtilNegative ? '-' : ''}1${utilVal}`;
-    }
-
-    const percentValue = serializeFraction(utilVal);
-
-    if (percentValue) {
-      return `${isUtilNegative ? '-' : ''}${percentValue}`;
-    }
-
-    const float = parseFloat(utilVal);
-
-    if (!isNaN(float) && isKnownNumberValue(utilVal)) {
-      return `${isUtilNegative ? '-' : ''}${utilVal}`;
-    }
-  } else if (isKnownNumberValue(utilVal)) {
-    fallbackValue =
-      unit === DEFAULT_SPACE_UNIT
-        ? `calc(${numberValue}${unit} * var(--spacer, 0.25))`
-        : `${numberValue}${unit}`;
+    insertRefVar(
+      `--ref-${refKey}: ${isUtilNegative ? `calc(${val} * -1)` : val}`,
+    );
+    VARIABLE_CACHE.add(refKey);
   }
 
-  const val = serializeValueAsVariable(
-    utilKey,
-    validVarVal,
-    utilVal,
-    fallbackValue,
-    varCat,
-    unit,
-  );
-
-  return isUtilNegative ? `calc(${val} * -1)` : val;
+  return `var(--ref-${refKey})`;
 }
 
 function serializeColorValue(parsed: ParsedClass): string {
@@ -305,47 +325,56 @@ function serializeColorValue(parsed: ParsedClass): string {
     return utilVal;
   }
 
-  const tokenParts = REGEX_COLOR_TOKEN.exec(utilVal);
+  const refKey = `${utilKey}-${parsed.validVarVal}`;
 
-  if (!tokenParts) {
-    const serializedValue = serializeValue(utilVal);
+  if (!VARIABLE_CACHE.has(refKey)) {
+    const tokenParts = REGEX_COLOR_TOKEN.exec(utilVal);
 
-    return isKnownColorValue(serializedValue)
-      ? serializedValue
-      : serializeOtherValue(parsed);
+    if (!tokenParts) {
+      const serializedValue = serializeValue(utilVal);
+
+      return isKnownColorValue(serializedValue)
+        ? serializedValue
+        : serializeOtherValue(parsed);
+    }
+
+    const name = tokenParts[1];
+    const tone = Number(tokenParts[2]) || COLOR_MID_TONE;
+    const opacity = tokenParts[3] ? Number(tokenParts[3]) : null;
+    const amount = (COLOR_MID_TONE - tone) / COLOR_MID_TONE;
+
+    const nameVar = serializeValueAsVariable(
+      utilKey,
+      name,
+      name,
+      name,
+      CSS_VARIABLE_CATEGORY.color,
+    );
+    const [lightnessFactor, chromaFactor, hueRotate] = [
+      ['lightness-factor', 1],
+      ['chroma-factor', 1],
+      ['hue-rotate', 0],
+    ].map(
+      ([key, defaultValue]) =>
+        `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${key}, ${defaultValue})))`,
+    );
+
+    const lCalc = amount > 0 ? `(1 - l) * ${amount}` : `l * ${amount}`;
+    const l =
+      amount === 0
+        ? `calc(l * ${lightnessFactor})`
+        : `calc((l + ${lCalc}) * ${lightnessFactor})`;
+    const c = `calc(c * ${chromaFactor})`;
+    const h = `calc(h + ${hueRotate})`;
+    const alpha = opacity && opacity < 100 ? `${opacity}%` : 'alpha';
+
+    insertRefVar(
+      `--ref-${refKey}: oklch(from ${nameVar} ${l} ${c} ${h} / ${alpha})`,
+    );
+    VARIABLE_CACHE.add(refKey);
   }
 
-  const name = tokenParts[1];
-  const tone = Number(tokenParts[2]) || COLOR_MID_TONE;
-  const opacity = tokenParts[3] ? Number(tokenParts[3]) : null;
-  const amount = (COLOR_MID_TONE - tone) / COLOR_MID_TONE;
-
-  const nameVar = serializeValueAsVariable(
-    utilKey,
-    name,
-    name,
-    name,
-    CSS_VARIABLE_CATEGORY.color,
-  );
-  const [lightnessFactor, chromaFactor, hueRotate] = [
-    ['lightness-factor', 1],
-    ['chroma-factor', 1],
-    ['hue-rotate', 0],
-  ].map(
-    ([key, defaultValue]) =>
-      `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${key}, ${defaultValue})))`,
-  );
-
-  const lCalc = amount > 0 ? `(1 - l) * ${amount}` : `l * ${amount}`;
-  const l =
-    amount === 0
-      ? `calc(l * ${lightnessFactor})`
-      : `calc((l + ${lCalc}) * ${lightnessFactor})`;
-  const c = `calc(c * ${chromaFactor})`;
-  const h = `calc(h + ${hueRotate})`;
-  const alpha = opacity && opacity < 100 ? `${opacity}%` : 'alpha';
-
-  return `oklch(from ${nameVar} ${l} ${c} ${h} / ${alpha})`;
+  return `var(--ref-${refKey})`;
 }
 
 function serializeContainer({

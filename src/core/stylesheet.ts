@@ -5,6 +5,31 @@ import { Bucket, BucketType, ParsedMediaQuery } from './types';
 const buckets: Array<Bucket> = [];
 let sheet: CSSStyleSheet | null = null;
 
+export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
+  if (!sheet) initStyleSheet();
+  if (!sheet) return;
+
+  const targetKey = parsedMediaQuery?.bucketKey ?? 'base';
+  let bucket = buckets.find((b) => b.key === targetKey);
+
+  if (!bucket && parsedMediaQuery) {
+    insertBucket(targetKey, parsedMediaQuery);
+    bucket = buckets.find((b) => b.key === targetKey);
+  }
+
+  bucket?.rule.insertRule(cssRule, bucket.rule.cssRules.length);
+}
+
+export function insertRefVar(cssRule: string) {
+  if (!sheet) initStyleSheet();
+  if (!sheet) return;
+
+  const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
+  const refsLayer = utilsLayer.cssRules[0] as CSSGroupingRule;
+
+  refsLayer.insertRule(cssRule, refsLayer.cssRules.length);
+}
+
 function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
   const match = REGEX_NUMBER_WITH_UNIT.exec(parsedMediaQuery.bucketVal);
 
@@ -91,27 +116,13 @@ function initStyleSheet() {
 
   const utilsLayer = sheet.cssRules[0] as CSSGroupingRule;
 
-  utilsLayer.insertRule('@layer base {}', 0);
+  utilsLayer.insertRule('@layer refs {}', 0);
+  utilsLayer.insertRule('@layer base {}', 1);
 
   buckets.push({
     key: 'base',
     type: 'base',
     val: 0,
-    rule: utilsLayer.cssRules[0] as CSSGroupingRule,
+    rule: utilsLayer.cssRules[1] as CSSGroupingRule,
   });
-}
-
-export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
-  if (!sheet) initStyleSheet();
-  if (!sheet) return;
-
-  const targetKey = parsedMediaQuery?.bucketKey ?? 'base';
-  let bucket = buckets.find((b) => b.key === targetKey);
-
-  if (!bucket && parsedMediaQuery) {
-    insertBucket(targetKey, parsedMediaQuery);
-    bucket = buckets.find((b) => b.key === targetKey);
-  }
-
-  bucket?.rule.insertRule(cssRule, bucket.rule.cssRules.length);
 }
