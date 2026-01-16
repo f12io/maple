@@ -4,9 +4,10 @@ import {
   PROP_TYPE_SPACE,
 } from '../../../src/core/constants/config';
 import {
-  DEFAULT_ANGLE_UNIT,
-  DEFAULT_SPACE_UNIT,
-  DEFAULT_TIME_UNIT,
+  DEFAULT_ANGLE_VALUE,
+  DEFAULT_COLOR_VALUE,
+  DEFAULT_SPACE_VALUE,
+  DEFAULT_TIME_VALUE,
 } from '../../../src/core/constants/units';
 import { supportedCssProperties } from '../data/supported-css-properties.data';
 import { prepareContent, writeFile } from '../helpers/file.helper';
@@ -25,9 +26,10 @@ export function precalculatePropTypes() {
           PROP_TYPE_COLOR,
           PROP_TYPE_SPACE,
           PROP_TYPE_OTHER,
-          DEFAULT_SPACE_UNIT,
-          DEFAULT_TIME_UNIT,
-          DEFAULT_ANGLE_UNIT,
+          DEFAULT_SPACE_VALUE,
+          DEFAULT_TIME_VALUE,
+          DEFAULT_ANGLE_VALUE,
+          DEFAULT_COLOR_VALUE,
         }) => {
           let element: HTMLDivElement | null = null;
           const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
@@ -39,36 +41,19 @@ export function precalculatePropTypes() {
             element ??= document.createElement('div');
             let type = PROP_TYPE_OTHER;
 
-            element.style.setProperty(propKeyKebab, '#000000');
+            if (typeof CSS === 'undefined') {
+              return type;
+            }
 
-            if (element.style.getPropertyValue(propKeyKebab)) {
+            if (
+              CSS.supports(propKeyKebab, DEFAULT_SPACE_VALUE) ||
+              CSS.supports(propKeyKebab, DEFAULT_ANGLE_VALUE) ||
+              CSS.supports(propKeyKebab, DEFAULT_TIME_VALUE)
+            ) {
+              type = PROP_TYPE_SPACE;
+            } else if (CSS.supports(propKeyKebab, DEFAULT_COLOR_VALUE)) {
               type = PROP_TYPE_COLOR;
             }
-
-            const spaceValue = '1' + DEFAULT_SPACE_UNIT;
-            element.style.setProperty(propKeyKebab, spaceValue);
-
-            if (element.style.getPropertyValue(propKeyKebab) === spaceValue) {
-              type = PROP_TYPE_SPACE;
-            } else {
-              const timeValue = '1' + DEFAULT_TIME_UNIT;
-              element.style.setProperty(propKeyKebab, timeValue);
-
-              if (element.style.getPropertyValue(propKeyKebab) === timeValue) {
-                type = PROP_TYPE_SPACE;
-              } else {
-                const angleValue = '1' + DEFAULT_ANGLE_UNIT;
-                element.style.setProperty(propKeyKebab, angleValue);
-
-                if (
-                  element.style.getPropertyValue(propKeyKebab) === angleValue
-                ) {
-                  type = PROP_TYPE_SPACE;
-                }
-              }
-            }
-
-            element.style.setProperty(propKeyKebab, null);
 
             return type;
           }
@@ -88,9 +73,10 @@ export function precalculatePropTypes() {
           PROP_TYPE_OTHER,
           PROP_TYPE_COLOR,
           PROP_TYPE_SPACE,
-          DEFAULT_SPACE_UNIT,
-          DEFAULT_TIME_UNIT,
-          DEFAULT_ANGLE_UNIT,
+          DEFAULT_SPACE_VALUE,
+          DEFAULT_TIME_VALUE,
+          DEFAULT_ANGLE_VALUE,
+          DEFAULT_COLOR_VALUE,
         },
       );
 

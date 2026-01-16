@@ -405,15 +405,12 @@ function serializePercentageToDecimal(parsed: ParsedClass): string {
 }
 
 function serializeTransform(parsed: ParsedClass): string {
-  const { utilityKey, utilityValue, utilityOperator, propValue, isImportant } =
-    parsed;
-
   let value;
 
-  if (utilityOperator == REF_CHAR_CUSTOM) {
-    value = propValue;
+  if (parsed.utilityOperator == REF_CHAR_CUSTOM) {
+    value = parsed.propValue;
   } else {
-    const valueItems = split(utilityValue, REF_CHAR_SPACE);
+    const valueItems = split(parsed.utilityValue, REF_CHAR_SPACE);
     const serializedValue = [];
 
     for (const valueItem of valueItems) {
@@ -431,10 +428,10 @@ function serializeTransform(parsed: ParsedClass): string {
 
   return (
     serializeProp(
-      `--tf-${utilityKey}`,
-      `${TRANSFORM_KEYS[utilityKey]}(${value})`,
+      `--tf-${parsed.utilityKey}`,
+      `${TRANSFORM_KEYS[parsed.utilityKey]}(${value})`,
       false,
-    ) + serializeProp('transform', TRANSFORM_VARIABLES, isImportant)
+    ) + serializeProp('transform', TRANSFORM_VARIABLES, parsed.isImportant)
   );
 }
 
@@ -444,15 +441,12 @@ function serializeFilter(
   variables: string,
   abbreviationKeys: Record<string, string>,
 ): string {
-  const { utilityKey, utilityValue, utilityOperator, propValue, isImportant } =
-    parsed;
-
   let value;
 
-  if (utilityOperator == REF_CHAR_CUSTOM) {
-    value = `${abbreviationKeys[utilityKey]}(${propValue})`;
+  if (parsed.utilityOperator == REF_CHAR_CUSTOM) {
+    value = `${abbreviationKeys[parsed.utilityKey]}(${parsed.propValue})`;
   } else {
-    const parts = split(utilityValue, REF_CHAR_VALUE_PARTS);
+    const parts = split(parsed.utilityValue, REF_CHAR_VALUE_PARTS);
     const serializedParts = [];
 
     for (const part of parts) {
@@ -462,7 +456,10 @@ function serializeFilter(
       for (let i = 0; i < valueItems.length; i++) {
         const valueItem = valueItems[i];
 
-        if (utilityKey === 'dshadow' || utilityKey === 'bdshadow') {
+        if (
+          parsed.utilityKey === 'dshadow' ||
+          parsed.utilityKey === 'bdshadow'
+        ) {
           serializedValue.push(
             serializeShadowValue(
               { ...parsed, utilityKey: 'dshadow' },
@@ -491,7 +488,7 @@ function serializeFilter(
       }
 
       serializedParts.push(
-        `${abbreviationKeys[utilityKey]}(${serializedValue.join(' ')})`,
+        `${abbreviationKeys[parsed.utilityKey]}(${serializedValue.join(' ')})`,
       );
     }
 
@@ -499,8 +496,8 @@ function serializeFilter(
   }
 
   return (
-    serializeProp(`--filter-${utilityKey}`, value, false) +
-    serializeProp(propKey, variables, isImportant)
+    serializeProp(`--filter-${parsed.utilityKey}`, value, false) +
+    serializeProp(propKey, variables, parsed.isImportant)
   );
 }
 
@@ -583,9 +580,8 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
     const mappedPropKeyKebab = ABBREVIATIONS[propName]
       ? toKebabCase(ABBREVIATIONS[propName])
       : propName;
-    const mappedPropKeyCamel = toCamelCase(mappedPropKeyKebab);
 
-    if (isKnownProperty(mappedPropKeyCamel)) {
+    if (isKnownProperty(mappedPropKeyKebab)) {
       propNames.push(
         serializeValueAsVariable(
           parsed.utilityKey,

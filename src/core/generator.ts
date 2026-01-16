@@ -1,3 +1,4 @@
+import { CLASS_CACHE } from './constants/caches';
 import {
   REF_CHAR_CUSTOM,
   REF_CHAR_SPACE,
@@ -19,12 +20,10 @@ import {
 import { insert } from './stylesheet';
 import { ParsedClass } from './types';
 
-const classCache = new Map<string, 1>();
-
 export function generateStylesFromClass(
   sourceClass: string,
 ): string | undefined {
-  const isNewClass = setCacheItem(classCache, sourceClass, 1);
+  const isNewClass = setCacheItem(CLASS_CACHE, sourceClass, 1);
 
   if (!isNewClass) return;
 

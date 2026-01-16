@@ -1,4 +1,5 @@
 import { BREAKPOINTS } from './breakpoint';
+import { MEDIA_QUERY_CACHE } from './constants/caches';
 import {
   CHAR_AT,
   REF_CHAR_CUSTOM,
@@ -10,15 +11,7 @@ import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
 import { setCacheItem } from './helpers/cache.helper';
 import { removeBrackets, split } from './helpers/string.helper';
 import { serializeValue } from './serializer';
-import { BucketType, ParsedClass, ParsedMediaQuery } from './types';
-
-type MediaQueryBucketParams = [
-  bucketType: BucketType,
-  bucketKey: string,
-  bucketValue: string,
-  bucketQuery: string,
-];
-const queryCache = new Map<string, MediaQueryBucketParams>();
+import { MediaQueryBucketParams, ParsedClass, ParsedMediaQuery } from './types';
 
 const MEDIA_NOT = 'not-';
 
@@ -74,9 +67,9 @@ export function parseMediaQuery({
         ? bucketKey + propKeyKebab + propValue
         : bucketKey;
 
-    if (queryCache.has(cacheKey)) {
+    if (MEDIA_QUERY_CACHE.has(cacheKey)) {
       updateParsedMediaQuery(
-        queryCache.get(cacheKey),
+        MEDIA_QUERY_CACHE.get(cacheKey),
         parsedMediaQuery,
         cacheKey,
       );
@@ -433,7 +426,7 @@ function updateParsedMediaQuery(
     return;
   }
 
-  setCacheItem(queryCache, cacheKey, params);
+  setCacheItem(MEDIA_QUERY_CACHE, cacheKey, params);
 
   const [bucketType, bucketKey, bucketValue, bucketQuery] = params;
 

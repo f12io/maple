@@ -1,6 +1,10 @@
+import { PROP_TYPE_COLOR } from '../constants/config';
+
 /**
- * This empty map will be used in the browser build to avoid
- * including the prop types in the bundle. Instead, we will
- * calculate them at runtime.
+ * This map will be used in the browser build. Only include
+ * the ones that needs to be set manually. The rest will
+ * be calculated at runtime.
  */
-export const PRECALCULATED_PROP_TYPES: Record<string, number> = {};
+export const PRECALCULATED_PROP_TYPES: Record<string, number> = {
+  background: PROP_TYPE_COLOR,
+};

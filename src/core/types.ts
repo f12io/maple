@@ -37,6 +37,13 @@ export interface Bucket {
   rule: CSSGroupingRule;
 }
 
+export type MediaQueryBucketParams = [
+  bucketType: BucketType,
+  bucketKey: string,
+  bucketValue: string,
+  bucketQuery: string,
+];
+
 export interface ParsedMediaQuery {
   bucketKey: string;
   bucketQuery: string;

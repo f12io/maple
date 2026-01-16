@@ -44,6 +44,11 @@ export const DEFAULT_SPACE_UNIT = 'rem';
 export const DEFAULT_TIME_UNIT = 'ms';
 export const DEFAULT_ANGLE_UNIT = 'deg';
 
+export const DEFAULT_COLOR_VALUE = '#000000';
+export const DEFAULT_SPACE_VALUE = '1rem';
+export const DEFAULT_TIME_VALUE = '1ms';
+export const DEFAULT_ANGLE_VALUE = '1deg';
+
 export const ALL_UNITS = [
   ...ANGLE_UNITS,
   ...TIME_UNITS,

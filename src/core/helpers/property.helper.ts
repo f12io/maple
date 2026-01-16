@@ -1,4 +1,5 @@
 import { PRECALCULATED_PROP_TYPES } from 'internal:precalculated-prop-types';
+import { PROP_TYPE_CACHE } from '../constants/caches';
 import { CHAR_DASH } from '../constants/chars';
 import {
   PROP_TYPE_COLOR,
@@ -14,76 +15,61 @@ import {
   REGEX_RESERVED_KEYWORDS,
 } from '../constants/regex';
 import {
-  DEFAULT_ANGLE_UNIT,
-  DEFAULT_SPACE_UNIT,
-  DEFAULT_TIME_UNIT,
+  DEFAULT_ANGLE_VALUE,
+  DEFAULT_COLOR_VALUE,
+  DEFAULT_SPACE_VALUE,
+  DEFAULT_TIME_VALUE,
 } from '../constants/units';
-
-let element: HTMLDivElement | undefined;
+import { setCacheItem } from './cache.helper';
 
 export function resolveType(
   propKeyKebab: string,
   propKeyCamel: string,
 ): number {
-  // Return precalculated type, if available
-  if (propKeyCamel in PRECALCULATED_PROP_TYPES) {
-    return PRECALCULATED_PROP_TYPES[propKeyCamel];
-  }
-
-  // Return other type, if we're not in a browser
-  if (typeof document === 'undefined') {
-    return PROP_TYPE_OTHER;
-  }
-
-  element ??= document.createElement('div');
   let type = PROP_TYPE_OTHER;
 
-  element.style.setProperty(propKeyKebab, '#000000');
+  if (PROP_TYPE_CACHE.has(propKeyKebab)) {
+    return PROP_TYPE_CACHE.get(propKeyKebab) ?? type;
+  }
 
-  if (element.style.getPropertyValue(propKeyKebab)) {
+  if (propKeyCamel in PRECALCULATED_PROP_TYPES) {
+    type = PRECALCULATED_PROP_TYPES[propKeyCamel];
+    setCacheItem(PROP_TYPE_CACHE, propKeyKebab, type);
+    return type;
+  }
+
+  if (typeof CSS === 'undefined') {
+    return type;
+  }
+
+  if (
+    CSS.supports(propKeyKebab, DEFAULT_SPACE_VALUE) ||
+    CSS.supports(propKeyKebab, DEFAULT_ANGLE_VALUE) ||
+    CSS.supports(propKeyKebab, DEFAULT_TIME_VALUE)
+  ) {
+    type = PROP_TYPE_SPACE;
+  } else if (CSS.supports(propKeyKebab, DEFAULT_COLOR_VALUE)) {
     type = PROP_TYPE_COLOR;
   }
 
-  const spaceValue = '1' + DEFAULT_SPACE_UNIT;
-  element.style.setProperty(propKeyKebab, spaceValue);
-
-  if (element.style.getPropertyValue(propKeyKebab) === spaceValue) {
-    type = PROP_TYPE_SPACE;
-  } else {
-    const timeValue = '1' + DEFAULT_TIME_UNIT;
-    element.style.setProperty(propKeyKebab, timeValue);
-
-    if (element.style.getPropertyValue(propKeyKebab) === timeValue) {
-      type = PROP_TYPE_SPACE;
-    } else {
-      const angleValue = '1' + DEFAULT_ANGLE_UNIT;
-      element.style.setProperty(propKeyKebab, angleValue);
-
-      if (element.style.getPropertyValue(propKeyKebab) === angleValue) {
-        type = PROP_TYPE_SPACE;
-      }
-    }
-  }
-
-  element.style.setProperty(propKeyKebab, null);
+  setCacheItem(PROP_TYPE_CACHE, propKeyKebab, type);
 
   return type;
 }
 
-export function isKnownProperty(propKeyCamel: string): boolean {
-  // Return precalculated type, if available
-  if (propKeyCamel in PRECALCULATED_PROP_TYPES) {
+export function isKnownProperty(propKeyKebab: string): boolean {
+  if (
+    propKeyKebab in PRECALCULATED_PROP_TYPES ||
+    PROP_TYPE_CACHE.has(propKeyKebab)
+  ) {
     return true;
   }
 
-  // Return other type, if we're not in a browser
-  if (typeof document === 'undefined') {
+  if (typeof CSS === 'undefined') {
     return false;
   }
 
-  element ??= document.createElement('div');
-
-  return propKeyCamel in element.style;
+  return CSS.supports(propKeyKebab, 'inherit');
 }
 
 export function isKnownNumberValue(val: string): boolean {
