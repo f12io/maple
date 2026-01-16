@@ -40,7 +40,7 @@ export interface Bucket {
 export type MediaQueryBucketParams = [
   bucketType: BucketType,
   bucketKey: string,
-  bucketValue: string,
+  bucketVal: string,
   bucketQuery: string,
 ];
 
@@ -48,34 +48,34 @@ export interface ParsedMediaQuery {
   bucketKey: string;
   bucketQuery: string;
   bucketType: BucketType;
-  bucketValue: string;
+  bucketVal: string;
   innerBlockOpen: string;
   innerBlockClose: string;
 }
 
 export interface ParsedSelector {
   mediaQuery?: string;
-  parentSelector?: string;
-  selfSelector?: string;
-  childSelector?: string;
+  parentSel?: string;
+  selfSel?: string;
+  childSel?: string;
 }
 
 export interface ParsedClass {
-  sourceClass: string;
-  sourceSelector: string;
+  srcClass: string;
+  srcSel: string;
   isImportant: boolean;
-  isUtilityNegative: boolean;
+  isUtilNegative: boolean;
   mediaQuery?: string;
-  parentSelector?: string;
-  selfSelector?: string;
-  childSelector?: string;
-  utilityKey: string;
-  utilityValue: string;
-  utilityOperator: '-' | '=';
+  parentSel?: string;
+  selfSel?: string;
+  childSel?: string;
+  utilKey: string;
+  utilVal: string;
+  utilOp: '-' | '=';
   propType: number;
-  propValue: string;
+  propVal: string;
   propKeyCamel: string;
   propKeyKebab: string;
-  validVariableValue: string;
-  variableCategory?: string;
+  validVarVal: string;
+  varCat?: string;
 }

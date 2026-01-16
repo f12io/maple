@@ -6,7 +6,7 @@ const buckets: Array<Bucket> = [];
 let sheet: CSSStyleSheet | null = null;
 
 function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
-  const match = REGEX_NUMBER_WITH_UNIT.exec(parsedMediaQuery.bucketValue);
+  const match = REGEX_NUMBER_WITH_UNIT.exec(parsedMediaQuery.bucketVal);
 
   if (!match) return 0;
 

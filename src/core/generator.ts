@@ -19,18 +19,18 @@ import {
 import { insert } from './stylesheet';
 import { ParsedClass, ParsedMediaQuery } from './types';
 
-export function generateStylesFromClass(sourceClass: string): void {
+export function generateStylesFromClass(srcClass: string): void {
   /**
    * The class cache should leave as long as the
    * application is running. This will prevent the
    * same class from being parsed and inserted multiple times.
    */
-  if (CLASS_CACHE.has(sourceClass)) return;
+  if (CLASS_CACHE.has(srcClass)) return;
 
-  CLASS_CACHE.add(sourceClass);
+  CLASS_CACHE.add(srcClass);
 
   try {
-    const result = buildRule(sourceClass);
+    const result = buildRule(srcClass);
 
     if (result) {
       insert(result.rule, result.parsedMediaQuery);
@@ -40,8 +40,8 @@ export function generateStylesFromClass(sourceClass: string): void {
   }
 }
 
-export function convert(sourceClass: string): string | undefined {
-  const result = buildRule(sourceClass);
+export function convert(srcClass: string): string | undefined {
+  const result = buildRule(srcClass);
 
   if (!result) return;
 
@@ -55,11 +55,11 @@ export function convert(sourceClass: string): string | undefined {
 }
 
 function buildRule(
-  sourceClass: string,
+  srcClass: string,
 ):
   | { rule: string; parsedMediaQuery: ParsedMediaQuery | undefined }
   | undefined {
-  const parsed = parseClass(sourceClass);
+  const parsed = parseClass(srcClass);
   const styles = buildProp(parsed);
 
   if (!styles) return;
@@ -78,15 +78,15 @@ function buildRule(
 }
 
 function buildProp(parsed: ParsedClass) {
-  const { utilityKey } = parsed;
+  const { utilKey } = parsed;
 
-  if (!utilityKey) {
+  if (!utilKey) {
     return;
   }
 
-  const { utilityValue, propKeyCamel, isImportant } = parsed;
+  const { utilVal, propKeyCamel, isImportant } = parsed;
 
-  if (!utilityValue) {
+  if (!utilVal) {
     if (SHORTCUTS[propKeyCamel]) {
       return `${SHORTCUTS[propKeyCamel]}${isImportant ? ' !important' : ''};`;
     }
@@ -97,18 +97,18 @@ function buildProp(parsed: ParsedClass) {
 
   if (mod) return mod;
 
-  const { propKeyKebab, propValue, utilityOperator, propType } = parsed;
+  const { propKeyKebab, propVal, utilOp, propType } = parsed;
 
-  if (utilityOperator === REF_CHAR_CUSTOM) {
-    return serializeProp(propKeyKebab, propValue, isImportant);
+  if (utilOp === REF_CHAR_CUSTOM) {
+    return serializeProp(propKeyKebab, propVal, isImportant);
   }
 
   const serializedParts: Array<string> = [];
-  const parts = split(utilityValue, REF_CHAR_VALUE_PARTS);
+  const parts = split(utilVal, REF_CHAR_VALUE_PARTS);
 
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
-    const modifierResult = PART_MODIFIERS[utilityKey]?.(
+    const modifierResult = PART_MODIFIERS[utilKey]?.(
       parsed,
       part,
       i,
@@ -126,17 +126,12 @@ function buildProp(parsed: ParsedClass) {
     for (let j = 0; j < valueItems.length; j++) {
       const valueItem = valueItems[j];
       const value =
-        VALUE_MODIFIERS[utilityKey]?.(
-          parsed,
-          valueItem,
-          j,
-          valueItems.length,
-        ) ??
+        VALUE_MODIFIERS[utilKey]?.(parsed, valueItem, j, valueItems.length) ??
         TYPE_MODIFIERS[propType]?.({
           ...parsed,
-          utilityValue: valueItem,
-          propValue: valueItem,
-          validVariableValue: escapeVariable(valueItem),
+          utilVal: valueItem,
+          propVal: valueItem,
+          validVarVal: escapeVariable(valueItem),
         });
 
       if (value) {
@@ -155,10 +150,10 @@ function buildProp(parsed: ParsedClass) {
 }
 
 function buildSelector({
-  sourceSelector,
-  parentSelector = '',
-  selfSelector = '',
-  childSelector = '',
+  srcSel,
+  parentSel = '',
+  selfSel = '',
+  childSel = '',
 }: ParsedClass) {
-  return `${serializeSelector(parentSelector)} ${sourceSelector}${serializeSelector(selfSelector)} ${serializeSelector(childSelector)}`.trim();
+  return `${serializeSelector(parentSel)} ${srcSel}${serializeSelector(selfSel)} ${serializeSelector(childSel)}`.trim();
 }

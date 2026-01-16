@@ -126,10 +126,10 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
 
 export function applyModifier(parsed: ParsedClass): string | undefined {
   return (
-    INTERNAL_DECISION_MODIFIERS[parsed.utilityKey] ??
-    (parsed.utilityOperator === REF_CHAR_CUSTOM
+    INTERNAL_DECISION_MODIFIERS[parsed.utilKey] ??
+    (parsed.utilOp === REF_CHAR_CUSTOM
       ? CUSTOM_MODIFIERS
-      : PREDEFINED_MODIFIERS)[parsed.utilityKey]
+      : PREDEFINED_MODIFIERS)[parsed.utilKey]
   )?.(parsed);
 }
 
@@ -159,32 +159,32 @@ function createVariables(keys: Record<string, string>, prefix: string) {
 }
 
 function serializeValueAsVariable(
-  utilityKey: string,
-  validVariableValue: string,
-  propValue: string,
+  utilKey: string,
+  validVarVal: string,
+  propVal: string,
   fallbackValue?: string,
   variableCategoryAsIs?: string,
   variableCategoryForMap?: string,
 ) {
-  const propValueAsIs = removeBrackets(propValue);
+  const propValueAsIs = removeBrackets(propVal);
 
-  if (propValue !== propValueAsIs) {
+  if (propVal !== propValueAsIs) {
     return serializeValue(propValueAsIs);
   }
 
-  if (isReservedKeyword(propValue)) {
-    return propValue;
+  if (isReservedKeyword(propVal)) {
+    return propVal;
   }
 
   let variableCategoryFromMap: string | undefined;
 
-  fallbackValue ??= propValue;
+  fallbackValue ??= propVal;
 
-  if (!isKnownNumberValue(propValue)) {
-    fallbackValue = `var(--${validVariableValue}, ${fallbackValue})`;
+  if (!isKnownNumberValue(propVal)) {
+    fallbackValue = `var(--${validVarVal}, ${fallbackValue})`;
 
     if (variableCategoryAsIs) {
-      fallbackValue = `var(--${variableCategoryAsIs}-${validVariableValue}, ${fallbackValue})`;
+      fallbackValue = `var(--${variableCategoryAsIs}-${validVarVal}, ${fallbackValue})`;
     }
   }
 
@@ -193,14 +193,14 @@ function serializeValueAsVariable(
   }
 
   if (!variableCategoryForMap) {
-    variableCategoryFromMap = CSS_VARIABLE_CATEGORY[utilityKey];
+    variableCategoryFromMap = CSS_VARIABLE_CATEGORY[utilKey];
   }
 
   if (variableCategoryFromMap) {
-    fallbackValue = `var(--${variableCategoryFromMap}-${validVariableValue}, ${fallbackValue})`;
+    fallbackValue = `var(--${variableCategoryFromMap}-${validVarVal}, ${fallbackValue})`;
   }
 
-  return `var(--${utilityKey}-${validVariableValue}, ${fallbackValue})`;
+  return `var(--${utilKey}-${validVarVal}, ${fallbackValue})`;
 }
 
 function serializeFraction(value: string): string | undefined {
@@ -214,71 +214,67 @@ function serializeFraction(value: string): string | undefined {
   return `${val}%`;
 }
 
-function serializeOtherValue({
-  utilityKey,
-  validVariableValue,
-  propValue,
-}: ParsedClass) {
-  return serializeValueAsVariable(utilityKey, validVariableValue, propValue);
+function serializeOtherValue({ utilKey, validVarVal, propVal }: ParsedClass) {
+  return serializeValueAsVariable(utilKey, validVarVal, propVal);
 }
 
 function serializeNumberValue({
-  utilityKey,
-  utilityValue,
+  utilKey,
+  utilVal,
   propKeyCamel,
-  validVariableValue,
-  isUtilityNegative,
-  variableCategory,
+  validVarVal,
+  isUtilNegative,
+  varCat,
 }: ParsedClass): string {
-  const utilityValueAsIs = removeBrackets(utilityValue);
+  const utilityValueAsIs = removeBrackets(utilVal);
 
-  if (utilityValueAsIs !== utilityValue) {
+  if (utilityValueAsIs !== utilVal) {
     return serializeValue(utilityValueAsIs);
   }
 
-  if (isReservedKeyword(utilityValue)) {
-    return utilityValue;
+  if (isReservedKeyword(utilVal)) {
+    return utilVal;
   }
 
-  const numberValue = Number(utilityValue);
+  const numberValue = Number(utilVal);
 
   if (numberValue === 0) return '0';
 
-  const transformFnName = TRANSFORM_KEYS[utilityKey];
+  const transformFnName = TRANSFORM_KEYS[utilKey];
   const unit =
     PROP_UNIT_MAP[transformFnName || propKeyCamel] ?? DEFAULT_SPACE_UNIT;
 
-  let fallbackValue = utilityValue;
+  let fallbackValue = utilVal;
 
   if (isNaN(numberValue)) {
-    const isValueNegative = startsWithNegative(utilityValue);
+    const isValueNegative = startsWithNegative(utilVal);
 
-    isUtilityNegative = isUtilityNegative || isValueNegative;
+    isUtilNegative = isUtilNegative || isValueNegative;
 
     if (isValueNegative) {
-      utilityValue = utilityValue.slice(1);
+      utilVal = utilVal.slice(1);
     }
 
-    if (COVER_UNITS.includes(utilityValue)) {
-      return `${isUtilityNegative ? '-' : ''}100${utilityValue}`;
+    if (COVER_UNITS.includes(utilVal)) {
+      return `${isUtilNegative ? '-' : ''}100${utilVal}`;
     }
 
-    if (ONE_UNITS.includes(utilityValue)) {
-      return `${isUtilityNegative ? '-' : ''}1${utilityValue}`;
+    if (ONE_UNITS.includes(utilVal)) {
+      return `${isUtilNegative ? '-' : ''}1${utilVal}`;
     }
 
-    const percentValue = serializeFraction(utilityValue);
+    const percentValue = serializeFraction(utilVal);
 
     if (percentValue) {
-      return `${isUtilityNegative ? '-' : ''}${percentValue}`;
+      return `${isUtilNegative ? '-' : ''}${percentValue}`;
     }
 
-    const float = parseFloat(utilityValue);
+    const float = parseFloat(utilVal);
 
-    if (!isNaN(float) && isKnownNumberValue(utilityValue)) {
-      return `${isUtilityNegative ? '-' : ''}${utilityValue}`;
+    if (!isNaN(float) && isKnownNumberValue(utilVal)) {
+      return `${isUtilNegative ? '-' : ''}${utilVal}`;
     }
-  } else if (isKnownNumberValue(utilityValue)) {
+  } else if (isKnownNumberValue(utilVal)) {
     fallbackValue =
       unit === DEFAULT_SPACE_UNIT
         ? `calc(${numberValue}${unit} * var(--spacer, 0.25))`
@@ -286,33 +282,33 @@ function serializeNumberValue({
   }
 
   const val = serializeValueAsVariable(
-    utilityKey,
-    validVariableValue,
-    utilityValue,
+    utilKey,
+    validVarVal,
+    utilVal,
     fallbackValue,
-    variableCategory,
+    varCat,
     unit,
   );
 
-  return isUtilityNegative ? `calc(${val} * -1)` : val;
+  return isUtilNegative ? `calc(${val} * -1)` : val;
 }
 
 function serializeColorValue(parsed: ParsedClass): string {
-  const { utilityValue, utilityKey } = parsed;
-  const utilityValueAsIs = removeBrackets(utilityValue);
+  const { utilVal, utilKey } = parsed;
+  const utilityValueAsIs = removeBrackets(utilVal);
 
-  if (utilityValue !== utilityValueAsIs) {
+  if (utilVal !== utilityValueAsIs) {
     return serializeValue(utilityValueAsIs);
   }
 
-  if (isReservedKeyword(utilityValue)) {
-    return utilityValue;
+  if (isReservedKeyword(utilVal)) {
+    return utilVal;
   }
 
-  const tokenParts = REGEX_COLOR_TOKEN.exec(utilityValue);
+  const tokenParts = REGEX_COLOR_TOKEN.exec(utilVal);
 
   if (!tokenParts) {
-    const serializedValue = serializeValue(utilityValue);
+    const serializedValue = serializeValue(utilVal);
 
     return isKnownColorValue(serializedValue)
       ? serializedValue
@@ -325,7 +321,7 @@ function serializeColorValue(parsed: ParsedClass): string {
   const amount = (COLOR_MID_TONE - tone) / COLOR_MID_TONE;
 
   const nameVar = serializeValueAsVariable(
-    utilityKey,
+    utilKey,
     name,
     name,
     name,
@@ -337,7 +333,7 @@ function serializeColorValue(parsed: ParsedClass): string {
     ['hue-rotate', 0],
   ].map(
     ([key, defaultValue]) =>
-      `var(--${utilityKey}-${name}-${key}, var(--${name}-${key}, var(--${key}, ${defaultValue})))`,
+      `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${key}, ${defaultValue})))`,
   );
 
   const lCalc = amount > 0 ? `(1 - l) * ${amount}` : `l * ${amount}`;
@@ -353,23 +349,23 @@ function serializeColorValue(parsed: ParsedClass): string {
 }
 
 function serializeContainer({
-  utilityValue,
-  propValue,
+  utilVal,
+  propVal,
   isImportant,
 }: ParsedClass): string {
   let propKeyKebab = 'container-name';
 
   // Reqular container property
-  if (propValue.includes('/')) {
+  if (propVal.includes('/')) {
     propKeyKebab = 'container';
   }
 
   // Container type
-  if (CONTAINER_TYPES.includes(split(utilityValue, REF_CHAR_SPACE)[0])) {
+  if (CONTAINER_TYPES.includes(split(utilVal, REF_CHAR_SPACE)[0])) {
     propKeyKebab = 'container-type';
   }
 
-  return serializeProp(propKeyKebab, propValue, isImportant);
+  return serializeProp(propKeyKebab, propVal, isImportant);
 }
 
 function serializeRepeat(
@@ -378,8 +374,8 @@ function serializeRepeat(
   validPropKey2: string,
 ): string {
   const value =
-    parsed.utilityOperator == REF_CHAR_CUSTOM
-      ? parsed.propValue
+    parsed.utilOp == REF_CHAR_CUSTOM
+      ? parsed.propVal
       : serializeNumberValue(parsed);
 
   return (
@@ -389,16 +385,10 @@ function serializeRepeat(
 }
 
 function serializePercentageToDecimal(parsed: ParsedClass): string {
-  const {
-    utilityKey,
-    utilityValue,
-    propValue,
-    validVariableValue,
-    isImportant,
-  } = parsed;
-  const rawValue = Number(utilityValue);
+  const { utilKey, utilVal, propVal, validVarVal, isImportant } = parsed;
+  const rawValue = Number(utilVal);
   const value = isNaN(rawValue)
-    ? serializeValueAsVariable(utilityKey, validVariableValue, propValue)
+    ? serializeValueAsVariable(utilKey, validVarVal, propVal)
     : rawValue / 100;
 
   return serializeProp('opacity', `${value}`, isImportant);
@@ -407,18 +397,18 @@ function serializePercentageToDecimal(parsed: ParsedClass): string {
 function serializeTransform(parsed: ParsedClass): string {
   let value;
 
-  if (parsed.utilityOperator == REF_CHAR_CUSTOM) {
-    value = parsed.propValue;
+  if (parsed.utilOp == REF_CHAR_CUSTOM) {
+    value = parsed.propVal;
   } else {
-    const valueItems = split(parsed.utilityValue, REF_CHAR_SPACE);
+    const valueItems = split(parsed.utilVal, REF_CHAR_SPACE);
     const serializedValue = [];
 
     for (const valueItem of valueItems) {
       serializedValue.push(
         serializeNumberValue({
           ...parsed,
-          utilityValue: valueItem,
-          validVariableValue: escapeVariable(valueItem),
+          utilVal: valueItem,
+          validVarVal: escapeVariable(valueItem),
         }),
       );
     }
@@ -428,8 +418,8 @@ function serializeTransform(parsed: ParsedClass): string {
 
   return (
     serializeProp(
-      `--tf-${parsed.utilityKey}`,
-      `${TRANSFORM_KEYS[parsed.utilityKey]}(${value})`,
+      `--tf-${parsed.utilKey}`,
+      `${TRANSFORM_KEYS[parsed.utilKey]}(${value})`,
       false,
     ) + serializeProp('transform', TRANSFORM_VARIABLES, parsed.isImportant)
   );
@@ -443,10 +433,10 @@ function serializeFilter(
 ): string {
   let value;
 
-  if (parsed.utilityOperator == REF_CHAR_CUSTOM) {
-    value = `${abbreviationKeys[parsed.utilityKey]}(${parsed.propValue})`;
+  if (parsed.utilOp == REF_CHAR_CUSTOM) {
+    value = `${abbreviationKeys[parsed.utilKey]}(${parsed.propVal})`;
   } else {
-    const parts = split(parsed.utilityValue, REF_CHAR_VALUE_PARTS);
+    const parts = split(parsed.utilVal, REF_CHAR_VALUE_PARTS);
     const serializedParts = [];
 
     for (const part of parts) {
@@ -456,13 +446,10 @@ function serializeFilter(
       for (let i = 0; i < valueItems.length; i++) {
         const valueItem = valueItems[i];
 
-        if (
-          parsed.utilityKey === 'dshadow' ||
-          parsed.utilityKey === 'bdshadow'
-        ) {
+        if (parsed.utilKey === 'dshadow' || parsed.utilKey === 'bdshadow') {
           serializedValue.push(
             serializeShadowValue(
-              { ...parsed, utilityKey: 'dshadow' },
+              { ...parsed, utilKey: 'dshadow' },
               valueItem,
               i,
               valueItems.length,
@@ -472,23 +459,23 @@ function serializeFilter(
           serializedValue.push(
             serializeNumberValue({
               ...parsed,
-              utilityValue: valueItem,
-              utilityKey: parsed.utilityKey.replace(REGEX_BACKDROP_PREFIX, ''),
-              validVariableValue: escapeVariable(valueItem),
+              utilVal: valueItem,
+              utilKey: parsed.utilKey.replace(REGEX_BACKDROP_PREFIX, ''),
+              validVarVal: escapeVariable(valueItem),
             }),
           );
         } else {
           serializedValue.push(
             serializeOtherValue({
               ...parsed,
-              utilityKey: parsed.utilityKey.replace(REGEX_BACKDROP_PREFIX, ''),
+              utilKey: parsed.utilKey.replace(REGEX_BACKDROP_PREFIX, ''),
             }),
           );
         }
       }
 
       serializedParts.push(
-        `${abbreviationKeys[parsed.utilityKey]}(${serializedValue.join(' ')})`,
+        `${abbreviationKeys[parsed.utilKey]}(${serializedValue.join(' ')})`,
       );
     }
 
@@ -496,25 +483,19 @@ function serializeFilter(
   }
 
   return (
-    serializeProp(`--filter-${parsed.utilityKey}`, value, false) +
+    serializeProp(`--filter-${parsed.utilKey}`, value, false) +
     serializeProp(propKey, variables, parsed.isImportant)
   );
 }
 
 function serializeGridTemplate(parsed: ParsedClass): string | undefined {
-  const {
-    utilityKey,
-    utilityValue,
-    propValue,
-    propKeyKebab,
-    validVariableValue,
-    isImportant,
-  } = parsed;
-  const valueItems = split(utilityValue, REF_CHAR_SPACE);
+  const { utilKey, utilVal, propVal, propKeyKebab, validVarVal, isImportant } =
+    parsed;
+  const valueItems = split(utilVal, REF_CHAR_SPACE);
 
   if (valueItems.length === 1) {
     if (isNaN(Number(valueItems[0]))) {
-      const frItems = split(utilityValue, '/');
+      const frItems = split(utilVal, '/');
 
       if (frItems.length > 1) {
         return serializeProp(
@@ -532,7 +513,7 @@ function serializeGridTemplate(parsed: ParsedClass): string | undefined {
     } else {
       return serializeProp(
         propKeyKebab,
-        `repeat(var(--${utilityKey}-${validVariableValue}, ${propValue}), minmax(0, 1fr))`,
+        `repeat(var(--${utilKey}-${validVarVal}, ${propVal}), minmax(0, 1fr))`,
         isImportant,
       );
     }
@@ -544,8 +525,8 @@ function serializeGridTemplate(parsed: ParsedClass): string | undefined {
     serializedValue.push(
       serializeNumberValue({
         ...parsed,
-        utilityValue: valueItem,
-        validVariableValue: escapeVariable(valueItem),
+        utilVal: valueItem,
+        validVarVal: escapeVariable(valueItem),
       }),
     );
   }
@@ -556,7 +537,7 @@ function serializeGridTemplate(parsed: ParsedClass): string | undefined {
 }
 
 function serializeGridItem(parsed: ParsedClass): string | undefined {
-  const frItems = split(parsed.utilityValue, '/');
+  const frItems = split(parsed.utilVal, '/');
 
   if (frItems.length === 1 && isKnownNumberValue(frItems[0])) {
     const numberValue = Number(frItems[0]);
@@ -569,7 +550,7 @@ function serializeGridItem(parsed: ParsedClass): string | undefined {
 }
 
 function serializePropsInValue(parsed: ParsedClass): string | undefined {
-  const parts = split(parsed.utilityValue, REF_CHAR_VALUE_PARTS);
+  const parts = split(parsed.utilVal, REF_CHAR_VALUE_PARTS);
   const propNames = [];
 
   for (const part of parts) {
@@ -584,7 +565,7 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
     if (isKnownProperty(mappedPropKeyKebab)) {
       propNames.push(
         serializeValueAsVariable(
-          parsed.utilityKey,
+          parsed.utilKey,
           escapeVariable(propName),
           mappedPropKeyKebab,
           undefined,
@@ -594,7 +575,7 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
     } else {
       propNames.push(
         serializeValueAsVariable(
-          parsed.utilityKey,
+          parsed.utilKey,
           escapeVariable(propName),
           mappedPropKeyKebab,
           undefined,
@@ -616,7 +597,7 @@ function serializeTransitionValue(
   valueItem: string,
 ): string | undefined {
   let mappedValueItem = valueItem;
-  let variableCategory;
+  let varCat;
 
   valueItem =
     ABBREVIATIONS_REVERSE[valueItem] ||
@@ -627,14 +608,14 @@ function serializeTransitionValue(
     : valueItem;
 
   if (isKnownProperty(mappedValueItem)) {
-    variableCategory = CSS_VARIABLE_CATEGORY.prop;
+    varCat = CSS_VARIABLE_CATEGORY.prop;
   }
 
   return serializeNumberValue({
     ...parsed,
-    utilityValue: mappedValueItem,
-    validVariableValue: escapeVariable(valueItem),
-    variableCategory,
+    utilVal: mappedValueItem,
+    validVarVal: escapeVariable(valueItem),
+    varCat,
   });
 }
 
@@ -658,9 +639,9 @@ function serializeShadowValue(
 
   return TYPE_MODIFIERS[type]?.({
     ...parsed,
-    utilityValue: valueItem,
-    propValue: valueItem,
-    validVariableValue: escapeVariable(valueItem),
+    utilVal: valueItem,
+    propVal: valueItem,
+    validVarVal: escapeVariable(valueItem),
   });
 }
 
@@ -671,7 +652,7 @@ function serializeBackgroundImageParts(
   let cssFunction;
   let nonFunctionParams;
 
-  if (parsed.utilityKey === ABBREVIATIONS_REVERSE.background) {
+  if (parsed.utilKey === ABBREVIATIONS_REVERSE.background) {
     [cssFunction, nonFunctionParams] = partItem.split(
       REGEX_NON_FUNCTION_PARAM_SPLITTER,
     );
@@ -695,7 +676,7 @@ function serializeBackgroundImageParts(
     // Check if the value starts with a known function name
     if (FUNCTION_KEYS[split(partItem, REF_CHAR_PREDEFINED)[0]]) {
       return serializeValueAsVariable(
-        parsed.utilityKey,
+        parsed.utilKey,
         escapeVariable(partItem),
         partItem,
         undefined,
@@ -704,13 +685,13 @@ function serializeBackgroundImageParts(
     } else {
       return TYPE_MODIFIERS[parsed.propType]?.({
         ...parsed,
-        utilityValue: partItem,
-        utilityKey:
+        utilVal: partItem,
+        utilKey:
           parsed.propType === PROP_TYPE_COLOR
             ? ABBREVIATIONS_REVERSE.backgroundColor
             : ABBREVIATIONS_REVERSE.backgroundImage,
-        propValue: partItem,
-        validVariableValue: escapeVariable(partItem),
+        propVal: partItem,
+        validVarVal: escapeVariable(partItem),
       });
     }
   }
@@ -734,7 +715,7 @@ function serializeBackgroundImageParts(
       if (value !== valueAsIs) {
         serializedParams.push(serializeValue(valueAsIs));
       } else {
-        const propValue =
+        const propVal =
           functionKey && functionKey !== value
             ? `${functionKey}${REF_CHAR_PREDEFINED}${value}`
             : value;
@@ -742,8 +723,8 @@ function serializeBackgroundImageParts(
         serializedParams.push(
           serializeValueAsVariable(
             ABBREVIATIONS_REVERSE.backgroundImage,
-            escapeVariable(propValue),
-            propValue,
+            escapeVariable(propVal),
+            propVal,
             undefined,
             isUrlFunction ? undefined : CSS_VARIABLE_CATEGORY.gradient,
           ),
@@ -768,8 +749,8 @@ function serializeBackgroundImageParts(
       const colorToken = stopParts.shift() ?? '';
       const colorValue = serializeColorValue({
         ...parsed,
-        utilityKey: ABBREVIATIONS_REVERSE.backgroundColor,
-        utilityValue: colorToken,
+        utilKey: ABBREVIATIONS_REVERSE.backgroundColor,
+        utilVal: colorToken,
       });
 
       const positionTokens: Array<string> = [];
@@ -778,9 +759,9 @@ function serializeBackgroundImageParts(
         positionTokens.push(
           serializeNumberValue({
             ...parsed,
-            utilityKey: 'stop',
-            utilityValue: positionToken,
-            validVariableValue: escapeVariable(positionToken),
+            utilKey: 'stop',
+            utilVal: positionToken,
+            validVarVal: escapeVariable(positionToken),
           }),
         );
       }

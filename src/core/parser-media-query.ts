@@ -35,7 +35,7 @@ const MEDIA_SNAPPED_CUSTOM = 'snapped' + REF_CHAR_CUSTOM;
 export function parseMediaQuery({
   mediaQuery,
   propKeyKebab,
-  propValue,
+  propVal,
 }: ParsedClass): ParsedMediaQuery | undefined {
   if (!mediaQuery) {
     return;
@@ -49,7 +49,7 @@ export function parseMediaQuery({
     bucketKey: '',
     bucketQuery: '',
     bucketType: 'initial',
-    bucketValue: '',
+    bucketVal: '',
     innerBlockOpen: '',
     innerBlockClose: '',
   };
@@ -64,7 +64,7 @@ export function parseMediaQuery({
     const cacheKey =
       isViewportQuery &&
       (mq === MEDIA_SUPPORTS || mq === MEDIA_NOT + MEDIA_SUPPORTS)
-        ? bucketKey + propKeyKebab + propValue
+        ? bucketKey + propKeyKebab + propVal
         : bucketKey;
 
     if (MEDIA_QUERY_CACHE.has(cacheKey)) {
@@ -239,14 +239,14 @@ export function parseMediaQuery({
 
     if (isViewportQuery) {
       if (mq === MEDIA_SUPPORTS) {
-        propValue = serializeValue(propValue);
+        propVal = serializeValue(propVal);
 
         updateParsedMediaQuery(
           [
             'supports',
             bucketKey,
-            propValue,
-            `@supports ${not}(${propKeyKebab}:${propValue})`,
+            propVal,
+            `@supports ${not}(${propKeyKebab}:${propVal})`,
           ],
           parsedMediaQuery,
           cacheKey,
@@ -428,7 +428,7 @@ function updateParsedMediaQuery(
 
   setCacheItem(MEDIA_QUERY_CACHE, cacheKey, params);
 
-  const [bucketType, bucketKey, bucketValue, bucketQuery] = params;
+  const [bucketType, bucketKey, bucketVal, bucketQuery] = params;
 
   if (parsedMediaQuery.bucketKey === bucketKey) {
     return;
@@ -437,7 +437,7 @@ function updateParsedMediaQuery(
   if (parsedMediaQuery.bucketType === 'initial') {
     parsedMediaQuery.bucketType = bucketType;
     parsedMediaQuery.bucketKey = bucketKey;
-    parsedMediaQuery.bucketValue = bucketValue;
+    parsedMediaQuery.bucketVal = bucketVal;
     parsedMediaQuery.bucketQuery = bucketQuery;
     return;
   }
@@ -467,7 +467,7 @@ function updateParsedMediaQuery(
 
     parsedMediaQuery.bucketType = bucketType;
     parsedMediaQuery.bucketKey = bucketKey;
-    parsedMediaQuery.bucketValue = bucketValue;
+    parsedMediaQuery.bucketVal = bucketVal;
     parsedMediaQuery.bucketQuery = bucketQuery;
     return;
   }

@@ -7,8 +7,8 @@ export function startObserver() {
     for (const mut of muts) {
       if (!(mut.target instanceof Element)) continue;
 
-      for (const sourceClass of mut.target.classList) {
-        generateStylesFromClass(sourceClass);
+      for (const srcClass of mut.target.classList) {
+        generateStylesFromClass(srcClass);
       }
     }
   });

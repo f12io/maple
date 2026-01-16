@@ -31,17 +31,17 @@ import {
 import { serializeValue } from './serializer';
 import { ParsedClass, ParsedSelector } from './types';
 
-export function parseClass(sourceClass: string): ParsedClass {
-  const originalClass = sourceClass;
+export function parseClass(srcClass: string): ParsedClass {
+  const originalClass = srcClass;
 
   // Handle "Important" flag
   let isImportant = false;
-  if (sourceClass.startsWith(REF_CHAR_IMPORTANT)) {
+  if (srcClass.startsWith(REF_CHAR_IMPORTANT)) {
     isImportant = true;
-    sourceClass = sourceClass.slice(1);
+    srcClass = srcClass.slice(1);
   }
 
-  const parts = split(sourceClass, REF_CHAR_UTILITY_DELIMITER);
+  const parts = split(srcClass, REF_CHAR_UTILITY_DELIMITER);
   let contextRaw = '';
   let utilityRaw = '';
 
@@ -55,8 +55,8 @@ export function parseClass(sourceClass: string): ParsedClass {
   const parsed: ParsedClass = {
     ...parseSelectors(contextRaw),
     ...parseUtility(utilityRaw),
-    sourceClass: originalClass,
-    sourceSelector: '.' + escapeClass(originalClass),
+    srcClass: originalClass,
+    srcSel: '.' + escapeClass(originalClass),
     isImportant,
   };
 
@@ -64,61 +64,61 @@ export function parseClass(sourceClass: string): ParsedClass {
 }
 
 function parseUtility(utilityRaw: string): {
-  utilityKey: string;
-  utilityValue: string;
-  utilityOperator: ParsedClass['utilityOperator'];
-  isUtilityNegative: boolean;
+  utilKey: string;
+  utilVal: string;
+  utilOp: ParsedClass['utilOp'];
+  isUtilNegative: boolean;
   propKeyCamel: string;
   propKeyKebab: string;
   propType: number;
-  propValue: string;
-  validVariableValue: string;
+  propVal: string;
+  validVarVal: string;
 } {
-  let utilityKey = utilityRaw;
-  let utilityValue = '';
-  let utilityOperator: ParsedClass['utilityOperator'] = REF_CHAR_CUSTOM;
-  let isUtilityNegative = false;
+  let utilKey = utilityRaw;
+  let utilVal = '';
+  let utilOp: ParsedClass['utilOp'] = REF_CHAR_CUSTOM;
+  let isUtilNegative = false;
 
   const parts = split(utilityRaw, REF_CHAR_CUSTOM);
 
   if (parts.length > 1) {
-    utilityKey = parts.shift() ?? '';
-    utilityValue = parts.join(REF_CHAR_CUSTOM);
-    utilityValue = removeBrackets(utilityValue);
+    utilKey = parts.shift() ?? '';
+    utilVal = parts.join(REF_CHAR_CUSTOM);
+    utilVal = removeBrackets(utilVal);
   } else {
-    isUtilityNegative = startsWithNegative(utilityRaw);
-    utilityRaw = isUtilityNegative ? utilityRaw.slice(1) : utilityRaw;
+    isUtilNegative = startsWithNegative(utilityRaw);
+    utilityRaw = isUtilNegative ? utilityRaw.slice(1) : utilityRaw;
 
     const splitted = splitAtFirstOccurrence(utilityRaw, REF_CHAR_PREDEFINED);
 
     if (splitted.length === 2) {
-      utilityKey = splitted[0];
-      utilityValue = splitted[1];
-      utilityOperator = REF_CHAR_PREDEFINED;
+      utilKey = splitted[0];
+      utilVal = splitted[1];
+      utilOp = REF_CHAR_PREDEFINED;
     }
   }
 
-  let propKeyCamel = ABBREVIATIONS[utilityKey];
+  let propKeyCamel = ABBREVIATIONS[utilKey];
 
   if (!propKeyCamel) {
-    const abbrFromCamel = ABBREVIATIONS_REVERSE[utilityKey] ?? utilityKey;
+    const abbrFromCamel = ABBREVIATIONS_REVERSE[utilKey] ?? utilKey;
 
-    utilityKey = abbrFromCamel;
-    propKeyCamel = ABBREVIATIONS[abbrFromCamel] ?? utilityKey;
+    utilKey = abbrFromCamel;
+    propKeyCamel = ABBREVIATIONS[abbrFromCamel] ?? utilKey;
   }
 
   const propKeyKebab = toKebabCase(propKeyCamel);
 
   return {
-    utilityKey,
-    utilityValue,
-    utilityOperator,
-    isUtilityNegative,
+    utilKey,
+    utilVal,
+    utilOp,
+    isUtilNegative,
     propKeyCamel,
     propKeyKebab,
     propType: resolveType(propKeyKebab, propKeyCamel),
-    propValue: serializeValue(utilityValue),
-    validVariableValue: escapeVariable(utilityValue),
+    propVal: serializeValue(utilVal),
+    validVarVal: escapeVariable(utilVal),
   };
 }
 
@@ -128,9 +128,9 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
   }
 
   let mediaQuery: string | undefined;
-  let parentSelector: string | undefined;
-  let selfSelector: string | undefined;
-  let childSelector: string | undefined;
+  let parentSel: string | undefined;
+  let selfSel: string | undefined;
+  let childSel: string | undefined;
 
   if (!contextRaw) {
     return;
@@ -198,13 +198,13 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
 
             switch (lastAnchorType) {
               case CHAR_CARET:
-                parentSelector = value;
+                parentSel = value;
                 break;
               case CHAR_AMPERSAND:
-                selfSelector = value;
+                selfSel = value;
                 break;
               case CHAR_SLASH:
-                childSelector = value;
+                childSel = value;
                 break;
             }
           }
@@ -219,9 +219,9 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
 
   const parsedSelector: ParsedSelector = {
     mediaQuery,
-    parentSelector,
-    selfSelector,
-    childSelector,
+    parentSel,
+    selfSel,
+    childSel,
   };
 
   setCacheItem(SELECTOR_CACHE, contextRaw, parsedSelector);
