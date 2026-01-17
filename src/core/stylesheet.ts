@@ -1,9 +1,10 @@
 import { CHAR_AT } from './constants/chars';
-import { MEDIA_BUCKET_TYPE_ORDER, REM_SIZE } from './constants/config';
+import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
 import { REGEX_NUMBER_WITH_UNIT } from './constants/regex';
 import { Bucket, BucketType, ParsedMediaQuery } from './types';
 
 const buckets: Array<Bucket> = [];
+const BASE_KEY = 'base';
 let sheet: CSSStyleSheet | null = null;
 let refsLayer: CSSGroupingRule | null = null;
 let utilsLayer: CSSGroupingRule | null = null;
@@ -12,7 +13,7 @@ export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
   if (!sheet) initStyleSheet();
   if (!sheet) return;
 
-  const targetKey = parsedMediaQuery?.bucketKey ?? 'base';
+  const targetKey = parsedMediaQuery?.bucketKey ?? BASE_KEY;
   let bucket = buckets.find((b) => b.key === targetKey);
 
   if (!bucket && parsedMediaQuery) {
@@ -40,17 +41,39 @@ export function insertRefVar(key: string, val: string) {
 function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
   const match = REGEX_NUMBER_WITH_UNIT.exec(parsedMediaQuery.bucketVal);
 
-  if (!match) return 0;
-
-  const rawValue = parseFloat(match[1]);
-  const unit = match[2];
-  let normalized = rawValue;
-
-  if (unit === 'rem' || unit === 'em') {
-    normalized = rawValue * REM_SIZE;
+  if (!match) {
+    const numberValue = Number(parsedMediaQuery.bucketVal);
+    return isNaN(numberValue) ? 0 : numberValue;
   }
 
-  return normalized;
+  const rawValue = parseFloat(match[1]);
+  const unit = match[2].toLowerCase();
+
+  switch (unit) {
+    case 'px':
+      return rawValue;
+    case 'rem':
+      return rawValue * 16;
+    case 'em':
+      return rawValue * 16;
+    case 'in':
+      return rawValue * 96;
+    case 'cm':
+      return rawValue * (96 / 2.54);
+    case 'mm':
+      return rawValue * (96 / 25.4);
+    case 'pt':
+      return rawValue * (96 / 72);
+    case 'pc':
+      return rawValue * 16;
+  }
+
+  /**
+   * Unknown Units (vw, vh, ch, ex)
+   * We return the raw value because we can't convert them.
+   * Strict sorting is impossible for these mixed types.
+   */
+  return rawValue;
 }
 
 function compareBuckets(
@@ -95,20 +118,14 @@ function insertBucket(key: string, parsedMediaQuery: ParsedMediaQuery) {
     insertIndex = i + 1;
   }
 
-  try {
-    utilsLayer.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
+  utilsLayer.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
 
-    const rule = utilsLayer.cssRules[insertIndex] as CSSGroupingRule;
-
-    buckets.splice(insertIndex, 0, {
-      key,
-      type,
-      val,
-      rule,
-    });
-  } catch (ignoreError) {
-    console.error(ignoreError);
-  }
+  buckets.splice(insertIndex, 0, {
+    key,
+    type,
+    val,
+    rule: utilsLayer.cssRules[insertIndex] as CSSGroupingRule,
+  });
 }
 
 function initStyleSheet() {
@@ -138,8 +155,8 @@ function initStyleSheet() {
   utilsLayer.insertRule('@layer base {}', 0);
 
   buckets.push({
-    key: 'base',
-    type: 'base',
+    key: BASE_KEY,
+    type: BASE_KEY,
     val: 0,
     rule: utilsLayer.cssRules[0] as CSSGroupingRule,
   });

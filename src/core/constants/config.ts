@@ -11,7 +11,6 @@ export const DEFAULT_BREAKPOINTS: Record<string, string> = {
   '2xl': '1536px',
 };
 
-export const REM_SIZE = 16;
 export const COLOR_MID_TONE = 500;
 
 export const PROP_TYPE_OTHER = 0;
