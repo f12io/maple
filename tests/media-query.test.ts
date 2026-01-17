@@ -471,6 +471,12 @@ describe('Nested Queries', () => {
       '@container not (min-width: 768px) { @media (min-width: 1280px) { .\\@xl\\:mxw-md\\:o-0 { opacity: 0; } } }',
     );
   });
+
+  it('media with 2xl and @2xl', () => {
+    expect(convert('2xl:@2xl:o-0')).toBe(
+      '@media (min-width: 1536px) { @container (min-width: 1536px) { .\\32 xl\\:\\@2xl\\:o-0 { opacity: 0; } } }',
+    );
+  });
 });
 
 describe('Stress Tests', () => {
