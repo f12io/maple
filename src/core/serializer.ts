@@ -624,7 +624,7 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
           escapeVariable(propName),
           mappedPropKeyKebab,
           undefined,
-          CSS_VARIABLE_CATEGORY.other,
+          undefined,
         ),
       );
     }

@@ -27,8 +27,7 @@ export type BucketType =
   | 'scrollable'
   | 'snapped'
   | 'prefers'
-  | 'initial'
-  | 'other';
+  | 'static';
 
 export interface Bucket {
   key: string;
@@ -49,8 +48,8 @@ export interface ParsedMediaQuery {
   bucketQuery: string;
   bucketType: BucketType;
   bucketVal: string;
-  innerBlockOpen: string;
-  innerBlockClose: string;
+  prefix: string;
+  suffix: string;
 }
 
 export interface ParsedSelector {

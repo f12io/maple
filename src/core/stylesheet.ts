@@ -1,3 +1,4 @@
+import { CHAR_AT } from './constants/chars';
 import { MEDIA_BUCKET_TYPE_ORDER, REM_SIZE } from './constants/config';
 import { REGEX_NUMBER_WITH_UNIT } from './constants/regex';
 import { Bucket, BucketType, ParsedMediaQuery } from './types';
@@ -53,14 +54,27 @@ function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
 }
 
 function compareBuckets(
-  a: { type: BucketType; val: number },
-  b: { type: BucketType; val: number },
+  a: { type: BucketType; val: number; key: string },
+  b: { type: BucketType; val: number; key: string },
 ) {
   const orderA = MEDIA_BUCKET_TYPE_ORDER[a.type];
   const orderB = MEDIA_BUCKET_TYPE_ORDER[b.type];
 
   if (orderA !== orderB) return orderA - orderB;
-  if (a.type === 'mnw' || a.type === 'mnh') return a.val - b.val;
+
+  if (a.type === 'mnw' || a.type === 'mnh') {
+    if (a.val !== b.val) return a.val - b.val;
+
+    // '@' denotes Viewport (Media), and lack of '@' denotes Container
+    const isAMedia = a.key.charCodeAt(0) === CHAR_AT;
+    const isBMedia = b.key.charCodeAt(0) === CHAR_AT;
+
+    if (isAMedia !== isBMedia) {
+      // If A is Media (Global) and B is Container (Local),
+      // A should come FIRST (smaller index) so B overrides it.
+      return isAMedia ? -1 : 1;
+    }
+  }
 
   return b.val - a.val;
 }
@@ -70,7 +84,7 @@ function insertBucket(key: string, parsedMediaQuery: ParsedMediaQuery) {
 
   const val = parsePriority(parsedMediaQuery);
   const type = parsedMediaQuery.bucketType;
-  const compareParam = { type, val };
+  const compareParam = { type, val, key };
   let insertIndex = 0;
 
   for (let i = 0; i < buckets.length; i++) {

@@ -438,7 +438,13 @@ describe('Not with "Not Equal" Sign', () => {
 describe('Nested Queries', () => {
   it('media with not custom min width and dark', () => {
     expect(convert('@mnw!=600px:@dark:o-0')).toBe(
-      '@media not (min-width: 600px) { @media (prefers-color-scheme: dark) { .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } } }',
+      '@media (prefers-color-scheme: dark) { @media not (min-width: 600px) { .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } } }',
+    );
+  });
+
+  it('media with supports, print and mnw ', () => {
+    expect(convert('@md:@supports=[opacity:0]:@print:o-0')).toBe(
+      '@media print { @media (min-width: 768px) { @supports (opacity:0) { .\\@md\\:\\@supports\\=\\[opacity\\:0\\]\\:\\@print\\:o-0 { opacity: 0; } } } }',
     );
   });
 
@@ -456,7 +462,13 @@ describe('Nested Queries', () => {
 
   it('media with md and @xl', () => {
     expect(convert('md:@xl:o-0')).toBe(
-      '@container (min-width: 768px) { @media (min-width: 1280px) { .md\\:\\@xl\\:o-0 { opacity: 0; } } }',
+      '@media (min-width: 1280px) { @container (min-width: 768px) { .md\\:\\@xl\\:o-0 { opacity: 0; } } }',
+    );
+  });
+
+  it('media with md and @xl', () => {
+    expect(convert('@xl:mxw-md:o-0')).toBe(
+      '@container not (min-width: 768px) { @media (min-width: 1280px) { .\\@xl\\:mxw-md\\:o-0 { opacity: 0; } } }',
     );
   });
 });
@@ -468,17 +480,17 @@ describe('Stress Tests', () => {
         '@print:@supports=[(display:grid)and(gap:1px)]:@not-mxh=50rem:@mnw=600px:md:snapped(snap-container)=y:o-0',
       ),
     ).toBe(
-      '@supports ((display:grid)and(gap:1px)) { @media print { @media not (max-height: 50rem) { @media (min-width: 600px) { @container (min-width: 768px) { @container snap-container scroll-state(snapped: y) { .\\@print\\:\\@supports\\=\\[\\(display\\:grid\\)and\\(gap\\:1px\\)\\]\\:\\@not-mxh\\=50rem\\:\\@mnw\\=600px\\:md\\:snapped\\(snap-container\\)\\=y\\:o-0 { opacity: 0; } } } } } } }',
+      '@media print { @supports ((display:grid)and(gap:1px)) { @media not (max-height: 50rem) { @media (min-width: 600px) { @container (min-width: 768px) { @container snap-container scroll-state(snapped: y) { .\\@print\\:\\@supports\\=\\[\\(display\\:grid\\)and\\(gap\\:1px\\)\\]\\:\\@not-mxh\\=50rem\\:\\@mnw\\=600px\\:md\\:snapped\\(snap-container\\)\\=y\\:o-0 { opacity: 0; } } } } } } }',
     );
   });
 
   it('2', () => {
     expect(
       convert(
-        "@print:@supports=[(display:grid)and(gap:1px)]:@not-mxh=50rem:@mnw=600px:md:style(section)=[--theme-color]:snapped(snap-container)=y:^:rtl:odd&:not(:has(.active))/.card[data-type='test:123&abc']:content='Time=12:00'",
+        "@supports=[(display:grid)and(gap:1px)]:@mnw=600px:md:@print:style(section)=[--theme-color]:@not-mxh=50rem:snapped(snap-container)=y:^:rtl:odd&:not(:has(.active))/.card[data-type='test:123&abc']:content='Time=12:00'",
       ),
     ).toBe(
-      "@supports ((display:grid)and(gap:1px)) { @media print { @media not (max-height: 50rem) { @media (min-width: 600px) { @container (min-width: 768px) { @container section style(--theme-color) { @container snap-container scroll-state(snapped: y) { [dir=\"rtl\"]:nth-child(odd) .\\@print\\:\\@supports\\=\\[\\(display\\:grid\\)and\\(gap\\:1px\\)\\]\\:\\@not-mxh\\=50rem\\:\\@mnw\\=600px\\:md\\:style\\(section\\)\\=\\[--theme-color\\]\\:snapped\\(snap-container\\)\\=y\\:\\^\\:rtl\\:odd\\&\\:not\\(\\:has\\(\\.active\\)\\)\\/\\.card\\[data-type\\=\\'test\\:123\\&abc\\'\\]\\:content\\=\\'Time\\=12\\:00\\':not(:has(.active)) .card[data-type='test:123&abc'] { content: 'Time=12:00'; } } } } } } } }",
+      "@media print { @supports ((display:grid)and(gap:1px)) { @media (min-width: 600px) { @container (min-width: 768px) { @container section style(--theme-color) { @media not (max-height: 50rem) { @container snap-container scroll-state(snapped: y) { [dir=\"rtl\"]:nth-child(odd) .\\@supports\\=\\[\\(display\\:grid\\)and\\(gap\\:1px\\)\\]\\:\\@mnw\\=600px\\:md\\:\\@print\\:style\\(section\\)\\=\\[--theme-color\\]\\:\\@not-mxh\\=50rem\\:snapped\\(snap-container\\)\\=y\\:\\^\\:rtl\\:odd\\&\\:not\\(\\:has\\(\\.active\\)\\)\\/\\.card\\[data-type\\=\\'test\\:123\\&abc\\'\\]\\:content\\=\\'Time\\=12\\:00\\':not(:has(.active)) .card[data-type='test:123&abc'] { content: 'Time=12:00'; } } } } } } } }",
     );
   });
 });

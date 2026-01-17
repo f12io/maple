@@ -20,8 +20,6 @@ export const PROP_TYPE_COLOR = 2;
 
 export const MEDIA_BUCKET_TYPE_ORDER: Record<BucketType, number> = {
   base: 1,
-  supports: 2,
-  other: 10,
   mnw: 20,
   mxw: 30,
   mnh: 40,
@@ -31,6 +29,7 @@ export const MEDIA_BUCKET_TYPE_ORDER: Record<BucketType, number> = {
   stuck: 80,
   scrollable: 90,
   snapped: 100,
-  prefers: 1000,
-  initial: 9999,
+  prefers: 110,
+  supports: 120,
+  static: 130,
 };

@@ -43,15 +43,12 @@ export function parseMediaQuery({
 
   const prefixContainer = '@container';
   const prefixMedia = '@media';
+  const collection: Array<MediaQueryBucketParams> = [];
   const mediaQueries = split(mediaQuery, REF_CHAR_MEDIA_QUERY_DELIMITER);
 
-  const parsedMediaQuery: ParsedMediaQuery = {
-    bucketKey: '',
-    bucketQuery: '',
-    bucketType: 'initial',
-    bucketVal: '',
-    innerBlockOpen: '',
-    innerBlockClose: '',
+  const collect = (cacheKey: string, params: MediaQueryBucketParams) => {
+    setCacheItem(MEDIA_QUERY_CACHE, cacheKey, params);
+    collection.push(params);
   };
 
   for (let mq of mediaQueries) {
@@ -68,11 +65,8 @@ export function parseMediaQuery({
         : bucketKey;
 
     if (MEDIA_QUERY_CACHE.has(cacheKey)) {
-      updateParsedMediaQuery(
-        MEDIA_QUERY_CACHE.get(cacheKey),
-        parsedMediaQuery,
-        cacheKey,
-      );
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      collect(cacheKey, MEDIA_QUERY_CACHE.get(cacheKey)!);
 
       continue;
     }
@@ -111,16 +105,12 @@ export function parseMediaQuery({
     const prefixWithNot = not ? `${prefix} ${not}` : `${prefix} `;
 
     if (BREAKPOINTS[mq]) {
-      updateParsedMediaQuery(
-        [
-          'mnw',
-          bucketKey,
-          BREAKPOINTS[mq],
-          `${prefixWithNot}(min-width: ${BREAKPOINTS[mq]})`,
-        ],
-        parsedMediaQuery,
-        cacheKey,
-      );
+      collect(cacheKey, [
+        'mnw',
+        bucketKey,
+        BREAKPOINTS[mq],
+        `${prefixWithNot}(min-width: ${BREAKPOINTS[mq]})`,
+      ]);
 
       continue;
     }
@@ -131,17 +121,19 @@ export function parseMediaQuery({
 
       if (value) {
         if (not) {
-          updateParsedMediaQuery(
-            ['mxw', bucketKey, value, `${prefix} (min-width: ${value})`],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'mxw',
+            bucketKey,
+            value,
+            `${prefix} (min-width: ${value})`,
+          ]);
         } else {
-          updateParsedMediaQuery(
-            ['mxw', bucketKey, value, `${prefix} not (min-width: ${value})`],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'mxw',
+            bucketKey,
+            value,
+            `${prefix} not (min-width: ${value})`,
+          ]);
         }
       }
 
@@ -154,17 +146,19 @@ export function parseMediaQuery({
 
       if (value) {
         if (not) {
-          updateParsedMediaQuery(
-            ['mnh', bucketKey, value, `${prefix} (min-height: ${value})`],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'mnh',
+            bucketKey,
+            value,
+            `${prefix} (min-height: ${value})`,
+          ]);
         } else {
-          updateParsedMediaQuery(
-            ['mxh', bucketKey, value, `${prefix} not (min-height: ${value})`],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'mxh',
+            bucketKey,
+            value,
+            `${prefix} not (min-height: ${value})`,
+          ]);
         }
       }
 
@@ -175,11 +169,12 @@ export function parseMediaQuery({
       const value = mq.slice(MEDIA_MIN_WIDTH_CUSTOM.length);
 
       if (value) {
-        updateParsedMediaQuery(
-          ['mnw', bucketKey, value, `${prefixWithNot}(min-width: ${value})`],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'mnw',
+          bucketKey,
+          value,
+          `${prefixWithNot}(min-width: ${value})`,
+        ]);
       }
 
       continue;
@@ -189,11 +184,12 @@ export function parseMediaQuery({
       const value = mq.slice(MEDIA_MIN_HEIGHT_CUSTOM.length);
 
       if (value) {
-        updateParsedMediaQuery(
-          ['mnh', bucketKey, value, `${prefixWithNot}(min-height: ${value})`],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'mnh',
+          bucketKey,
+          value,
+          `${prefixWithNot}(min-height: ${value})`,
+        ]);
       }
 
       continue;
@@ -203,11 +199,12 @@ export function parseMediaQuery({
       const value = mq.slice(MEDIA_MAX_WIDTH_CUSTOM.length);
 
       if (value) {
-        updateParsedMediaQuery(
-          ['mxw', bucketKey, value, `${prefixWithNot}(max-width: ${value})`],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'mxw',
+          bucketKey,
+          value,
+          `${prefixWithNot}(max-width: ${value})`,
+        ]);
       }
 
       continue;
@@ -217,22 +214,24 @@ export function parseMediaQuery({
       const value = mq.slice(MEDIA_MAX_HEIGHT_CUSTOM.length);
 
       if (value) {
-        updateParsedMediaQuery(
-          ['mxh', bucketKey, value, `${prefixWithNot}(max-height: ${value})`],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'mxh',
+          bucketKey,
+          value,
+          `${prefixWithNot}(max-height: ${value})`,
+        ]);
       }
 
       continue;
     }
 
     if (mq === 'landscape' || mq === 'portrait') {
-      updateParsedMediaQuery(
-        ['orientation', bucketKey, mq, `${prefixWithNot}(orientation: ${mq})`],
-        parsedMediaQuery,
-        cacheKey,
-      );
+      collect(cacheKey, [
+        'orientation',
+        bucketKey,
+        mq,
+        `${prefixWithNot}(orientation: ${mq})`,
+      ]);
 
       continue;
     }
@@ -241,16 +240,12 @@ export function parseMediaQuery({
       if (mq === MEDIA_SUPPORTS) {
         propVal = serializeValue(propVal);
 
-        updateParsedMediaQuery(
-          [
-            'supports',
-            bucketKey,
-            propVal,
-            `@supports ${not}(${propKeyKebab}:${propVal})`,
-          ],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'supports',
+          bucketKey,
+          propVal,
+          `@supports ${not}(${propKeyKebab}:${propVal})`,
+        ]);
 
         continue;
       }
@@ -261,57 +256,46 @@ export function parseMediaQuery({
         );
 
         if (value) {
-          updateParsedMediaQuery(
-            ['supports', bucketKey, value, `@supports ${not}(${value})`],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'supports',
+            bucketKey,
+            value,
+            `@supports ${not}(${value})`,
+          ]);
         }
 
         continue;
       }
 
       if (mq === 'dark' || mq === 'light') {
-        updateParsedMediaQuery(
-          [
-            'prefers',
-            bucketKey,
-            mq,
-            `${prefixWithNot}(prefers-color-scheme: ${mq})`,
-          ],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'prefers',
+          bucketKey,
+          mq,
+          `${prefixWithNot}(prefers-color-scheme: ${mq})`,
+        ]);
 
         continue;
       }
 
       if (mq === 'motion-reduce') {
-        updateParsedMediaQuery(
-          [
-            'prefers',
-            bucketKey,
-            'reduce',
-            `${prefixWithNot}(prefers-reduced-motion: reduce)`,
-          ],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'prefers',
+          bucketKey,
+          'reduce',
+          `${prefixWithNot}(prefers-reduced-motion: reduce)`,
+        ]);
 
         continue;
       }
 
       if (mq === 'motion-safe') {
-        updateParsedMediaQuery(
-          [
-            'prefers',
-            bucketKey,
-            'no-preference',
-            `${prefixWithNot}(prefers-reduced-motion: no-preference)`,
-          ],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'prefers',
+          bucketKey,
+          'no-preference',
+          `${prefixWithNot}(prefers-reduced-motion: no-preference)`,
+        ]);
 
         continue;
       }
@@ -319,16 +303,12 @@ export function parseMediaQuery({
       const [prefers, value] = split(mq, '=');
 
       if (value) {
-        updateParsedMediaQuery(
-          [
-            'prefers',
-            bucketKey,
-            value,
-            `${prefixWithNot}(prefers-${prefers}: ${value})`,
-          ],
-          parsedMediaQuery,
-          cacheKey,
-        );
+        collect(cacheKey, [
+          'prefers',
+          bucketKey,
+          value,
+          `${prefixWithNot}(prefers-${prefers}: ${value})`,
+        ]);
 
         continue;
       }
@@ -339,11 +319,12 @@ export function parseMediaQuery({
         );
 
         if (value) {
-          updateParsedMediaQuery(
-            ['style', bucketKey, value, `${prefixWithNot}style(${value})`],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'style',
+            bucketKey,
+            value,
+            `${prefixWithNot}style(${value})`,
+          ]);
         }
 
         continue;
@@ -353,16 +334,12 @@ export function parseMediaQuery({
         const value = mq.slice(MEDIA_STUCK_CUSTOM.length);
 
         if (value) {
-          updateParsedMediaQuery(
-            [
-              'stuck',
-              bucketKey,
-              value,
-              `${prefixWithNot}scroll-state(stuck: ${value})`,
-            ],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'stuck',
+            bucketKey,
+            value,
+            `${prefixWithNot}scroll-state(stuck: ${value})`,
+          ]);
         }
 
         continue;
@@ -372,16 +349,12 @@ export function parseMediaQuery({
         const value = mq.slice(MEDIA_SCROLLABLE_CUSTOM.length);
 
         if (value) {
-          updateParsedMediaQuery(
-            [
-              'scrollable',
-              bucketKey,
-              value,
-              `${prefixWithNot}scroll-state(scrollable: ${value})`,
-            ],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'scrollable',
+            bucketKey,
+            value,
+            `${prefixWithNot}scroll-state(scrollable: ${value})`,
+          ]);
         }
 
         continue;
@@ -391,87 +364,65 @@ export function parseMediaQuery({
         const value = mq.slice(MEDIA_SNAPPED_CUSTOM.length);
 
         if (value) {
-          updateParsedMediaQuery(
-            [
-              'snapped',
-              bucketKey,
-              value,
-              `${prefixWithNot}scroll-state(snapped: ${value})`,
-            ],
-            parsedMediaQuery,
-            cacheKey,
-          );
+          collect(cacheKey, [
+            'snapped',
+            bucketKey,
+            value,
+            `${prefixWithNot}scroll-state(snapped: ${value})`,
+          ]);
         }
 
         continue;
       }
     }
 
-    updateParsedMediaQuery(
-      ['other', bucketKey, mq, `${prefixMedia} ${not}${mq}`],
-      parsedMediaQuery,
-      cacheKey,
-    );
+    collect(cacheKey, ['static', bucketKey, mq, `${prefixMedia} ${not}${mq}`]);
+  }
+
+  // Find the highest priority query
+  let winnerIndex = 0;
+  let maxPriority = -1;
+
+  for (let i = 0; i < collection.length; i++) {
+    const [type, key] = collection[i];
+    let priority = MEDIA_BUCKET_TYPE_ORDER[type] || 0;
+
+    // Prefer viewport query (@media) over container query (@container)
+    if (key.charCodeAt(0) === CHAR_AT) {
+      priority += 0.5;
+    }
+
+    if (priority > maxPriority) {
+      maxPriority = priority;
+      winnerIndex = i;
+    }
+  }
+
+  // Build the parsed media query
+  const [bucketType, bucketKey, bucketVal, bucketQuery] =
+    collection[winnerIndex];
+
+  const parsedMediaQuery: ParsedMediaQuery = {
+    bucketType,
+    bucketKey,
+    bucketVal,
+    bucketQuery,
+    prefix: '',
+    suffix: '',
+  };
+
+  /**
+   * Loop through everyone else to build the nested chain
+   * We maintain the original order, just skipping the winner
+   */
+  for (let i = 0; i < collection.length; i++) {
+    // Skip the winner (it's the wrapper bucket)
+    if (i === winnerIndex) continue;
+
+    // collection[i][3] is the query string
+    parsedMediaQuery.prefix += collection[i][3] + ' { ';
+    parsedMediaQuery.suffix += '} ';
   }
 
   return parsedMediaQuery;
-}
-
-function updateParsedMediaQuery(
-  params: MediaQueryBucketParams | undefined,
-  parsedMediaQuery: ParsedMediaQuery,
-  cacheKey: string,
-) {
-  if (!params) {
-    return;
-  }
-
-  setCacheItem(MEDIA_QUERY_CACHE, cacheKey, params);
-
-  const [bucketType, bucketKey, bucketVal, bucketQuery] = params;
-
-  if (parsedMediaQuery.bucketKey === bucketKey) {
-    return;
-  }
-
-  if (parsedMediaQuery.bucketType === 'initial') {
-    parsedMediaQuery.bucketType = bucketType;
-    parsedMediaQuery.bucketKey = bucketKey;
-    parsedMediaQuery.bucketVal = bucketVal;
-    parsedMediaQuery.bucketQuery = bucketQuery;
-    return;
-  }
-
-  const isCurrentViewportQuery = bucketKey.charCodeAt(0) === CHAR_AT;
-  const isParsedViewportQuery =
-    parsedMediaQuery.bucketKey.charCodeAt(0) === CHAR_AT;
-  const currentOrder = MEDIA_BUCKET_TYPE_ORDER[bucketType];
-  const parsedOrder = MEDIA_BUCKET_TYPE_ORDER[parsedMediaQuery.bucketType];
-
-  let shouldSwap = false;
-
-  if (currentOrder !== parsedOrder) {
-    // Rule 1: Lower Bucket Order wins (e.g. Base < MinWidth)
-    shouldSwap = currentOrder < parsedOrder;
-  } else if (isCurrentViewportQuery !== isParsedViewportQuery) {
-    // Rule 2: If Bucket Orders are equal, Container wins over Viewport
-    shouldSwap = !isCurrentViewportQuery;
-  } else {
-    // Rule 3: If Scope is the same, sort Alphabetically
-    shouldSwap = bucketKey < parsedMediaQuery.bucketKey;
-  }
-
-  if (shouldSwap) {
-    parsedMediaQuery.innerBlockOpen += parsedMediaQuery.bucketQuery + ' { ';
-    parsedMediaQuery.innerBlockClose += '} ';
-
-    parsedMediaQuery.bucketType = bucketType;
-    parsedMediaQuery.bucketKey = bucketKey;
-    parsedMediaQuery.bucketVal = bucketVal;
-    parsedMediaQuery.bucketQuery = bucketQuery;
-    return;
-  }
-
-  parsedMediaQuery.innerBlockOpen += bucketQuery + ' { ';
-  parsedMediaQuery.innerBlockClose += '} ';
 }

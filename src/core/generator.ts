@@ -57,7 +57,7 @@ export function buildRule(
   const parsedMediaQuery = parseMediaQuery(parsed);
   const block = `${selector} { ${styles} }`;
   const rule = parsedMediaQuery
-    ? `${parsedMediaQuery.innerBlockOpen}${block} ${parsedMediaQuery.innerBlockClose}`.trim()
+    ? `${parsedMediaQuery.prefix}${block} ${parsedMediaQuery.suffix}`.trim()
     : block;
 
   return { rule, parsedMediaQuery };
