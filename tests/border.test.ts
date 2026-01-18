@@ -26,7 +26,7 @@ describe('Border', () => {
 
   it('border-color with variable', () => {
     expect(convert('brc-red-300/30')).toBe(
-      `.brc-red-300\\/30 { border-color: oklch(from var(--brc-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * 0.4) * var(--brc-red-lightness-factor, var(--red-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--brc-red-chroma-factor, var(--red-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--brc-red-hue-rotate, var(--red-hue-rotate, var(--hue-rotate, 0)))) / 30%); }`,
+      `.brc-red-300\\/30 { border-color: oklch(from var(--brc-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * 0.4) * var(--brc-red-lightness-factor, var(--red-lightness-factor, var(--brc-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--brc-red-chroma-factor, var(--red-chroma-factor, var(--brc-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--brc-red-hue-rotate, var(--red-hue-rotate, var(--brc-hue-rotate, var(--hue-rotate, 0))))) / 30%); }`,
     );
   });
 

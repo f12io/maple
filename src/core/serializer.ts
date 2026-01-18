@@ -376,7 +376,7 @@ function serializeColorValue(parsed: ParsedClass): string {
       ['hue-rotate', 0],
     ].map(
       ([key, defaultValue]) =>
-        `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${key}, ${defaultValue})))`,
+        `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${utilKey}-${key}, var(--${key}, ${defaultValue}))))`,
     );
 
     const lCalc = amount > 0 ? `(1 - l) * ${amount}` : `l * ${amount}`;

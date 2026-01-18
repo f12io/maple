@@ -58,13 +58,13 @@ describe('NoRef Variables', () => {
 
   it('noref color', () => {
     expect(convertWithRefs('$bg-red')).toBe(
-      '.\\$bg-red { background: oklch(from var(--bgc-red, var(--color-red, var(--red, red))) calc(l * var(--bgc-red-lightness-factor, var(--red-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--bgc-red-chroma-factor, var(--red-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--bgc-red-hue-rotate, var(--red-hue-rotate, var(--hue-rotate, 0)))) / alpha); }',
+      '.\\$bg-red { background: oklch(from var(--bgc-red, var(--color-red, var(--red, red))) calc(l * var(--bgc-red-lightness-factor, var(--red-lightness-factor, var(--bgc-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--bgc-red-chroma-factor, var(--red-chroma-factor, var(--bgc-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--bgc-red-hue-rotate, var(--red-hue-rotate, var(--bgc-hue-rotate, var(--hue-rotate, 0))))) / alpha); }',
     );
   });
 
   it('noref color with shade and alpha', () => {
     expect(convertWithRefs('$c-red-400/50')).toBe(
-      '.\\$c-red-400\\/50 { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * 0.2) * var(--c-red-lightness-factor, var(--red-lightness-factor, var(--lightness-factor, 1)))) calc(c * var(--c-red-chroma-factor, var(--red-chroma-factor, var(--chroma-factor, 1)))) calc(h + var(--c-red-hue-rotate, var(--red-hue-rotate, var(--hue-rotate, 0)))) / 50%); }',
+      '.\\$c-red-400\\/50 { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * 0.2) * var(--c-red-lightness-factor, var(--red-lightness-factor, var(--c-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--c-red-chroma-factor, var(--red-chroma-factor, var(--c-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--c-red-hue-rotate, var(--red-hue-rotate, var(--c-hue-rotate, var(--hue-rotate, 0))))) / 50%); }',
     );
   });
 
