@@ -1,6 +1,9 @@
 import { CHAR_AT } from './constants/chars';
 import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
-import { REGEX_NUMBER_WITH_UNIT } from './constants/regex';
+import {
+  REGEX_CSS_ESCAPED_CHARS,
+  REGEX_NUMBER_WITH_UNIT,
+} from './constants/regex';
 import { Bucket, BucketType, ParsedMediaQuery } from './types';
 
 const buckets: Array<Bucket> = [];
@@ -31,6 +34,8 @@ export function insertRefVar(key: string, val: string) {
   if (refsLayer.cssRules.length === 0) {
     refsLayer.insertRule(':root {}', 0);
   }
+
+  key = key.replace(REGEX_CSS_ESCAPED_CHARS, '');
 
   (refsLayer.cssRules[0] as CSSStyleRule).style.setProperty(
     `--ref-${key}`,

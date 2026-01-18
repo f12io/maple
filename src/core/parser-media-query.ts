@@ -1,4 +1,3 @@
-import { BREAKPOINTS } from './constants/breakpoints';
 import { MEDIA_QUERY_CACHE } from './constants/caches';
 import {
   CHAR_AT,
@@ -7,7 +6,7 @@ import {
   REF_CHAR_MEDIA_QUERY_DELIMITER,
   REF_CHAR_PREDEFINED,
 } from './constants/chars';
-import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
+import { MEDIA_BUCKET_TYPE_ORDER, OPTIONS } from './constants/config';
 import { setCacheItem } from './helpers/cache.helper';
 import { removeBrackets, split } from './helpers/string.helper';
 import { serializeValue } from './serializer';
@@ -104,12 +103,12 @@ export function parseMediaQuery({
     const prefix = containerName ? `${scope} ${containerName}` : scope;
     const prefixWithNot = not ? `${prefix} ${not}` : `${prefix} `;
 
-    if (BREAKPOINTS[mq]) {
+    if (OPTIONS.breakpoints[mq]) {
       collect(cacheKey, [
         'mnw',
         bucketKey,
-        BREAKPOINTS[mq],
-        `${prefixWithNot}(min-width: ${BREAKPOINTS[mq]})`,
+        OPTIONS.breakpoints[mq],
+        `${prefixWithNot}(min-width: ${OPTIONS.breakpoints[mq]})`,
       ]);
 
       continue;
@@ -117,7 +116,7 @@ export function parseMediaQuery({
 
     if (mq.startsWith(MEDIA_MAX_WIDTH)) {
       const bpKey = mq.slice(MEDIA_MAX_WIDTH.length);
-      const value = BREAKPOINTS[bpKey];
+      const value = OPTIONS.breakpoints[bpKey];
 
       if (value) {
         if (not) {
@@ -142,7 +141,7 @@ export function parseMediaQuery({
 
     if (mq.startsWith(MEDIA_MAX_HEIGHT)) {
       const bpKey = mq.slice(MEDIA_MAX_HEIGHT.length);
-      const value = BREAKPOINTS[bpKey];
+      const value = OPTIONS.breakpoints[bpKey];
 
       if (value) {
         if (not) {

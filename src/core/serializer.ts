@@ -9,6 +9,7 @@ import {
 } from './constants/chars';
 import {
   COLOR_MID_TONE,
+  OPTIONS,
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
@@ -51,8 +52,6 @@ import {
 } from './helpers/string.helper';
 import { insertRefVar } from './stylesheet';
 import { Modifiers, ParsedClass, ValueModifiers } from './types';
-
-let isRefCacheDisabled = false;
 
 // Applied to classes usign strict equality (as is utility values)
 const CUSTOM_MODIFIERS: Modifiers = {
@@ -156,18 +155,19 @@ export function serializeValue(value: string) {
   return value.replaceAll(REF_CHAR_SPACE, ' ').trim();
 }
 
-export function setDisableCache(disabled: boolean) {
-  isRefCacheDisabled = disabled;
-}
-
 function createVariables(keys: Record<string, string>, prefix: string) {
   return Object.keys(keys)
     .map((key) => `var(--${prefix}-${key},)`)
     .join(' ');
 }
 
-function serializeOtherValue({ utilKey, validVarVal, propVal }: ParsedClass) {
-  return serializeValueAsVariable(utilKey, validVarVal, propVal);
+function serializeOtherValue({
+  utilKey,
+  validVarVal,
+  propVal,
+  isNoRef,
+}: ParsedClass) {
+  return serializeValueAsVariable(utilKey, validVarVal, propVal, isNoRef);
 }
 
 function serializeFraction(value: string): string | undefined {
@@ -185,6 +185,7 @@ function serializeValueAsVariable(
   utilKey: string,
   validVarVal: string,
   propVal: string,
+  isNoRef: boolean,
   fallbackValue?: string,
   variableCategoryAsIs?: string,
   variableCategoryForMap?: string,
@@ -200,8 +201,9 @@ function serializeValueAsVariable(
   }
 
   const refKey = `${utilKey}-${validVarVal}`;
+  const isNoRefMode = !OPTIONS.refs || isNoRef;
 
-  if (isRefCacheDisabled || !VARIABLE_CACHE.has(refKey)) {
+  if (isNoRefMode || !VARIABLE_CACHE.has(refKey)) {
     let variableCategoryFromMap: string | undefined;
 
     fallbackValue ??= propVal;
@@ -228,7 +230,7 @@ function serializeValueAsVariable(
 
     const val = `var(--${refKey}, ${fallbackValue})`;
 
-    if (isRefCacheDisabled) {
+    if (isNoRefMode) {
       return val;
     }
 
@@ -245,6 +247,7 @@ function serializeNumberValue({
   propKeyCamel,
   validVarVal,
   isUtilNegative,
+  isNoRef,
   varCat,
 }: ParsedClass): string {
   const utilityValueAsIs = removeBrackets(utilVal);
@@ -258,8 +261,9 @@ function serializeNumberValue({
   }
 
   const refKey = `${utilKey}-${validVarVal}`;
+  const isNoRefMode = !OPTIONS.refs || isNoRef;
 
-  if (isRefCacheDisabled || !VARIABLE_CACHE.has(refKey)) {
+  if (isNoRefMode || !VARIABLE_CACHE.has(refKey)) {
     const numberValue = Number(utilVal);
 
     if (numberValue === 0) return '0';
@@ -309,13 +313,14 @@ function serializeNumberValue({
       utilKey,
       validVarVal,
       utilVal,
+      true,
       fallbackValue,
       varCat,
       unit,
     );
     val = isUtilNegative ? `calc(${val} * -1)` : val;
 
-    if (isRefCacheDisabled) {
+    if (isNoRefMode) {
       return val;
     }
 
@@ -339,8 +344,9 @@ function serializeColorValue(parsed: ParsedClass): string {
   }
 
   const refKey = `${utilKey}-${parsed.validVarVal}`;
+  const isNoRefMode = !OPTIONS.refs || parsed.isNoRef;
 
-  if (isRefCacheDisabled || !VARIABLE_CACHE.has(refKey)) {
+  if (isNoRefMode || !VARIABLE_CACHE.has(refKey)) {
     const tokenParts = REGEX_COLOR_TOKEN.exec(utilVal);
 
     if (!tokenParts) {
@@ -360,6 +366,7 @@ function serializeColorValue(parsed: ParsedClass): string {
       utilKey,
       name,
       name,
+      true,
       name,
       CSS_VARIABLE_CATEGORY.color,
     );
@@ -382,7 +389,7 @@ function serializeColorValue(parsed: ParsedClass): string {
     const alpha = opacity && opacity < 100 ? `${opacity}%` : 'alpha';
     const val = `oklch(from ${nameVar} ${l} ${c} ${h} / ${alpha})`;
 
-    if (isRefCacheDisabled) {
+    if (isNoRefMode) {
       return val;
     }
 
@@ -430,10 +437,11 @@ function serializeRepeat(
 }
 
 function serializePercentageToDecimal(parsed: ParsedClass): string {
-  const { utilKey, utilVal, propVal, validVarVal, isImportant } = parsed;
+  const { utilKey, utilVal, propVal, validVarVal, isImportant, isNoRef } =
+    parsed;
   const rawValue = Number(utilVal);
   const value = isNaN(rawValue)
-    ? serializeValueAsVariable(utilKey, validVarVal, propVal)
+    ? serializeValueAsVariable(utilKey, validVarVal, propVal, isNoRef)
     : rawValue / 100;
 
   return serializeProp('opacity', `${value}`, isImportant);
@@ -613,6 +621,7 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
           parsed.utilKey,
           escapeVariable(propName),
           mappedPropKeyKebab,
+          parsed.isNoRef,
           undefined,
           CSS_VARIABLE_CATEGORY.prop,
         ),
@@ -623,6 +632,7 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
           parsed.utilKey,
           escapeVariable(propName),
           mappedPropKeyKebab,
+          parsed.isNoRef,
           undefined,
           undefined,
         ),
@@ -745,6 +755,7 @@ function serializeBackgroundImageParts(
         parsed.utilKey,
         escapeVariable(partItem),
         partItem,
+        parsed.isNoRef,
         undefined,
         CSS_VARIABLE_CATEGORY.gradient,
       );
@@ -791,6 +802,7 @@ function serializeBackgroundImageParts(
             ABBREVIATIONS_REVERSE.backgroundImage,
             escapeVariable(propVal),
             propVal,
+            parsed.isNoRef,
             undefined,
             isUrlFunction ? undefined : CSS_VARIABLE_CATEGORY.gradient,
           ),

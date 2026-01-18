@@ -1,17 +1,16 @@
+import { OPTIONS } from '../../src/core/constants/config';
 import { buildRule } from '../../src/core/generator';
-import { setDisableCache } from '../../src/core/serializer';
 import { insert } from '../../src/core/stylesheet';
 
 export function convert(srcClass: string): string | undefined {
-  setDisableCache(true);
-  const result = buildRule(srcClass);
-  setDisableCache(false);
-
-  return processResult(result);
+  return processResult(buildRule(srcClass));
 }
 
-export function convertWithCache(srcClass: string): string | undefined {
+export function convertWithRefs(srcClass: string): string | undefined {
+  OPTIONS.refs = true;
   const result = buildRule(srcClass);
+  OPTIONS.refs = false;
+
   return processResult(result);
 }
 

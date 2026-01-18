@@ -1,15 +1,21 @@
 import { BucketType } from '../types';
 
+export const OPTIONS: {
+  refs: boolean;
+  breakpoints: Record<string, string>;
+} = {
+  refs: false,
+  breakpoints: {
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
+    '2xl': '1536px',
+  },
+};
+
 export const CACHE_MAX_SIZE = 2000;
 export const CACHE_EVICTION_BATCH = Math.floor(CACHE_MAX_SIZE * 0.25);
-
-export const DEFAULT_BREAKPOINTS: Record<string, string> = {
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
-  xl: '1280px',
-  '2xl': '1536px',
-};
 
 export const COLOR_MID_TONE = 500;
 

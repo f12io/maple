@@ -6,17 +6,19 @@ import {
   CHAR_CLOSE_BRACKET,
   CHAR_CLOSE_PAREN,
   CHAR_COLON,
+  CHAR_DOLLAR,
   CHAR_DOUBLE_QUOTE,
+  CHAR_EXCLAMATION_MARK,
   CHAR_OPEN_BRACKET,
   CHAR_OPEN_PAREN,
   CHAR_SINGLE_QUOTE,
   CHAR_SLASH,
   REF_CHAR_CUSTOM,
-  REF_CHAR_IMPORTANT,
   REF_CHAR_PREDEFINED,
   REF_CHAR_SPACE,
   REF_CHAR_UTILITY_DELIMITER,
 } from './constants/chars';
+import { OPTIONS } from './constants/config';
 import { ABBREVIATIONS, ABBREVIATIONS_REVERSE } from './constants/dictionaries';
 import { setCacheItem } from './helpers/cache.helper';
 import { resolveType } from './helpers/property.helper';
@@ -36,9 +38,20 @@ export function parseClass(srcClass: string): ParsedClass {
 
   // Handle "Important" flag
   let isImportant = false;
-  if (srcClass.startsWith(REF_CHAR_IMPORTANT)) {
+  if (srcClass.charCodeAt(0) === CHAR_EXCLAMATION_MARK) {
     isImportant = true;
     srcClass = srcClass.slice(1);
+  }
+
+  // Handle "No Ref" flag if refs are enabled
+  let isNoRef = true;
+  if (OPTIONS.refs) {
+    isNoRef = false;
+
+    if (srcClass.charCodeAt(0) === CHAR_DOLLAR) {
+      isNoRef = true;
+      srcClass = srcClass.slice(1);
+    }
   }
 
   const parts = split(srcClass, REF_CHAR_UTILITY_DELIMITER);
@@ -58,6 +71,7 @@ export function parseClass(srcClass: string): ParsedClass {
     srcClass: originalClass,
     srcSel: '.' + escapeClass(originalClass),
     isImportant,
+    isNoRef,
   };
 
   return parsed;
@@ -107,7 +121,7 @@ function parseUtility(utilityRaw: string): {
     propKeyCamel = ABBREVIATIONS[abbrFromCamel] ?? utilKey;
   }
 
-  const propKeyKebab = toKebabCase(propKeyCamel);
+  const propKeyKebab = escapeVariable(toKebabCase(propKeyCamel));
 
   return {
     utilKey,

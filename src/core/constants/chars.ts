@@ -1,5 +1,4 @@
 export const REF_CHAR_SPACE = '_';
-export const REF_CHAR_IMPORTANT = '!';
 export const REF_CHAR_UTILITY_DELIMITER = ':';
 export const REF_CHAR_MEDIA_QUERY_DELIMITER = ':';
 export const REF_CHAR_COLOR_ALPHA = '/';
@@ -20,8 +19,10 @@ export const CHAR_OPEN_PAREN = 40; // (
 export const CHAR_CLOSE_PAREN = 41; // )
 export const CHAR_COLON = 58; // :
 export const CHAR_EQUAL = 61; // =
-export const CHAR_AT = 64; // @
 export const CHAR_DASH = 45; // -
-export const CHAR_CARET = 94; // ^ (Parent)
-export const CHAR_AMPERSAND = 38; // & (Self)
-export const CHAR_SLASH = 47; // / (Child)
+export const CHAR_EXCLAMATION_MARK = 33; // ! - important
+export const CHAR_AT = 64; // @ - viewport media queries
+export const CHAR_DOLLAR = 36; // $ - no ref mode
+export const CHAR_CARET = 94; // ^ - parent selector
+export const CHAR_AMPERSAND = 38; // & - self selector
+export const CHAR_SLASH = 47; // / - child selector
