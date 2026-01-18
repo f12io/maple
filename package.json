@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently 'npm run build:runtime -- --watch' 'vite serve examples'",
     "clean": "rimraf dist",
     "build:module": "cross-env BUILD_TYPE=lib vite build",
     "build:runtime": "cross-env BUILD_TYPE=runtime vite build",
@@ -37,6 +37,7 @@
     "@eslint/js": "^9.39.2",
     "@types/node": "^25.0.3",
     "@vitest/browser-playwright": "^4.0.16",
+    "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",

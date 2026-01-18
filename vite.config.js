@@ -1,6 +1,7 @@
 import { playwright } from '@vitest/browser-playwright';
 import path from 'path';
 import { defineConfig } from 'vite';
+import { prepareExamples } from './build/plugins/prepare-examples';
 import { precalculatePropAbbreviations } from './build/plugins/prop-abbr-precalculator';
 import { precalculatePropTypes } from './build/plugins/prop-type-precalculator';
 
@@ -13,12 +14,18 @@ export default defineConfig(({ mode }) => {
     plugins.push(precalculatePropAbbreviations());
     if (!isRuntime) {
       plugins.push(precalculatePropTypes());
+    } else {
+      plugins.push(prepareExamples());
     }
   }
 
   return {
     server: { port: 3000 },
     build: {
+      watch: {
+        include: ['src/**'],
+        exclude: ['src/generated/**'],
+      },
       outDir: isRuntime ? 'dist' : 'dist/module',
       target: 'es2024',
       minify: 'terser',

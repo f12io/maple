@@ -12,5 +12,12 @@
     "allowJs": true,
     "noEmit": true
   },
-  "include": ["src", "tests", "scripts", "build", "*.config.js"]
+  "include": [
+    "src",
+    "tests",
+    "scripts",
+    "build",
+    "*.config.js",
+    "examples/*.config.js"
+  ]
 }
