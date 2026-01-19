@@ -7,6 +7,7 @@ import { precalculatePropTypes } from './build/plugins/prop-type-precalculator';
 
 export default defineConfig(({ mode }) => {
   const isRuntime = process.env.BUILD_TYPE === 'runtime';
+  const isWatch = process.argv.includes('--watch');
   const isTest = mode === 'test';
   const plugins = [];
 
@@ -20,12 +21,16 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    server: { port: 3000 },
+    server: {
+      port: 3000,
+    },
     build: {
-      watch: {
-        include: ['src/**'],
-        exclude: ['src/generated/**'],
-      },
+      watch: isWatch
+        ? {
+            include: ['src/**'],
+            exclude: ['src/generated/**'],
+          }
+        : undefined,
       outDir: isRuntime ? 'dist' : 'dist/module',
       target: 'es2024',
       minify: 'terser',
@@ -34,7 +39,7 @@ export default defineConfig(({ mode }) => {
         compress: {
           defaults: true,
           passes: 2,
-          drop_console: !isTest,
+          drop_console: !isTest && !isWatch,
         },
         format: { comments: false },
       },
