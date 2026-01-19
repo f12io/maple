@@ -234,7 +234,11 @@ function serializeValueAsVariable(
       return val;
     }
 
-    insertRefVar(refKey, val);
+    insertRefVar(
+      refKey,
+      val,
+      isNaN(Number(propValueAsIs)) ? 'custom' : 'number',
+    );
     VARIABLE_CACHE.add(refKey);
   }
 
@@ -274,7 +278,9 @@ function serializeNumberValue({
 
     let fallbackValue = utilVal;
 
-    if (isNaN(numberValue)) {
+    const isValueNumber = !isNaN(numberValue);
+
+    if (!isValueNumber) {
       const isValueNegative = startsWithNegative(utilVal);
 
       isUtilNegative = isUtilNegative || isValueNegative;
@@ -324,7 +330,7 @@ function serializeNumberValue({
       return val;
     }
 
-    insertRefVar(refKey, val);
+    insertRefVar(refKey, val, isValueNumber ? 'number' : 'custom');
     VARIABLE_CACHE.add(refKey);
   }
 
@@ -393,7 +399,7 @@ function serializeColorValue(parsed: ParsedClass): string {
       return val;
     }
 
-    insertRefVar(refKey, val);
+    insertRefVar(refKey, val, 'color');
     VARIABLE_CACHE.add(refKey);
   }
 
@@ -829,6 +835,7 @@ function serializeBackgroundImageParts(
         ...parsed,
         utilKey: ABBREVIATIONS_REVERSE.backgroundColor,
         utilVal: colorToken,
+        validVarVal: escapeVariable(colorToken),
       });
 
       const positionTokens: Array<string> = [];

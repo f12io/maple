@@ -1,5 +1,5 @@
 import { CHAR_AT } from './constants/chars';
-import { MEDIA_BUCKET_TYPE_ORDER } from './constants/config';
+import { MEDIA_BUCKET_TYPE_ORDER, OPTIONS } from './constants/config';
 import {
   REGEX_CSS_ESCAPED_CHARS,
   REGEX_NUMBER_WITH_UNIT,
@@ -9,7 +9,9 @@ import { Bucket, BucketType, ParsedMediaQuery } from './types';
 const buckets: Array<Bucket> = [];
 const BASE_KEY = 'base';
 let sheet: CSSStyleSheet | null = null;
-let refsLayer: CSSGroupingRule | null = null;
+let refNumbersLayer: CSSGroupingRule | null = null;
+let refColorsLayer: CSSGroupingRule | null = null;
+let refCustomLayer: CSSGroupingRule | null = null;
 let utilsLayer: CSSGroupingRule | null = null;
 
 export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
@@ -27,9 +29,24 @@ export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
   bucket?.rule.insertRule(cssRule, bucket.rule.cssRules.length);
 }
 
-export function insertRefVar(key: string, val: string) {
+export function insertRefVar(
+  key: string,
+  val: string,
+  type: 'number' | 'color' | 'custom',
+) {
   if (!sheet) initStyleSheet();
-  if (!sheet || !refsLayer) return;
+  if (!sheet) return;
+
+  const refsLayer =
+    type === 'number'
+      ? refNumbersLayer
+      : type === 'color'
+        ? refColorsLayer
+        : refCustomLayer;
+
+  if (!refsLayer) {
+    return;
+  }
 
   if (refsLayer.cssRules.length === 0) {
     refsLayer.insertRule(':root {}', 0);
@@ -155,7 +172,17 @@ function initStyleSheet() {
   sheet.insertRule('@layer refs {}', 0);
   sheet.insertRule('@layer utils {}', 1);
 
-  refsLayer = sheet.cssRules[0] as CSSGroupingRule;
+  if (OPTIONS.refs) {
+    const refsLayer = sheet.cssRules[0] as CSSGroupingRule;
+    refsLayer.insertRule('@layer colors {}', 0);
+    refsLayer.insertRule('@layer numbers {}', 1);
+    refsLayer.insertRule('@layer custom {}', 2);
+
+    refColorsLayer = refsLayer.cssRules[0] as CSSGroupingRule;
+    refNumbersLayer = refsLayer.cssRules[1] as CSSGroupingRule;
+    refCustomLayer = refsLayer.cssRules[2] as CSSGroupingRule;
+  }
+
   utilsLayer = sheet.cssRules[1] as CSSGroupingRule;
   utilsLayer.insertRule('@layer base {}', 0);
 
