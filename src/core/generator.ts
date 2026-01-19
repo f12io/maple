@@ -70,11 +70,11 @@ function buildProp(parsed: ParsedClass) {
     return;
   }
 
-  const { utilVal, propKeyCamel, isImportant } = parsed;
+  const { utilVal, isImportant } = parsed;
 
   if (!utilVal) {
-    if (SHORTCUTS[propKeyCamel]) {
-      return `${SHORTCUTS[propKeyCamel]}${isImportant ? ' !important' : ''};`;
+    if (SHORTCUTS[utilKey]) {
+      return `${SHORTCUTS[utilKey]}${isImportant ? ' !important' : ''};`;
     }
     return;
   }

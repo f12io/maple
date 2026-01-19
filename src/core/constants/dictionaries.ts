@@ -16,15 +16,16 @@ Object.entries(PRECALCULATED_PROP_ABBREVIATIONS).forEach(([alias, prop]) => {
 export const SHORTCUTS: Record<string, string> = {
   // position
   abs: 'position: absolute',
+  fixed: 'position: fixed',
   rel: 'position: relative',
   sticky: 'position: sticky',
   static: 'position: static',
 
   // display
   iblock: 'display: inline-block',
-  iflex: 'display: inline-flex',
-  flex: 'display: flex',
-  grid: 'display: grid',
+  ifx: 'display: inline-flex',
+  fx: 'display: flex',
+  gr: 'display: grid',
   block: 'display: block',
   none: 'display: none',
   table: 'display: table',

@@ -3,7 +3,7 @@ import { convert } from './helpers/convert.helper';
 
 describe('Shortcuts', () => {
   it('flex', () => {
-    expect(convert('flex')).toBe(`.flex { display: flex; }`);
+    expect(convert('fx')).toBe(`.fx { display: flex; }`);
   });
 
   it('d-flex', () => {
@@ -17,11 +17,11 @@ describe('Shortcuts', () => {
   });
 
   it('flex important', () => {
-    expect(convert('!flex')).toBe(`.\\!flex { display: flex !important; }`);
+    expect(convert('!fx')).toBe(`.\\!fx { display: flex !important; }`);
   });
 
   it('grid', () => {
-    expect(convert('grid')).toBe(`.grid { display: grid; }`);
+    expect(convert('gr')).toBe(`.gr { display: grid; }`);
   });
 
   it('block', () => {
@@ -53,7 +53,7 @@ describe('Shortcuts', () => {
   });
 
   it('inline-flex', () => {
-    expect(convert('iflex')).toBe(`.iflex { display: inline-flex; }`);
+    expect(convert('ifx')).toBe(`.ifx { display: inline-flex; }`);
   });
 
   it('absolute', () => {
