@@ -1,4 +1,5 @@
 import { playwright } from '@vitest/browser-playwright';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
 import { prepareExamples } from './build/plugins/prepare-examples';
@@ -6,6 +7,12 @@ import { precalculatePropAbbreviations } from './build/plugins/prop-abbr-precalc
 import { precalculatePropTypes } from './build/plugins/prop-type-precalculator';
 
 export default defineConfig(({ mode }) => {
+  /** @type {{ name: string; version: string; }} */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const pkg = JSON.parse(
+    readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'),
+  );
+
   const isRuntime = process.env.BUILD_TYPE === 'runtime';
   const isWatch = process.argv.includes('--watch');
   const isTest = mode === 'test';
@@ -41,7 +48,10 @@ export default defineConfig(({ mode }) => {
           passes: 2,
           drop_console: !isTest && !isWatch,
         },
-        format: { comments: false },
+        format: {
+          comments: false,
+          preamble: `/*! ${pkg.name} v${pkg.version} | (c) ${new Date().getFullYear()} - f12.io | Released under the ROOT License v1.0. rootsrc.org */`,
+        },
       },
       lib: isRuntime
         ? {
