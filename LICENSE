@@ -1,0 +1,15 @@
+The Root Source License (ROOT) v1.0
+
+Copyright (c) 2026 f12.io
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Root"), to deal in the Root without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Root, subject to the following distribution conditions, where
+
+"The System" refers to any structure that encapsulates the Root in an abstract form, capable of recreating a copy or substantial portions of the Root on-demand.
+
+A. Distribution of The Root: If you distribute the Root, the above copyright notice and this permission notice shall be included in all copies or substantial portions of the Root.
+
+B. Distribution through The System: If you provide public network access to a System, allowing it to act as a distribution channel—regardless of the percentage of the Root's coverage in that System—the above copyright notice and this permission notice shall be included in all copies or substantial portions of the Root distributed by the System.
+
+C. Severability: If any provision of this License is held to be unenforceable, the remainder of the License shall remain in full force and effect.
+
+THE ROOT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE ROOT OR THE USE OR OTHER DEALINGS IN THE ROOT.
