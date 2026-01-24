@@ -299,14 +299,58 @@ export function parseMediaQuery({
         continue;
       }
 
-      const [prefers, value] = split(mq, '=');
+      if (mq === 'browser') {
+        collect(cacheKey, [
+          'static',
+          bucketKey,
+          'browser',
+          `${prefixWithNot}(display-mode: browser)`,
+        ]);
+
+        continue;
+      }
+
+      if (mq === 'standalone') {
+        collect(cacheKey, [
+          'static',
+          bucketKey,
+          'standalone',
+          `${prefixWithNot}(display-mode: standalone)`,
+        ]);
+
+        continue;
+      }
+
+      if (mq === 'fullscreen') {
+        collect(cacheKey, [
+          'static',
+          bucketKey,
+          'fullscreen',
+          `${prefixWithNot}(display-mode: fullscreen)`,
+        ]);
+
+        continue;
+      }
+
+      if (mq === 'pip') {
+        collect(cacheKey, [
+          'static',
+          bucketKey,
+          'picture-in-picture',
+          `${prefixWithNot}(display-mode: picture-in-picture)`,
+        ]);
+
+        continue;
+      }
+
+      const [key, value] = split(mq, '=');
 
       if (value) {
         collect(cacheKey, [
-          'prefers',
+          key.startsWith('prefers-') ? 'prefers' : 'static',
           bucketKey,
           value,
-          `${prefixWithNot}(prefers-${prefers}: ${value})`,
+          `${prefixWithNot}(${key}: ${value})`,
         ]);
 
         continue;

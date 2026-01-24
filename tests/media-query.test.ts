@@ -341,14 +341,74 @@ describe('Media Query', () => {
   });
 
   it('media with custom prefers', () => {
-    expect(convert('@contrast=more:o-0')).toBe(
-      '@media (prefers-contrast: more) { .\\@contrast\\=more\\:o-0 { opacity: 0; } }',
+    expect(convert('@prefers-contrast=more:o-0')).toBe(
+      '@media (prefers-contrast: more) { .\\@prefers-contrast\\=more\\:o-0 { opacity: 0; } }',
     );
   });
 
   it('media with not custom prefers', () => {
-    expect(convert('@not-contrast=more:o-0')).toBe(
-      '@media not (prefers-contrast: more) { .\\@not-contrast\\=more\\:o-0 { opacity: 0; } }',
+    expect(convert('@not-prefers-contrast=more:o-0')).toBe(
+      '@media not (prefers-contrast: more) { .\\@not-prefers-contrast\\=more\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with custom display-mode', () => {
+    expect(convert('@browser:o-0')).toBe(
+      '@media (display-mode: browser) { .\\@browser\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with not custom display-mode', () => {
+    expect(convert('@not-browser:o-0')).toBe(
+      '@media not (display-mode: browser) { .\\@not-browser\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with custom display-mode', () => {
+    expect(convert('@fullscreen:o-0')).toBe(
+      '@media (display-mode: fullscreen) { .\\@fullscreen\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with not custom display-mode', () => {
+    expect(convert('@not-fullscreen:o-0')).toBe(
+      '@media not (display-mode: fullscreen) { .\\@not-fullscreen\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with custom display-mode', () => {
+    expect(convert('@standalone:o-0')).toBe(
+      '@media (display-mode: standalone) { .\\@standalone\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with not custom display-mode', () => {
+    expect(convert('@not-standalone:o-0')).toBe(
+      '@media not (display-mode: standalone) { .\\@not-standalone\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with custom display-mode', () => {
+    expect(convert('@pip:o-0')).toBe(
+      '@media (display-mode: picture-in-picture) { .\\@pip\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with not custom display-mode', () => {
+    expect(convert('@not-pip:o-0')).toBe(
+      '@media not (display-mode: picture-in-picture) { .\\@not-pip\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with display-mode', () => {
+    expect(convert('@display-mode=fullscreen:o-0')).toBe(
+      '@media (display-mode: fullscreen) { .\\@display-mode\\=fullscreen\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with not display-mode', () => {
+    expect(convert('@not-display-mode=fullscreen:o-0')).toBe(
+      '@media not (display-mode: fullscreen) { .\\@not-display-mode\\=fullscreen\\:o-0 { opacity: 0; } }',
     );
   });
 
