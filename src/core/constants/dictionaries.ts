@@ -34,6 +34,9 @@ export const SHORTCUTS: Record<string, string> = {
   // visibility
   hidden: 'visibility: hidden',
   visible: 'visibility: visible',
+
+  // border
+  br: 'border-width: 1px; border-style: solid',
 };
 
 export const SELECTOR_REPLACEMENTS: Record<string, string> = {

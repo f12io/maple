@@ -83,4 +83,10 @@ describe('Shortcuts', () => {
   it('hidden', () => {
     expect(convert('hidden')).toBe(`.hidden { visibility: hidden; }`);
   });
+
+  it('border', () => {
+    expect(convert('br')).toBe(
+      `.br { border-width: 1px; border-style: solid; }`,
+    );
+  });
 });
