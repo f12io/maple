@@ -30,7 +30,7 @@ Add Maple to your project by including the script below and start styling.
   </head>
   <body>
     <!-- Start styling -->
-    <div class="bg-blue c-white p-4 br-2">Hello World</div>
+    <div class="bgc-blue c-white p-4">Hello World</div>
   </body>
 </html>
 ```
