@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "dev": "concurrently 'npm run build:runtime -- --watch' 'vite serve examples'",
+    "dev": "concurrently 'npm run build:runtime -- --watch' 'vite serve examples --host'",
     "clean": "rimraf dist",
     "build:module": "cross-env BUILD_TYPE=lib vite build",
     "build:runtime": "cross-env BUILD_TYPE=runtime vite build",
