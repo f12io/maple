@@ -370,7 +370,7 @@ On the other hand, Maple treats colors as parameters. Color utilities resolve th
 A single semantic color can express an entire range of variants — without defining them upfront.
 
 ```html
-<div class="bgc-primary c-primary/80"></div>
+<div class="bgc-primary c-white/80"></div>
 ```
 
 **Infinite Variants**
