@@ -456,7 +456,7 @@ As long as everyone follows the rules, things work. When they don’t, styles le
 
 Maple removes the need for agreement by moving selector logic into the class name itself. It supports full CSS selector syntax inline, allowing components to define their own relationship with their environment, without relying on external coordination.
 
-#### 1. Parent Selector (^)
+#### 1. Parent Selector - `^`
 
 Usually, a parent controls a child: `card .button { color: red }`. This creates a dependency where the Card must know about the Button.
 
@@ -472,7 +472,7 @@ So, elements define their own contextual behavior. This is true component encaps
 - No global overrides
 - No coupling between components
 
-#### 2. Self Selector (&)
+#### 2. Self Selector - `&`
 
 Maple supports self selectors via `&`, allowing components to express complex state logic directly:
 
@@ -480,7 +480,7 @@ Maple supports self selectors via `&`, allowing components to express complex st
 <div class="^.dark&:hover:c-white">Interactive Component</div>
 ```
 
-#### 3. Child Selector (/)
+#### 3. Child Selector - `/`
 
 Sometimes you need to style markup you don’t control — CMS output, markdown, or third-party HTML.
 
@@ -496,6 +496,8 @@ An element styled with Maple is a self-contained unit of styling logic that beha
 
 > [!IMPORTANT]
 > Maple removes the need for global agreements, but not the risk of misuse. Selector power can become footguns that can recreate similar chaos locally.
+
+## Limitations
 
 ## License
 
