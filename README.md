@@ -160,7 +160,7 @@ To style an application with Maple, all you need is to include the script below 
 
 ### No Configuration Files
 
-Most utility-based styling engines depend on static analysis. They scan your source files ahead of time, trying to predict which class names might exist at runtime.
+Most utility-based styling engines depend on static analysis. They scan source files ahead of time, trying to predict which class names might exist at runtime.
 
 This creates a fundamental mismatch between where styles are decided and where styles actually exist.
 
@@ -194,11 +194,11 @@ As a result, no configuration is required because no prediction is required.
 
 ### No Special SSR Treatment
 
-Maple does not participate in server rendering at all.
+Maple does not participate in server rendering.
 
-Whether your HTML is produced by Next.js, Remix, Nuxt, PHP, or a static file, Maple behaves the same way: it observes the DOM and generates styles when elements appear. There is no style collection step, no critical CSS extraction, and no framework-specific integration.
+Whether HTML is produced by Next.js, Remix, Nuxt, PHP, or served as a static file, Maple behaves the same way: it observes the DOM and generates styles as elements appear. There is no style collection step, no critical CSS extraction, and no framework-specific integration.
 
-Styling is no longer part of your SSR architecture — it is a client-side concern with deterministic behavior.
+Styling is decoupled from your SSR architecture and handled entirely on the client, with deterministic runtime behavior.
 
 ---
 
@@ -250,7 +250,7 @@ As styles cannot exist “just in case”, the styling footprint is always perfe
 
 ### Universal Portability
 
-Because Maple has no build step and no compile-time requirements, it works anywhere HTML and JavaScript work. If you can add a `<script>` tag, you can use Maple.
+Because Maple has no build step or compile-time requirements, it works anywhere HTML and JavaScript work. If you can add a `<script>` tag, you can use Maple.
 
 This makes Maple immediately usable in environments where build-dependent CSS tooling is impractical or unavailable:
 
@@ -261,7 +261,7 @@ This makes Maple immediately usable in environments where build-dependent CSS to
 
 There is no npm install, no bundler configuration, and no fragile build chain to maintain.
 
-Maple decouples your design system from your build infrastructure — and makes modern utility styling available to the entire web.
+Maple decouples design systems from build infrastructure — and makes modern utility-based styling available to the entire web.
 
 ---
 
