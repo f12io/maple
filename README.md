@@ -54,7 +54,7 @@ Add Maple to your project by including the script below and start styling.
 
 Before going into the details of how Maple works, let's understand why you might actually need it.
 
-Since the introduction of CSS, these sheets are treated as static assets for a good reason. The "C" at the beginning of CSS stands for "Cascading", meaning that the rule at line 5000 can override the rule at line 1.
+Since the introduction of CSS, the stylesheets are treated as static assets for a good reason. The "C" at the beginning of CSS stands for "Cascading", meaning that the rule at line 5000 can override the rule at line 1.
 
 This feature naturally draws a hard line on how CSS can be evaluated between the first stylesheet request and the pixels on the screen. Any random combination of selector and specificity order has to be converted to CSSOM before its sibling DOM can be processed. So downloading stylesheets in the head, parsing them, building the CSSOM and then matching it with the DOM elements became the inevitable way to render the page, which we call [Critical Rendering Path](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Critical_rendering_path).
 
