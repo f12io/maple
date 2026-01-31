@@ -3,6 +3,8 @@ import { generateStylesFromClass } from './generator';
 export function startObserver() {
   if (typeof document === 'undefined') return;
 
+  let streaming = true;
+
   const observer = new MutationObserver((muts) => {
     for (const mut of muts) {
       if (mut.type === 'childList') {
@@ -10,6 +12,16 @@ export function startObserver() {
           if (node instanceof Element) {
             for (const srcClass of node.classList) {
               generateStylesFromClass(srcClass);
+            }
+
+            if (node.childElementCount > 0 && !streaming) {
+              const children = node.getElementsByTagName('*');
+
+              for (const child of children) {
+                for (const srcClass of child.classList) {
+                  generateStylesFromClass(srcClass);
+                }
+              }
             }
           }
         }
@@ -21,6 +33,8 @@ export function startObserver() {
         }
       }
     }
+
+    streaming = false;
   });
 
   for (const srcClass of document.documentElement.classList) {
