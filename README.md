@@ -2,7 +2,8 @@
 
   <h1>Maple</h1>
   <p>
-    A variable-first, theme and framework agnostic runtime CSS engine. Atomic, tiny (~8kb gzipped), fast, and delightfully intuitive.<br>
+    A variable-first, theme and framework agnostic runtime CSS engine.<br>
+    Atomic, tiny (~8kb gzipped), fast, and delightfully intuitive.<br>
     Zero build steps. Zero configuration. Zero dependencies.
   </p>
 
