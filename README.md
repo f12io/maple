@@ -48,7 +48,7 @@ Add Maple to your project by including the script below and start styling.
 > Load Maple as a blocking script in the document head.
 > Do not use `async`, `defer`, `type="module"`, or place the script at the end of the body.
 >
-> These options allow the browser to resolve styles before Maple initializes, which can result in unstyled or partially styled content during the first paint.
+> These options allow the browser to process and render DOM elements before Maple initializes, which can result in unstyled or partially styled content during the first paint.
 
 ## Why Maple?
 
