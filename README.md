@@ -198,8 +198,6 @@ Maple does not participate in server rendering.
 
 Whether HTML is produced by Next.js, Remix, Nuxt, PHP, or served as a static file, Maple behaves the same way: it observes the DOM and generates styles as elements appear. There is no style collection step, no critical CSS extraction, and no framework-specific integration.
 
-Styling is decoupled from your SSR architecture and handled entirely on the client, with deterministic runtime behavior.
-
 ---
 
 ### Incremental CSSOM Construction
