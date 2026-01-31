@@ -304,15 +304,16 @@ When you write a utility like `c-primary`, Maple does not resolve it to a single
 ```css
 .c-primary {
   color: oklch(
-    from /* 1. Is there a specific override for text color primary? */
+    from
       var(
-        --c-primary,
-        /* 2. Is there a generic 'color-primary'? */
+        /* 1. Is there a specific override for color property? */ --c-primary,
         var(
-            --color-primary,
-            /* 3. Is there a global 'primary' token? */
-            var(--primary, /* 4. Fallback */ primary)
+          /* 2. Is there a generic 'color-primary'? */ --color-primary,
+          var(
+            /* 3. Is there a global 'primary' token? */ --primary,
+            /* 4. Fallback */ primary
           )
+        )
       )
       /* ... plus lightness, chroma, and hue modifiers */
   );
