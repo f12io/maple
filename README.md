@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>Maple</h1>
+  <h1 style="border:none">Maple</h1>
   <p>
     A variable-first, framework agnostic runtime CSS engine.<br>
     Atomic, tiny (~8kb gzipped), fast, and delightfully intuitive.<br>
