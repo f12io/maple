@@ -331,6 +331,7 @@ The same principle applies to every utility, not just colors. A spacing utility 
 
 When you want to bypass the variable system, you can use `=` to inject a literal value directly:
 
+```html
 <div class="w=86% c=#ff0000"></div>
 ```
 
