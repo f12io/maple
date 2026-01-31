@@ -370,7 +370,7 @@ On the other hand, Maple treats colors as parameters. Color utilities resolve th
 A single semantic color can express an entire range of variants — without defining them upfront.
 
 ```html
-<div class="bg-primary c-primary/80"></div>
+<div class="bgc-primary c-primary/80"></div>
 ```
 
 **Infinite Variants**
@@ -411,11 +411,11 @@ Because all color adjustments are variable-driven, colors respond naturally to c
 
 ```html
 <section class="--primary=teal">
-  <button class="bg-primary c-white"></button>
+  <button class="bgc-primary c-white"></button>
 </section>
 
 <section class="--primary=purple">
-  <button class="bg-primary c-white"></button>
+  <button class="bgc-primary c-white"></button>
 </section>
 ```
 
@@ -427,7 +427,7 @@ Components can tune color behavior locally:
 
 ```html
 <div class="@dark:--bgc-lightness-factor=0.2 @dark:--c-lightness-factor=100">
-  <div class="bg-primary c-primary"></div>
+  <div class="bgc-primary c-primary"></div>
 </div>
 ```
 
