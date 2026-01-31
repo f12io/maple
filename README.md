@@ -508,4 +508,4 @@ Maple deliberately shifts styling concerns from build time to runtime. This unlo
 
 ## License
 
-Release under [ROOT](https://github.com/f12io/maple/blob/main/LICENSE) License © [f12.io](https://f12.io)
+Released under [ROOT](https://github.com/f12io/maple/blob/main/LICENSE) License © [f12.io](https://f12.io)
