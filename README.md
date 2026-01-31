@@ -8,7 +8,7 @@
   </p>
 
   <p>
-    <a href="#quick-start">Quick Start</a> •
+    <a href="#why-maple">Why Maple?</a> •
     <a href="#the-deep-dive">Deep Dive</a> •
     <a href="https://maple.f12.io">Docs</a>
   </p>
@@ -16,6 +16,30 @@
 </div>
 
 <br>
+
+## Quick Start
+
+Add Maple to your project by including the script below and start styling.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Include Maple in the head -->
+    <script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+  </head>
+  <body>
+    <!-- Start styling -->
+    <div class="bg-blue c-white p-4 br-2">Hello World</div>
+  </body>
+</html>
+```
+
+> [!IMPORTANT]
+> Load Maple as a blocking script in the document head.
+> Do not use `async`, `defer`, `type="module"`, or place the script at the end of the body.
+>
+> These options allow the browser to resolve styles before Maple initializes, which can result in unstyled or partially styled content during the first paint.
 
 ## Why Maple?
 
@@ -462,27 +486,6 @@ An element styled with Maple is a self-contained unit of styling logic that beha
 
 > [!IMPORTANT]
 > Maple removes the need for global agreements, but not the risk of misuse. Selector power can become footguns that can recreate similar chaos locally.
-
-## Quick Start
-
-Maple must be loaded before any DOM is parsed so it can observe elements as they are created and inject styles before the first layout and paint.
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Include Maple at the end of the head -->
-    <script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
-  </head>
-  <body>
-    <!-- Start styling -->
-    <div class="bg-blue c-white p-4 br-2">Hello World</div>
-  </body>
-</html>
-```
-
-> [!IMPORTANT]
-> Do not use `async`, `defer`, or `type="module"`. These attributes allow HTML parsing and rendering to proceed before Maple initializes, which can result in unstyled or partially styled content.
 
 ## License
 
