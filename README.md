@@ -127,33 +127,33 @@ This moves work from upfront network transfer to incremental runtime generation,
 
 ### No Build Pipeline
 
-This is where things get interesting. To put a blue rectangle on the screen today, `bg-blue` must travel through a sophisticated, yet remarkably complex machine:
+This is where things get interesting. To put a blue rectangle on the screen today, `bg-blue` must travel through a sophisticated, multi-step build toolchain:
 
-**With Sass (2006-era):**
-
-```
-bg-blue → Sass → PostCSS → Autoprefixer → Minify → 150kb CSS → Browser
-         └─ 2-5s build time, complex config
-```
-
-**With Tailwind v4 (2025-era):**
+**With Sass:**
 
 ```
-bg-blue → Vite → Oxide Engine → Lightning CSS → 50kb CSS → Browser
-         └─ ~1s build time, still needs config
+bg-blue → Sass → PostCSS → Autoprefixer → Minify → CSS File → Browser
+         └─ requires a build step and toolchain configuration
 ```
 
-With Maple, all you need is to include below script to the head of `index.html`:
+**With Tailwind v4:**
 
-```html
-<script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+```
+bg-blue → Vite → Oxide Engine → Lightning CSS → CSS File → Browser
+         └─ requires a build step and minimal configuration
 ```
 
-**Now:**
+**With Maple:**
 
 ```
 bg-blue → Browser
-         └─ 0s build time, zero config
+         └─ no build step, no configuration
+```
+
+To style an application with Maple, all you need is to include the script below in the document head:
+
+```html
+<script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
 ```
 
 ---
