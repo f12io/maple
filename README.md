@@ -1,10 +1,13 @@
 <div align="center">
 
-  <h1 style="border:none">Maple</h1>
+  <h1>Maple</h1>
   <p>
-    A variable-first, framework agnostic runtime CSS engine.<br>
-    Atomic, tiny (~8kb gzipped), fast, and delightfully intuitive.<br>
-    Zero build steps. Zero configuration. Zero dependencies.
+    A variable-first, framework-agnostic runtime CSS engine.<br>
+    Atomic. Tiny (~8kb gzipped). Fast. Delightfully intuitive.
+  </p>
+
+  <p>
+    Zero build steps • Zero configuration • Zero dependencies
   </p>
 
   <p>
@@ -15,7 +18,13 @@
 
 </div>
 
-<br>
+## TL;DR
+
+Maple is a runtime CSS engine that generates atomic styles **only when classes appear in the DOM**.
+
+Instead of shipping a stylesheet upfront, Maple ships a small runtime (~8kb gzipped) that observes the DOM and constructs CSS incrementally as your application renders. If a class is never used, its style is never generated.
+
+This shifts styling cost from upfront network transfer to demand-driven runtime generation, eliminating build steps, configuration, and unused CSS — while keeping styles deterministic and encapsulated.
 
 ## Quick Start
 
