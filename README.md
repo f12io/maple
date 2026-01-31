@@ -288,7 +288,7 @@ In a headless CMS, editors can supply utility strings as data, for example: `fs-
 Layouts, typography, and visual variants can be adjusted instantly—without touching code or triggering a deployment.
 
 > [!IMPORTANT]
-> The power of Maple comes with the responsibility of using it wisely. While Maple provides the tools to create flexible and dynamic designs, unbounded runtime values can lead to uncontrolled CSS growth and degraded performance.
+> The power of Maple comes with the responsibility of using it wisely. While Maple enables flexible and dynamic designs, class names with unbounded or highly variable runtime values can cause unnecessary CSSOM growth if not carefully constrained.
 
 ---
 
