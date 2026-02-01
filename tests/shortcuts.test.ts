@@ -6,6 +6,18 @@ describe('Shortcuts', () => {
     expect(convert('fx')).toBe(`.fx { display: flex; }`);
   });
 
+  it('md:flex', () => {
+    expect(convert('md:fx')).toBe(
+      `@container (min-width: 768px) { .md\\:fx { display: flex; } }`,
+    );
+  });
+
+  it('md:&hover:flex', () => {
+    expect(convert('md:&:hover:fx')).toBe(
+      `@container (min-width: 768px) { .md\\:\\&\\:hover\\:fx:hover { display: flex; } }`,
+    );
+  });
+
   it('d-flex', () => {
     expect(convert('d-flex')).toBe(
       `.d-flex { display: var(--d-flex, var(--flex, flex)); }`,
