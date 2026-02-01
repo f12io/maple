@@ -20,7 +20,7 @@
 
 ## TL;DR
 
-Maple is a runtime CSS engine that generates atomic styles **only when classes appear in the DOM**.
+Maple is a runtime CSS engine that generates atomic styles from class names **only when they appear in the DOM**.
 
 Instead of shipping a stylesheet upfront, Maple ships a small runtime (~8kb gzipped) that observes the DOM and constructs CSS incrementally as your application renders. If a class is never used, its style is never generated.
 
@@ -295,7 +295,7 @@ Layouts, typography, and visual variants can be adjusted instantly—without tou
 Traditional utility engines map a class name to a static value.
 `text-blue-500` → `#3b82f6`
 
-Maple maps a class name to a **semantic fallback chain**. This means utilities don’t encode values — they express intent, and variables determine the result.
+Maple maps a class name to a **semantic fallback chain** of CSS variables. This means utilities don’t encode values — they express intent, and variables determine the result.
 
 When you write a utility like `c-primary`, Maple does not resolve it to a single color. Instead, it generates a CSS rule that progressively searches for meaning at multiple levels:
 
