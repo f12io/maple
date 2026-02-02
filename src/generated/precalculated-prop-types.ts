@@ -29,7 +29,7 @@ export const PRECALCULATED_PROP_TYPES: Record<string, number> = {
   aspectRatio: 0,
   backdropFilter: 0,
   backfaceVisibility: 0,
-  background: 1,
+  background: 2,
   backgroundAttachment: 0,
   backgroundBlendMode: 0,
   backgroundClip: 0,

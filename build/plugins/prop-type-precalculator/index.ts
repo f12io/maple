@@ -3,6 +3,7 @@ import {
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
 } from '../../../src/core/constants/config';
+import { PRECALCULATED_PROP_TYPES } from '../../../src/core/constants/precalculated-prop-types';
 import {
   DEFAULT_ANGLE_VALUE,
   DEFAULT_COLOR_VALUE,
@@ -30,6 +31,7 @@ export function precalculatePropTypes() {
           DEFAULT_TIME_VALUE,
           DEFAULT_ANGLE_VALUE,
           DEFAULT_COLOR_VALUE,
+          PRECALCULATED_PROP_TYPES,
         }) => {
           let element: HTMLDivElement | null = null;
           const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
@@ -63,7 +65,7 @@ export function precalculatePropTypes() {
             .reduce<Record<string, number>>(
               (acc, prop) => ({
                 ...acc,
-                [prop]: resolveType(prop),
+                [prop]: PRECALCULATED_PROP_TYPES[prop] ?? resolveType(prop),
               }),
               {},
             );
@@ -77,6 +79,7 @@ export function precalculatePropTypes() {
           DEFAULT_TIME_VALUE,
           DEFAULT_ANGLE_VALUE,
           DEFAULT_COLOR_VALUE,
+          PRECALCULATED_PROP_TYPES,
         },
       );
 
