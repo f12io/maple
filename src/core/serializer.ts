@@ -158,18 +158,19 @@ export function serializeProp(
   value: string,
   isImportant: 1 | 0,
 ) {
-  const important = isImportant ? ' !important' : '';
   const prefixes = VENDOR_PREFIXES[propKeyKebab];
+  const important = isImportant ? ' !important' : '';
+  const result = `${propKeyKebab}: ${value}${important};`;
 
   if (prefixes) {
     return (
       prefixes
         .map((prefix) => `${prefix}${propKeyKebab}: ${value}${important};`)
-        .join(' ') + ` ${propKeyKebab}: ${value}${important};`
+        .join() + result
     );
   }
 
-  return `${propKeyKebab}: ${value}${important};`;
+  return result;
 }
 
 export function serializeValue(value: string) {
@@ -889,8 +890,6 @@ function serializeFlexLayout(
   isInline: 1 | 0,
 ): string | undefined {
   const { utilVal, isImportant } = parsed;
-  const important = isImportant ? ' !important' : '';
-  const display = isInline ? 'inline-flex' : 'flex';
 
   // No position code
   if (!utilVal) {
@@ -908,8 +907,14 @@ function serializeFlexLayout(
   // For column: vertical = justify-content, horizontal = align-items
   // For row: vertical = align-items, horizontal = justify-content
   const [jc, ai] = direction === 'column' ? [v, h] : [h, v];
+  const display = isInline ? 'inline-flex' : 'flex';
 
-  return `display: ${display}${important}; flex-direction: ${direction}${important}; justify-content: ${jc}${important}; align-items: ${ai}${important};`;
+  return (
+    serializeProp('display', display, isImportant) +
+    serializeProp('flex-direction', direction, isImportant) +
+    serializeProp('justify-content', jc, isImportant) +
+    serializeProp('align-items', ai, isImportant)
+  );
 }
 
 function serializeFlexSelf(
@@ -925,11 +930,12 @@ function serializeFlexSelf(
 
   if (!v || !h) return;
 
-  const important = isImportant ? ' !important' : '';
-
   // For column: vertical = justify-self, horizontal = align-self
   // For row: vertical = align-self, horizontal = justify-self
   const [js, as] = direction === 'column' ? [v, h] : [h, v];
 
-  return `justify-self: ${js}${important}; align-self: ${as}${important};`;
+  return (
+    serializeProp('justify-self', js, isImportant) +
+    serializeProp('align-self', as, isImportant)
+  );
 }
