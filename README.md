@@ -504,6 +504,7 @@ Maple deliberately shifts styling concerns from build time to runtime. This unlo
 - **Not all CSS belongs in utilities.** While Maple supports advanced selectors, certain patterns—such as complex keyframes-are often better expressed in traditional CSS. Please keep in mind that Maple is optimized for utility-first and token-driven design systems.
 - **Arbitrary runtime values must be bounded.** Styles generated from arbitrary runtime values can lead to excessive CSSOM growth. As with static stylesheets, once a style rule is inserted into the CSSOM, it remains in memory until page unload. When arbitrary runtime values are not used, Maple’s total CSSOM memory usage converges to that of an equivalent static CSS implementation. The difference is that Maple starts with an empty CSSOM and builds it incrementally as needed.
 - **Runtime cost scales with the number of unique utility classes.** Maple’s runtime overhead scales with the number of unique utility classes that actually appear in the DOM. For most applications this cost is negligible—and often lower than shipping large static stylesheets—but performance characteristics should be evaluated for your specific use case. See [Performance](#performance) and the [examples](#examples) for guidance.
+- **Relative OKLCH Colors** Maple uses OKLCH relative colors to support dynamic color adjustment. As of writing, the browser support is 89.65%. Please check [Can I use](https://caniuse.com/mdn-css_types_color_oklch_relative_syntax) for the latest information.
 
 ## License
 
