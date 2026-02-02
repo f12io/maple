@@ -2,15 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { convert } from './helpers/convert.helper';
 
 const vars =
-  '-webkit-backdrop-filter: var(--filter-bdblur,) var(--filter-bdbrightness,) var(--filter-bdcontrast,) var(--filter-bdshadow,) var(--filter-bdgrayscale,) var(--filter-bdhue,) var(--filter-bdinvert,) var(--filter-bdsaturate,) var(--filter-bdsepia,); backdrop-filter: var(--filter-bdblur,) var(--filter-bdbrightness,) var(--filter-bdcontrast,) var(--filter-bdshadow,) var(--filter-bdgrayscale,) var(--filter-bdhue,) var(--filter-bdinvert,) var(--filter-bdsaturate,) var(--filter-bdsepia,)';
-
-const varsImportant =
-  '-webkit-backdrop-filter: var(--filter-bdblur,) var(--filter-bdbrightness,) var(--filter-bdcontrast,) var(--filter-bdshadow,) var(--filter-bdgrayscale,) var(--filter-bdhue,) var(--filter-bdinvert,) var(--filter-bdsaturate,) var(--filter-bdsepia,) !important; backdrop-filter: var(--filter-bdblur,) var(--filter-bdbrightness,) var(--filter-bdcontrast,) var(--filter-bdshadow,) var(--filter-bdgrayscale,) var(--filter-bdhue,) var(--filter-bdinvert,) var(--filter-bdsaturate,) var(--filter-bdsepia,) !important';
+  'backdrop-filter: var(--filter-bdblur,) var(--filter-bdbrightness,) var(--filter-bdcontrast,) var(--filter-bdshadow,) var(--filter-bdgrayscale,) var(--filter-bdhue,) var(--filter-bdinvert,) var(--filter-bdsaturate,) var(--filter-bdsepia,)';
 
 describe('Backdrop Filter', () => {
   it('with variables', () => {
     expect(convert('bdf-blur-soft_shadow-soft')).toBe(
-      `.bdf-blur-soft_shadow-soft { -webkit-backdrop-filter: var(--bdf-blur-soft, var(--blur-soft, blur-soft)) var(--bdf-shadow-soft, var(--shadow-soft, shadow-soft)); backdrop-filter: var(--bdf-blur-soft, var(--blur-soft, blur-soft)) var(--bdf-shadow-soft, var(--shadow-soft, shadow-soft)); }`,
+      `.bdf-blur-soft_shadow-soft { backdrop-filter: var(--bdf-blur-soft, var(--blur-soft, blur-soft)) var(--bdf-shadow-soft, var(--shadow-soft, shadow-soft)); }`,
     );
   });
 });
@@ -24,7 +21,7 @@ describe('Blur', () => {
 
   it('blur with integer and important', () => {
     expect(convert('!bdblur-4')).toBe(
-      `.\\!bdblur-4 { --filter-bdblur: blur(var(--blur-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))));${varsImportant}; }`,
+      `.\\!bdblur-4 { --filter-bdblur: blur(var(--blur-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))));${vars} !important; }`,
     );
   });
 
@@ -75,7 +72,7 @@ describe('Blur', () => {
 
   it('blur with custom value and important', () => {
     expect(convert('!bdblur=2px')).toBe(
-      `.\\!bdblur\\=2px { --filter-bdblur: blur(2px);${varsImportant}; }`,
+      `.\\!bdblur\\=2px { --filter-bdblur: blur(2px);${vars} !important; }`,
     );
   });
 });
@@ -89,7 +86,7 @@ describe('Brightness', () => {
 
   it('brightness with integer and important', () => {
     expect(convert('!bdbrightness-2')).toBe(
-      `.\\!bdbrightness-2 { --filter-bdbrightness: brightness(var(--brightness-2, 2));${varsImportant}; }`,
+      `.\\!bdbrightness-2 { --filter-bdbrightness: brightness(var(--brightness-2, 2));${vars} !important; }`,
     );
   });
 
@@ -134,7 +131,7 @@ describe('Brightness', () => {
 
   it('brightness with multiple custom value and important', () => {
     expect(convert('!bdbrightness=1')).toBe(
-      `.\\!bdbrightness\\=1 { --filter-bdbrightness: brightness(1);${varsImportant}; }`,
+      `.\\!bdbrightness\\=1 { --filter-bdbrightness: brightness(1);${vars} !important; }`,
     );
   });
 });
@@ -148,7 +145,7 @@ describe('Contrast', () => {
 
   it('contrast with integer and important', () => {
     expect(convert('!bdcontrast-2')).toBe(
-      `.\\!bdcontrast-2 { --filter-bdcontrast: contrast(var(--contrast-2, 2));${varsImportant}; }`,
+      `.\\!bdcontrast-2 { --filter-bdcontrast: contrast(var(--contrast-2, 2));${vars} !important; }`,
     );
   });
 
@@ -193,7 +190,7 @@ describe('Contrast', () => {
 
   it('contrast with multiple custom value and important', () => {
     expect(convert('!bdcontrast=1')).toBe(
-      `.\\!bdcontrast\\=1 { --filter-bdcontrast: contrast(1);${varsImportant}; }`,
+      `.\\!bdcontrast\\=1 { --filter-bdcontrast: contrast(1);${vars} !important; }`,
     );
   });
 });
@@ -207,7 +204,7 @@ describe('Grayscale', () => {
 
   it('grayscale with integer and important', () => {
     expect(convert('!bdgrayscale-2')).toBe(
-      `.\\!bdgrayscale-2 { --filter-bdgrayscale: grayscale(var(--grayscale-2, 2));${varsImportant}; }`,
+      `.\\!bdgrayscale-2 { --filter-bdgrayscale: grayscale(var(--grayscale-2, 2));${vars} !important; }`,
     );
   });
 
@@ -252,7 +249,7 @@ describe('Grayscale', () => {
 
   it('grayscale with multiple custom value and important', () => {
     expect(convert('!bdgrayscale=1')).toBe(
-      `.\\!bdgrayscale\\=1 { --filter-bdgrayscale: grayscale(1);${varsImportant}; }`,
+      `.\\!bdgrayscale\\=1 { --filter-bdgrayscale: grayscale(1);${vars} !important; }`,
     );
   });
 });
@@ -266,7 +263,7 @@ describe('Invert', () => {
 
   it('invert with integer and important', () => {
     expect(convert('!bdinvert-2')).toBe(
-      `.\\!bdinvert-2 { --filter-bdinvert: invert(var(--invert-2, 2));${varsImportant}; }`,
+      `.\\!bdinvert-2 { --filter-bdinvert: invert(var(--invert-2, 2));${vars} !important; }`,
     );
   });
 
@@ -311,7 +308,7 @@ describe('Invert', () => {
 
   it('invert with multiple custom value and important', () => {
     expect(convert('!bdinvert=1')).toBe(
-      `.\\!bdinvert\\=1 { --filter-bdinvert: invert(1);${varsImportant}; }`,
+      `.\\!bdinvert\\=1 { --filter-bdinvert: invert(1);${vars} !important; }`,
     );
   });
 });
@@ -325,7 +322,7 @@ describe('Saturate', () => {
 
   it('saturate with integer and important', () => {
     expect(convert('!bdsaturate-2')).toBe(
-      `.\\!bdsaturate-2 { --filter-bdsaturate: saturate(var(--saturate-2, 2));${varsImportant}; }`,
+      `.\\!bdsaturate-2 { --filter-bdsaturate: saturate(var(--saturate-2, 2));${vars} !important; }`,
     );
   });
 
@@ -370,7 +367,7 @@ describe('Saturate', () => {
 
   it('saturate with multiple custom value and important', () => {
     expect(convert('!bdsaturate=1')).toBe(
-      `.\\!bdsaturate\\=1 { --filter-bdsaturate: saturate(1);${varsImportant}; }`,
+      `.\\!bdsaturate\\=1 { --filter-bdsaturate: saturate(1);${vars} !important; }`,
     );
   });
 });
@@ -384,7 +381,7 @@ describe('Sepia', () => {
 
   it('sepia with integer and important', () => {
     expect(convert('!bdsepia-2')).toBe(
-      `.\\!bdsepia-2 { --filter-bdsepia: sepia(var(--sepia-2, 2));${varsImportant}; }`,
+      `.\\!bdsepia-2 { --filter-bdsepia: sepia(var(--sepia-2, 2));${vars} !important; }`,
     );
   });
 
@@ -429,7 +426,7 @@ describe('Sepia', () => {
 
   it('sepia with multiple custom value and important', () => {
     expect(convert('!bdsepia=1')).toBe(
-      `.\\!bdsepia\\=1 { --filter-bdsepia: sepia(1);${varsImportant}; }`,
+      `.\\!bdsepia\\=1 { --filter-bdsepia: sepia(1);${vars} !important; }`,
     );
   });
 });
@@ -443,7 +440,7 @@ describe('Hue Rotate', () => {
 
   it('hue rotate with integer and important', () => {
     expect(convert('!bdhue-15')).toBe(
-      `.\\!bdhue-15 { --filter-bdhue: hue-rotate(var(--hue-15, var(--angle-15, 15deg)));${varsImportant}; }`,
+      `.\\!bdhue-15 { --filter-bdhue: hue-rotate(var(--hue-15, var(--angle-15, 15deg)));${vars} !important; }`,
     );
   });
 
@@ -506,7 +503,7 @@ describe('Hue Rotate', () => {
 
   it('hue rotate with custom value and important', () => {
     expect(convert('!bdhue=10')).toBe(
-      `.\\!bdhue\\=10 { --filter-bdhue: hue-rotate(10);${varsImportant}; }`,
+      `.\\!bdhue\\=10 { --filter-bdhue: hue-rotate(10);${vars} !important; }`,
     );
   });
 });

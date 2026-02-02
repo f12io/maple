@@ -141,9 +141,6 @@ export const PROP_UNIT_MAP: Record<string, string> = {
   transition: DEFAULT_TIME_UNIT,
   transitionDelay: DEFAULT_TIME_UNIT,
   transitionDuration: DEFAULT_TIME_UNIT,
-  interestDelay: DEFAULT_TIME_UNIT,
-  interestDelayEnd: DEFAULT_TIME_UNIT,
-  interestDelayStart: DEFAULT_TIME_UNIT,
   skew: DEFAULT_ANGLE_UNIT,
   skewX: DEFAULT_ANGLE_UNIT,
   skewY: DEFAULT_ANGLE_UNIT,
@@ -181,17 +178,8 @@ const webkit = '-webkit-';
 export const VENDOR_PREFIXES: Record<string, Array<string> | undefined> = {
   appearance: [webkit],
   'user-select': [webkit],
-  mask: [webkit],
-  'mask-image': [webkit],
-  'mask-size': [webkit],
-  'mask-position': [webkit],
-  'mask-repeat': [webkit],
-  'mask-origin': [webkit],
-  'mask-clip': [webkit],
-  'mask-composite': [webkit],
   'print-color-adjust': [webkit],
   'text-size-adjust': [webkit],
-  'backdrop-filter': [webkit],
 };
 
 // Flex position value mappings (compact)
