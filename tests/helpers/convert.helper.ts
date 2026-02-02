@@ -7,9 +7,9 @@ export function convert(srcClass: string): string | undefined {
 }
 
 export function convertWithRefs(srcClass: string): string | undefined {
-  OPTIONS.refs = true;
+  OPTIONS.refs = 1;
   const result = buildRule(srcClass);
-  OPTIONS.refs = false;
+  OPTIONS.refs = 0;
 
   return processResult(result);
 }
