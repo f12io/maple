@@ -21,6 +21,8 @@ import {
   CONTAINER_TYPES,
   CSS_VARIABLE_CATEGORY,
   FILTER_KEYS,
+  FLEX_H,
+  FLEX_V,
   FUNCTION_KEYS,
   PROP_UNIT_MAP,
   SELECTOR_REPLACEMENTS,
@@ -126,6 +128,13 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
     }),
     {},
   ),
+  // Flex layout shortcuts
+  fxrow: (p) => serializeFlexLayout(p, 'row', false),
+  fxcol: (p) => serializeFlexLayout(p, 'column', false),
+  ifxrow: (p) => serializeFlexLayout(p, 'row', true),
+  ifxcol: (p) => serializeFlexLayout(p, 'column', true),
+  fxrowself: (p) => serializeFlexSelf(p, 'row'),
+  fxcolself: (p) => serializeFlexSelf(p, 'column'),
 };
 
 export function applyModifier(parsed: ParsedClass): string | undefined {
@@ -872,4 +881,55 @@ function serializeBackgroundImageParts(
   }
 
   return `${functionName}(${serializedParams.join(', ')})${nonFunctionParams ? ` ${serializeValue(nonFunctionParams)}` : ''}`;
+}
+
+function serializeFlexLayout(
+  parsed: ParsedClass,
+  direction: 'row' | 'column',
+  isInline: boolean,
+): string | undefined {
+  const { utilVal, isImportant } = parsed;
+  const important = isImportant ? ' !important' : '';
+  const display = isInline ? 'inline-flex' : 'flex';
+
+  // No position code
+  if (!utilVal) {
+    return undefined;
+  }
+
+  // Parse 2-letter position code
+  if (utilVal.length !== 2) return;
+
+  const v = FLEX_V[utilVal[0]];
+  const h = FLEX_H[utilVal[1]];
+
+  if (!v || !h) return;
+
+  // For column: vertical = justify-content, horizontal = align-items
+  // For row: vertical = align-items, horizontal = justify-content
+  const [jc, ai] = direction === 'column' ? [v, h] : [h, v];
+
+  return `display: ${display}${important}; flex-direction: ${direction}${important}; justify-content: ${jc}${important}; align-items: ${ai}${important};`;
+}
+
+function serializeFlexSelf(
+  parsed: ParsedClass,
+  direction: 'row' | 'column',
+): string | undefined {
+  const { utilVal, isImportant } = parsed;
+
+  if (utilVal.length !== 2) return;
+
+  const v = FLEX_V[utilVal[0]];
+  const h = FLEX_H[utilVal[1]];
+
+  if (!v || !h) return;
+
+  const important = isImportant ? ' !important' : '';
+
+  // For column: vertical = justify-self, horizontal = align-self
+  // For row: vertical = align-self, horizontal = justify-self
+  const [js, as] = direction === 'column' ? [v, h] : [h, v];
+
+  return `justify-self: ${js}${important}; align-self: ${as}${important};`;
 }

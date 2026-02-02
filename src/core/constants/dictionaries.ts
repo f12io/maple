@@ -193,3 +193,18 @@ export const VENDOR_PREFIXES: Record<string, Array<string> | undefined> = {
   'text-size-adjust': [webkit],
   'backdrop-filter': [webkit],
 };
+
+// Flex position value mappings (compact)
+export const FLEX_V: Record<string, string> = {
+  t: 'flex-start',
+  c: 'center',
+  b: 'flex-end',
+  s: 'stretch',
+  w: 'space-between',
+};
+export const FLEX_H: Record<string, string> = {
+  l: 'flex-start',
+  c: 'center',
+  r: 'flex-end',
+  w: 'space-between',
+};
