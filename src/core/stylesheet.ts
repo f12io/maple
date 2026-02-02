@@ -71,24 +71,12 @@ function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
   const rawValue = parseFloat(match[1]);
   const unit = match[2].toLowerCase();
 
-  switch (unit) {
-    case 'px':
-      return rawValue;
-    case 'rem':
-      return rawValue * 16;
-    case 'em':
-      return rawValue * 16;
-    case 'in':
-      return rawValue * 96;
-    case 'cm':
-      return rawValue * (96 / 2.54);
-    case 'mm':
-      return rawValue * (96 / 25.4);
-    case 'pt':
-      return rawValue * (96 / 72);
-    case 'pc':
-      return rawValue * 16;
-  }
+  if (unit === 'px') return rawValue;
+  if (unit === 'rem' || unit === 'em' || unit === 'pc') return rawValue * 16;
+  if (unit === 'in') return rawValue * 96;
+  if (unit === 'cm') return rawValue * (96 / 2.54);
+  if (unit === 'mm') return rawValue * (96 / 25.4);
+  if (unit === 'pt') return rawValue * (96 / 72);
 
   /**
    * Unknown Units (vw, vh, ch, ex)
