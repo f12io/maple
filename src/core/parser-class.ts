@@ -210,16 +210,12 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
               .slice(start, i)
               .replaceAll(REF_CHAR_SPACE, ' ');
 
-            switch (lastAnchorType) {
-              case CHAR_CARET:
-                parentSel = value;
-                break;
-              case CHAR_AMPERSAND:
-                selfSel = value;
-                break;
-              case CHAR_SLASH:
-                childSel = value;
-                break;
+            if (lastAnchorType === CHAR_CARET) {
+              parentSel = value;
+            } else if (lastAnchorType === CHAR_AMPERSAND) {
+              selfSel = value;
+            } else if (lastAnchorType === CHAR_SLASH) {
+              childSel = value;
             }
           }
         }
