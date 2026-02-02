@@ -175,3 +175,21 @@ export const PROP_UNIT_MAP: Record<string, string> = {
   bdsepia: '',
   bdhue: DEFAULT_ANGLE_UNIT,
 };
+
+const webkit = '-webkit-';
+
+export const VENDOR_PREFIXES: Record<string, Array<string> | undefined> = {
+  appearance: [webkit],
+  'user-select': [webkit],
+  mask: [webkit],
+  'mask-image': [webkit],
+  'mask-size': [webkit],
+  'mask-position': [webkit],
+  'mask-repeat': [webkit],
+  'mask-origin': [webkit],
+  'mask-clip': [webkit],
+  'mask-composite': [webkit],
+  'print-color-adjust': [webkit],
+  'text-size-adjust': [webkit],
+  'backdrop-filter': [webkit],
+};

@@ -25,6 +25,7 @@ import {
   PROP_UNIT_MAP,
   SELECTOR_REPLACEMENTS,
   TRANSFORM_KEYS,
+  VENDOR_PREFIXES,
 } from './constants/dictionaries';
 import {
   REGEX_BACKDROP_PREFIX,
@@ -148,7 +149,18 @@ export function serializeProp(
   value: string,
   isImportant: boolean,
 ) {
-  return `${propKeyKebab}: ${value}${isImportant ? ' !important' : ''};`;
+  const important = isImportant ? ' !important' : '';
+  const prefixes = VENDOR_PREFIXES[propKeyKebab];
+
+  if (prefixes) {
+    return (
+      prefixes
+        .map((prefix) => `${prefix}${propKeyKebab}: ${value}${important};`)
+        .join(' ') + ` ${propKeyKebab}: ${value}${important};`
+    );
+  }
+
+  return `${propKeyKebab}: ${value}${important};`;
 }
 
 export function serializeValue(value: string) {
