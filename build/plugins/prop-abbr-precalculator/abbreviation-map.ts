@@ -82,6 +82,7 @@ export const abbreviationMap: Record<string, string> = {
   gridTemplateColumns: 'cols',
   gridTemplateAreas: 'areas',
   willChange: 'wc',
+  whiteSpace: 'ws',
   backgroundClip: 'bgclip',
   backgroundRepeat: 'bgr',
   backgroundAttachment: 'bgattach',

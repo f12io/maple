@@ -161,6 +161,7 @@ export const PRECALCULATED_PROP_ABBREVIATIONS: Record<string, string> = {
   tstf: "transitionTimingFunction",
   tl: "translate",
   v: "visibility",
+  ws: "whiteSpace",
   w: "width",
   wc: "willChange",
   z: "zIndex"
