@@ -37,12 +37,20 @@ export const SHORTCUTS: Record<string, string> = {
 
   // border
   br: 'border-width: 1px; border-style: solid',
+  brt: 'border-top-width: 1px; border-top-style: solid',
+  brr: 'border-right-width: 1px; border-right-style: solid',
+  brb: 'border-bottom-width: 1px; border-bottom-style: solid',
+  brl: 'border-left-width: 1px; border-left-style: solid',
+
+  // container
+  cnt: 'container-type: inline-size',
 };
 
 export const SELECTOR_REPLACEMENTS: Record<string, string> = {
   odd: ':nth-child(odd)',
   even: ':nth-child(even)',
   rtl: '[dir="rtl"]',
+  ltr: '[dir="ltr"]',
 };
 
 export const CONTAINER_TYPES = [

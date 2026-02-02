@@ -101,4 +101,32 @@ describe('Shortcuts', () => {
       `.br { border-width: 1px; border-style: solid; }`,
     );
   });
+
+  it('border top', () => {
+    expect(convert('brt')).toBe(
+      `.brt { border-top-width: 1px; border-top-style: solid; }`,
+    );
+  });
+
+  it('border right', () => {
+    expect(convert('brr')).toBe(
+      `.brr { border-right-width: 1px; border-right-style: solid; }`,
+    );
+  });
+
+  it('border bottom', () => {
+    expect(convert('brb')).toBe(
+      `.brb { border-bottom-width: 1px; border-bottom-style: solid; }`,
+    );
+  });
+
+  it('border left', () => {
+    expect(convert('brl')).toBe(
+      `.brl { border-left-width: 1px; border-left-style: solid; }`,
+    );
+  });
+
+  it('container', () => {
+    expect(convert('cnt')).toBe(`.cnt { container-type: inline-size; }`);
+  });
 });
