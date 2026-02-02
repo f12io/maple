@@ -889,11 +889,6 @@ function serializeFlexLayout(
 ): string | undefined {
   const { utilVal, isImportant } = parsed;
 
-  // No position code
-  if (!utilVal) {
-    return;
-  }
-
   // Parse 2-letter position code
   if (utilVal.length !== 2) return;
 
@@ -905,10 +900,9 @@ function serializeFlexLayout(
   // For column: vertical = justify-content, horizontal = align-items
   // For row: vertical = align-items, horizontal = justify-content
   const [jc, ai] = direction === 'column' ? [v, h] : [h, v];
-  const display = isInline ? 'inline-flex' : 'flex';
 
   return (
-    serializeProp('display', display, isImportant) +
+    serializeProp('display', isInline ? 'inline-flex' : 'flex', isImportant) +
     serializeProp('flex-direction', direction, isImportant) +
     serializeProp('justify-content', jc, isImportant) +
     serializeProp('align-items', ai, isImportant)
