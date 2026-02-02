@@ -8,9 +8,8 @@ export function startRuntime() {
 
 function prepareOptions() {
   const url = new URL(import.meta.url);
-  const config = Array.from(url.searchParams.entries());
 
-  for (const [key, value] of config) {
+  for (const [key, value] of url.searchParams.entries()) {
     if (key === 'refs') {
       OPTIONS.refs = 1;
     }
