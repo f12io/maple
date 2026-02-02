@@ -893,7 +893,7 @@ function serializeFlexLayout(
 
   // No position code
   if (!utilVal) {
-    return undefined;
+    return;
   }
 
   // Parse 2-letter position code
