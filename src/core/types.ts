@@ -23,9 +23,7 @@ export type BucketType =
   | 'mxh'
   | 'orientation'
   | 'style'
-  | 'stuck'
-  | 'scrollable'
-  | 'snapped'
+  | 'scroll'
   | 'prefers'
   | 'static';
 

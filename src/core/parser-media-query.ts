@@ -378,7 +378,7 @@ export function parseMediaQuery({
 
         if (value) {
           collect(cacheKey, [
-            'stuck',
+            'scroll',
             bucketKey,
             value,
             `${prefixWithNot}scroll-state(stuck: ${value})`,
@@ -393,7 +393,7 @@ export function parseMediaQuery({
 
         if (value) {
           collect(cacheKey, [
-            'scrollable',
+            'scroll',
             bucketKey,
             value,
             `${prefixWithNot}scroll-state(scrollable: ${value})`,
@@ -408,7 +408,7 @@ export function parseMediaQuery({
 
         if (value) {
           collect(cacheKey, [
-            'snapped',
+            'scroll',
             bucketKey,
             value,
             `${prefixWithNot}scroll-state(snapped: ${value})`,
