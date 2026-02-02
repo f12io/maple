@@ -62,9 +62,9 @@ export interface ParsedSelector {
 export interface ParsedClass {
   srcClass: string;
   srcSel: string;
-  isImportant: boolean;
-  isUtilNegative: boolean;
-  isNoRef: boolean;
+  isImportant: 1 | 0;
+  isUtilNegative: 1 | 0;
+  isNoRef: 1 | 0;
   mediaQuery?: string;
   parentSel?: string;
   selfSel?: string;

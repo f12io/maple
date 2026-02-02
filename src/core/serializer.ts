@@ -129,10 +129,10 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
     {},
   ),
   // Flex layout shortcuts
-  fxrow: (p) => serializeFlexLayout(p, 'row', false),
-  fxcol: (p) => serializeFlexLayout(p, 'column', false),
-  ifxrow: (p) => serializeFlexLayout(p, 'row', true),
-  ifxcol: (p) => serializeFlexLayout(p, 'column', true),
+  fxrow: (p) => serializeFlexLayout(p, 'row', 0),
+  fxcol: (p) => serializeFlexLayout(p, 'column', 0),
+  ifxrow: (p) => serializeFlexLayout(p, 'row', 1),
+  ifxcol: (p) => serializeFlexLayout(p, 'column', 1),
   fxrowself: (p) => serializeFlexSelf(p, 'row'),
   fxcolself: (p) => serializeFlexSelf(p, 'column'),
 };
@@ -156,7 +156,7 @@ export function serializeSelector(selector: string) {
 export function serializeProp(
   propKeyKebab: string,
   value: string,
-  isImportant: boolean,
+  isImportant: 1 | 0,
 ) {
   const important = isImportant ? ' !important' : '';
   const prefixes = VENDOR_PREFIXES[propKeyKebab];
@@ -206,7 +206,7 @@ function serializeValueAsVariable(
   utilKey: string,
   validVarVal: string,
   propVal: string,
-  isNoRef: boolean,
+  isNoRef: 1 | 0,
   fallbackValue?: string,
   variableCategoryAsIs?: string,
   variableCategoryForMap?: string,
@@ -340,7 +340,7 @@ function serializeNumberValue({
       utilKey,
       validVarVal,
       utilVal,
-      true,
+      1,
       fallbackValue,
       varCat,
       unit,
@@ -393,7 +393,7 @@ function serializeColorValue(parsed: ParsedClass): string {
       utilKey,
       name,
       name,
-      true,
+      1,
       name,
       CSS_VARIABLE_CATEGORY.color,
     );
@@ -500,7 +500,7 @@ function serializeTransform(parsed: ParsedClass): string {
     serializeProp(
       `--tf-${parsed.utilKey}`,
       `${TRANSFORM_KEYS[parsed.utilKey]}(${value})`,
-      false,
+      0,
     ) + serializeProp('transform', TRANSFORM_VARIABLES, parsed.isImportant)
   );
 }
@@ -563,7 +563,7 @@ function serializeFilter(
   }
 
   return (
-    serializeProp(`--filter-${parsed.utilKey}`, value, false) +
+    serializeProp(`--filter-${parsed.utilKey}`, value, 0) +
     serializeProp(propKey, variables, parsed.isImportant)
   );
 }
@@ -886,7 +886,7 @@ function serializeBackgroundImageParts(
 function serializeFlexLayout(
   parsed: ParsedClass,
   direction: 'row' | 'column',
-  isInline: boolean,
+  isInline: 1 | 0,
 ): string | undefined {
   const { utilVal, isImportant } = parsed;
   const important = isImportant ? ' !important' : '';

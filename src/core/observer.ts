@@ -3,7 +3,7 @@ import { generateStylesFromClass } from './generator';
 export function startObserver() {
   if (typeof document === 'undefined') return;
 
-  let streaming = true;
+  let streaming = 1;
 
   const observer = new MutationObserver((muts) => {
     for (const mut of muts) {
@@ -34,7 +34,7 @@ export function startObserver() {
       }
     }
 
-    streaming = false;
+    streaming = 0;
   });
 
   for (const srcClass of document.documentElement.classList) {

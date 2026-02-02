@@ -57,33 +57,33 @@ export function resolveType(
   return type;
 }
 
-export function isKnownProperty(propKeyKebab: string): boolean {
+export function isKnownProperty(propKeyKebab: string): 1 | 0 {
   if (
     propKeyKebab in PRECALCULATED_PROP_TYPES ||
     PROP_TYPE_CACHE.has(propKeyKebab)
   ) {
-    return true;
+    return 1;
   }
 
   if (typeof CSS === 'undefined') {
-    return false;
+    return 0;
   }
 
-  return CSS.supports(propKeyKebab, 'inherit');
+  return CSS.supports(propKeyKebab, 'inherit') ? 1 : 0;
 }
 
-export function isKnownNumberValue(val: string): boolean {
-  if (!val) return false;
+export function isKnownNumberValue(val: string): 1 | 0 {
+  if (!val) return 0;
 
   val = val.charCodeAt(0) === CHAR_DASH ? val.slice(1) : val;
-  return REGEX_NUMBER_VALUE.test(val);
+  return REGEX_NUMBER_VALUE.test(val) ? 1 : 0;
 }
 
-export function isKnownAngleValue(val: string): boolean {
-  if (!val) return false;
+export function isKnownAngleValue(val: string): 1 | 0 {
+  if (!val) return 0;
 
   val = val.charCodeAt(0) === CHAR_DASH ? val.slice(1) : val;
-  return REGEX_ANGLE_VALUE.test(val);
+  return REGEX_ANGLE_VALUE.test(val) ? 1 : 0;
 }
 
 export function isKnownColorValue(val: string): boolean {

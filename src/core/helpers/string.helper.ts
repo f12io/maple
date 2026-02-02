@@ -74,8 +74,8 @@ export function escapeVariable(str: string) {
   return escapeClass(`--${str}`).replace('--', '');
 }
 
-export function startsWithNegative(value: string): boolean {
-  return value.charCodeAt(0) === CHAR_DASH;
+export function startsWithNegative(value: string): 1 | 0 {
+  return value.charCodeAt(0) === CHAR_DASH ? 1 : 0;
 }
 
 export function removeBrackets(value: string) {

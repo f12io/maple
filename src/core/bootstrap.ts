@@ -12,7 +12,7 @@ function prepareOptions() {
 
   for (const [key, value] of config) {
     if (key === 'refs') {
-      OPTIONS.refs = true;
+      OPTIONS.refs = 1;
     }
 
     OPTIONS.breakpoints[key] = value;

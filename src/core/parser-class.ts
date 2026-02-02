@@ -37,19 +37,19 @@ export function parseClass(srcClass: string): ParsedClass {
   const originalClass = srcClass;
 
   // Handle "Important" flag
-  let isImportant = false;
+  let isImportant: 1 | 0 = 0;
   if (srcClass.charCodeAt(0) === CHAR_EXCLAMATION_MARK) {
-    isImportant = true;
+    isImportant = 1;
     srcClass = srcClass.slice(1);
   }
 
   // Handle "No Ref" flag if refs are enabled
-  let isNoRef = true;
+  let isNoRef: 1 | 0 = 1;
   if (OPTIONS.refs) {
-    isNoRef = false;
+    isNoRef = 0;
 
     if (srcClass.charCodeAt(0) === CHAR_DOLLAR) {
-      isNoRef = true;
+      isNoRef = 1;
       srcClass = srcClass.slice(1);
     }
   }
@@ -81,7 +81,7 @@ function parseUtility(utilityRaw: string): {
   utilKey: string;
   utilVal: string;
   utilOp: ParsedClass['utilOp'];
-  isUtilNegative: boolean;
+  isUtilNegative: 1 | 0;
   propKeyCamel: string;
   propKeyKebab: string;
   propType: number;
@@ -91,7 +91,7 @@ function parseUtility(utilityRaw: string): {
   let utilKey = utilityRaw;
   let utilVal = '';
   let utilOp: ParsedClass['utilOp'] = REF_CHAR_CUSTOM;
-  let isUtilNegative = false;
+  let isUtilNegative: 1 | 0 = 0;
 
   const parts = split(utilityRaw, REF_CHAR_CUSTOM);
 

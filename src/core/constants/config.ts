@@ -1,10 +1,10 @@
 import { BucketType } from '../types';
 
 export const OPTIONS: {
-  refs: boolean;
+  refs: 1 | 0;
   breakpoints: Record<string, string>;
 } = {
-  refs: false,
+  refs: 0,
   breakpoints: {
     sm: '640px',
     md: '768px',
