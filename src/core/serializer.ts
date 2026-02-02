@@ -129,10 +129,10 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
     {},
   ),
   // Flex layout shortcuts
-  fxrow: (p) => serializeFlexLayout(p, 'row', 0),
-  fxcol: (p) => serializeFlexLayout(p, 'column', 0),
-  ifxrow: (p) => serializeFlexLayout(p, 'row', 1),
-  ifxcol: (p) => serializeFlexLayout(p, 'column', 1),
+  fxrow: (p) => serializeFlexLayout(p, 'row', 'flex'),
+  fxcol: (p) => serializeFlexLayout(p, 'column', 'flex'),
+  ifxrow: (p) => serializeFlexLayout(p, 'row', 'inline-flex'),
+  ifxcol: (p) => serializeFlexLayout(p, 'column', 'inline-flex'),
   fxrowself: (p) => serializeFlexSelf(p, 'row'),
   fxcolself: (p) => serializeFlexSelf(p, 'column'),
 };
@@ -884,36 +884,40 @@ function serializeBackgroundImageParts(
 
 function serializeFlexLayout(
   parsed: ParsedClass,
-  direction: 'row' | 'column',
-  isInline: 1 | 0,
+  dir: 'row' | 'column',
+  display: 'flex' | 'inline-flex',
 ): string | undefined {
-  const { utilVal, isImportant } = parsed;
+  const params = getFlexParams(parsed, dir);
 
-  // Parse 2-letter position code
-  if (utilVal.length !== 2) return;
-
-  const v = FLEX_V[utilVal[0]];
-  const h = FLEX_H[utilVal[1]];
-
-  if (!v || !h) return;
-
-  // For column: vertical = justify-content, horizontal = align-items
-  // For row: vertical = align-items, horizontal = justify-content
-  const [jc, ai] = direction === 'column' ? [v, h] : [h, v];
+  if (!params) return;
 
   return (
-    serializeProp('display', isInline ? 'inline-flex' : 'flex', isImportant) +
-    serializeProp('flex-direction', direction, isImportant) +
-    serializeProp('justify-content', jc, isImportant) +
-    serializeProp('align-items', ai, isImportant)
+    serializeProp('display', display, parsed.isImportant) +
+    serializeProp('flex-direction', dir, parsed.isImportant) +
+    serializeProp('justify-content', params[0], parsed.isImportant) +
+    serializeProp('align-items', params[1], parsed.isImportant)
   );
 }
 
 function serializeFlexSelf(
   parsed: ParsedClass,
-  direction: 'row' | 'column',
+  dir: 'row' | 'column',
 ): string | undefined {
-  const { utilVal, isImportant } = parsed;
+  const params = getFlexParams(parsed, dir);
+
+  if (!params) return;
+
+  return (
+    serializeProp('justify-self', params[0], parsed.isImportant) +
+    serializeProp('align-self', params[1], parsed.isImportant)
+  );
+}
+
+function getFlexParams(
+  parsed: ParsedClass,
+  dir: 'row' | 'column',
+): Array<string> | undefined {
+  const { utilVal } = parsed;
 
   if (utilVal.length !== 2) return;
 
@@ -924,10 +928,5 @@ function serializeFlexSelf(
 
   // For column: vertical = justify-self, horizontal = align-self
   // For row: vertical = align-self, horizontal = justify-self
-  const [js, as] = direction === 'column' ? [v, h] : [h, v];
-
-  return (
-    serializeProp('justify-self', js, isImportant) +
-    serializeProp('align-self', as, isImportant)
-  );
+  return dir === 'column' ? [v, h] : [h, v];
 }
