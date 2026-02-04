@@ -108,4 +108,6 @@ export const abbreviationMap: Record<string, string> = {
   transitionProperty: 'tsprop',
   transitionTimingFunction: 'tstf',
   textWrapMode: 'twrmod',
+  userSelect: 'select',
+  listStyle: 'list',
 };
