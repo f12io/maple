@@ -409,8 +409,6 @@ function serializeColorValue(parsed: ParsedClass): string {
     );
 
     /**
-     * Logic:
-     * We multiply the raw amount by the inversion variable.
      * If amount is positive (>0), we interpolate towards 1 (white).
      * If amount is negative (<0), we interpolate towards 0 (black).
      */
