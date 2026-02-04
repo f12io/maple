@@ -4,13 +4,13 @@ import { convert } from './helpers/convert.helper';
 describe('Positive Numbers', () => {
   it('padding', () => {
     expect(convert('p-4')).toBe(
-      '.p-4 { padding: var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }',
+      '.p-4 { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('padding without shortcut', () => {
     expect(convert('padding-4')).toBe(
-      '.padding-4 { padding: var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }',
+      '.padding-4 { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
@@ -22,19 +22,19 @@ describe('Positive Numbers', () => {
 
   it('padding with multiple values', () => {
     expect(convert('p-4_5')).toBe(
-      '.p-4_5 { padding: var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) var(--p-5, var(--space-5, calc(5rem * var(--spacer, 0.25)))); }',
+      '.p-4_5 { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))) var(--p-5, var(--space-5, calc(5rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('padding with multiple values and custom unit', () => {
     expect(convert('p-4_5px')).toBe(
-      '.p-4_5px { padding: var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) 5px; }',
+      '.p-4_5px { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))) 5px; }',
     );
   });
 
   it('padding important', () => {
     expect(convert('!p-4')).toBe(
-      '.\\!p-4 { padding: var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) !important; }',
+      '.\\!p-4 { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))) !important; }',
     );
   });
 
@@ -74,13 +74,13 @@ describe('Positive Numbers', () => {
 
   it('padding with 1 decimal', () => {
     expect(convert('p-4.5')).toBe(
-      `.p-4\\.5 { padding: var(--p-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--spacer, 0.25)))); }`,
+      `.p-4\\.5 { padding: var(--p-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--p-spacer, var(--spacer, 0.25))))); }`,
     );
   });
 
   it('padding with 2 decimals', () => {
     expect(convert('p-4.25')).toBe(
-      `.p-4\\.25 { padding: var(--p-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--spacer, 0.25)))); }`,
+      `.p-4\\.25 { padding: var(--p-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--p-spacer, var(--spacer, 0.25))))); }`,
     );
   });
 
@@ -94,7 +94,7 @@ describe('Positive Numbers', () => {
 
   it('padding 1', () => {
     expect(convert('p-1')).toBe(
-      '.p-1 { padding: var(--p-1, var(--space-1, calc(1rem * var(--spacer, 0.25)))); }',
+      '.p-1 { padding: var(--p-1, var(--space-1, calc(1rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
@@ -184,67 +184,67 @@ describe('Positive Numbers', () => {
 
   it('padding x axis', () => {
     expect(convert('px-3')).toBe(
-      '.px-3 { padding-inline: var(--px-3, var(--space-3, calc(3rem * var(--spacer, 0.25)))); }',
+      '.px-3 { padding-inline: var(--px-3, var(--space-3, calc(3rem * var(--px-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding y axis', () => {
     expect(convert('py-2')).toBe(
-      '.py-2 { padding-block: var(--py-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.py-2 { padding-block: var(--py-2, var(--space-2, calc(2rem * var(--py-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-right', () => {
     expect(convert('pr-2')).toBe(
-      '.pr-2 { padding-right: var(--pr-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.pr-2 { padding-right: var(--pr-2, var(--space-2, calc(2rem * var(--pr-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-left', () => {
     expect(convert('pl-2')).toBe(
-      '.pl-2 { padding-left: var(--pl-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.pl-2 { padding-left: var(--pl-2, var(--space-2, calc(2rem * var(--pl-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-inline-start', () => {
     expect(convert('ps-2')).toBe(
-      '.ps-2 { padding-inline-start: var(--ps-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.ps-2 { padding-inline-start: var(--ps-2, var(--space-2, calc(2rem * var(--ps-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-inline-end', () => {
     expect(convert('pe-2')).toBe(
-      '.pe-2 { padding-inline-end: var(--pe-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.pe-2 { padding-inline-end: var(--pe-2, var(--space-2, calc(2rem * var(--pe-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-top', () => {
     expect(convert('pt-2')).toBe(
-      '.pt-2 { padding-top: var(--pt-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.pt-2 { padding-top: var(--pt-2, var(--space-2, calc(2rem * var(--pt-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-bottom', () => {
     expect(convert('pb-2')).toBe(
-      '.pb-2 { padding-bottom: var(--pb-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.pb-2 { padding-bottom: var(--pb-2, var(--space-2, calc(2rem * var(--pb-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-block-start', () => {
     expect(convert('pbs-2')).toBe(
-      '.pbs-2 { padding-block-start: var(--pbs-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.pbs-2 { padding-block-start: var(--pbs-2, var(--space-2, calc(2rem * var(--pbs-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding-block-end', () => {
     expect(convert('pbe-2')).toBe(
-      '.pbe-2 { padding-block-end: var(--pbe-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.pbe-2 { padding-block-end: var(--pbe-2, var(--space-2, calc(2rem * var(--pbe-spacer, var(--p-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('padding with multiple predefined values', () => {
     expect(convert('p-1/2_1/4_4_rem')).toBe(
-      '.p-1\\/2_1\\/4_4_rem { padding: 50% 25% var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) 1rem; }',
+      '.p-1\\/2_1\\/4_4_rem { padding: 50% 25% var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))) 1rem; }',
     );
   });
 
@@ -276,13 +276,13 @@ describe('Positive Numbers', () => {
 describe('Positive Numbers with Multiple Property Outputs', () => {
   it('square', () => {
     expect(convert('square-4')).toBe(
-      '.square-4 { width: var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25))));height: var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }',
+      '.square-4 { width: var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25))))));height: var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('square important', () => {
     expect(convert('!square-4')).toBe(
-      '.\\!square-4 { width: var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) !important;height: var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) !important; }',
+      '.\\!square-4 { width: var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) !important;height: var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) !important; }',
     );
   });
 
@@ -324,13 +324,13 @@ describe('Positive Numbers with Multiple Property Outputs', () => {
 
   it('square with 1 decimal', () => {
     expect(convert('square-4.5')).toBe(
-      `.square-4\\.5 { width: var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--spacer, 0.25))));height: var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--spacer, 0.25)))); }`,
+      `.square-4\\.5 { width: var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25))))));height: var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))); }`,
     );
   });
 
   it('square with 2 decimals', () => {
     expect(convert('square-4.25')).toBe(
-      `.square-4\\.25 { width: var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--spacer, 0.25))));height: var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--spacer, 0.25)))); }`,
+      `.square-4\\.25 { width: var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25))))));height: var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))); }`,
     );
   });
 
@@ -346,7 +346,7 @@ describe('Positive Numbers with Multiple Property Outputs', () => {
 
   it('square 1', () => {
     expect(convert('square-1')).toBe(
-      '.square-1 { width: var(--square-1, var(--space-1, calc(1rem * var(--spacer, 0.25))));height: var(--square-1, var(--space-1, calc(1rem * var(--spacer, 0.25)))); }',
+      '.square-1 { width: var(--square-1, var(--space-1, calc(1rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25))))));height: var(--square-1, var(--space-1, calc(1rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
@@ -473,13 +473,13 @@ describe('Positive Numbers with Multiple Property Outputs', () => {
 describe('Negative Numbers', () => {
   it('margin', () => {
     expect(convert('-m-4')).toBe(
-      '.-m-4 { margin: calc(var(--m-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1); }',
+      '.-m-4 { margin: calc(var(--m-4, var(--space-4, calc(4rem * var(--m-spacer, var(--spacer, 0.25))))) * -1); }',
     );
   });
 
   it('margin negative value', () => {
     expect(convert('m--4')).toBe(
-      '.m--4 { margin: var(--m--4, var(--space--4, calc(-4rem * var(--spacer, 0.25)))); }',
+      '.m--4 { margin: var(--m--4, var(--space--4, calc(-4rem * var(--m-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
@@ -491,25 +491,25 @@ describe('Negative Numbers', () => {
 
   it('margin with multiple values', () => {
     expect(convert('m--4_-5')).toBe(
-      '.m--4_-5 { margin: var(--m--4, var(--space--4, calc(-4rem * var(--spacer, 0.25)))) var(--m--5, var(--space--5, calc(-5rem * var(--spacer, 0.25)))); }',
+      '.m--4_-5 { margin: var(--m--4, var(--space--4, calc(-4rem * var(--m-spacer, var(--spacer, 0.25))))) var(--m--5, var(--space--5, calc(-5rem * var(--m-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('margin with multiple values and custom unit', () => {
     expect(convert('m--4_-5px')).toBe(
-      '.m--4_-5px { margin: var(--m--4, var(--space--4, calc(-4rem * var(--spacer, 0.25)))) -5px; }',
+      '.m--4_-5px { margin: var(--m--4, var(--space--4, calc(-4rem * var(--m-spacer, var(--spacer, 0.25))))) -5px; }',
     );
   });
 
   it('margin without shortcut', () => {
     expect(convert('-margin-4')).toBe(
-      '.-margin-4 { margin: calc(var(--m-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1); }',
+      '.-margin-4 { margin: calc(var(--m-4, var(--space-4, calc(4rem * var(--m-spacer, var(--spacer, 0.25))))) * -1); }',
     );
   });
 
   it('margin important', () => {
     expect(convert('!-m-4')).toBe(
-      '.\\!-m-4 { margin: calc(var(--m-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1) !important; }',
+      '.\\!-m-4 { margin: calc(var(--m-4, var(--space-4, calc(4rem * var(--m-spacer, var(--spacer, 0.25))))) * -1) !important; }',
     );
   });
 
@@ -549,13 +549,13 @@ describe('Negative Numbers', () => {
 
   it('margin with 1 decimal', () => {
     expect(convert('-m-4.5')).toBe(
-      `.-m-4\\.5 { margin: calc(var(--m-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--spacer, 0.25)))) * -1); }`,
+      `.-m-4\\.5 { margin: calc(var(--m-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--m-spacer, var(--spacer, 0.25))))) * -1); }`,
     );
   });
 
   it('margin with 2 decimals', () => {
     expect(convert('-m-4.25')).toBe(
-      `.-m-4\\.25 { margin: calc(var(--m-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--spacer, 0.25)))) * -1); }`,
+      `.-m-4\\.25 { margin: calc(var(--m-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--m-spacer, var(--spacer, 0.25))))) * -1); }`,
     );
   });
 
@@ -569,7 +569,7 @@ describe('Negative Numbers', () => {
 
   it('margin 1', () => {
     expect(convert('-m-1')).toBe(
-      '.-m-1 { margin: calc(var(--m-1, var(--space-1, calc(1rem * var(--spacer, 0.25)))) * -1); }',
+      '.-m-1 { margin: calc(var(--m-1, var(--space-1, calc(1rem * var(--m-spacer, var(--spacer, 0.25))))) * -1); }',
     );
   });
 
@@ -671,67 +671,67 @@ describe('Negative Numbers', () => {
 
   it('margin x axis', () => {
     expect(convert('-mx-3')).toBe(
-      '.-mx-3 { margin-inline: calc(var(--mx-3, var(--space-3, calc(3rem * var(--spacer, 0.25)))) * -1); }',
+      '.-mx-3 { margin-inline: calc(var(--mx-3, var(--space-3, calc(3rem * var(--mx-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin y axis', () => {
     expect(convert('-my-2')).toBe(
-      '.-my-2 { margin-block: calc(var(--my-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-my-2 { margin-block: calc(var(--my-2, var(--space-2, calc(2rem * var(--my-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-right', () => {
     expect(convert('-mr-2')).toBe(
-      '.-mr-2 { margin-right: calc(var(--mr-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-mr-2 { margin-right: calc(var(--mr-2, var(--space-2, calc(2rem * var(--mr-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-left', () => {
     expect(convert('-ml-2')).toBe(
-      '.-ml-2 { margin-left: calc(var(--ml-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-ml-2 { margin-left: calc(var(--ml-2, var(--space-2, calc(2rem * var(--ml-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-inline-start', () => {
     expect(convert('-ms-2')).toBe(
-      '.-ms-2 { margin-inline-start: calc(var(--ms-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-ms-2 { margin-inline-start: calc(var(--ms-2, var(--space-2, calc(2rem * var(--ms-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-inline-end', () => {
     expect(convert('-me-2')).toBe(
-      '.-me-2 { margin-inline-end: calc(var(--me-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-me-2 { margin-inline-end: calc(var(--me-2, var(--space-2, calc(2rem * var(--me-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-top', () => {
     expect(convert('-mt-2')).toBe(
-      '.-mt-2 { margin-top: calc(var(--mt-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-mt-2 { margin-top: calc(var(--mt-2, var(--space-2, calc(2rem * var(--mt-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-bottom', () => {
     expect(convert('-mb-2')).toBe(
-      '.-mb-2 { margin-bottom: calc(var(--mb-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-mb-2 { margin-bottom: calc(var(--mb-2, var(--space-2, calc(2rem * var(--mb-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-block-start', () => {
     expect(convert('-mbs-2')).toBe(
-      '.-mbs-2 { margin-block-start: calc(var(--mbs-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-mbs-2 { margin-block-start: calc(var(--mbs-2, var(--space-2, calc(2rem * var(--mbs-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin-block-end', () => {
     expect(convert('-mbe-2')).toBe(
-      '.-mbe-2 { margin-block-end: calc(var(--mbe-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1); }',
+      '.-mbe-2 { margin-block-end: calc(var(--mbe-2, var(--space-2, calc(2rem * var(--mbe-spacer, var(--m-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('margin with multiple predefined values', () => {
     expect(convert('-m-1/2_1/4_4_rem')).toBe(
-      '.-m-1\\/2_1\\/4_4_rem { margin: -50% -25% calc(var(--m-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1) -1rem; }',
+      '.-m-1\\/2_1\\/4_4_rem { margin: -50% -25% calc(var(--m-4, var(--space-4, calc(4rem * var(--m-spacer, var(--spacer, 0.25))))) * -1) -1rem; }',
     );
   });
 
@@ -785,19 +785,19 @@ describe('Negative Numbers', () => {
 describe('Negative Numbers with Multiple Property Outputs', () => {
   it('square', () => {
     expect(convert('-square-4')).toBe(
-      '.-square-4 { width: calc(var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1);height: calc(var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1); }',
+      '.-square-4 { width: calc(var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1);height: calc(var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 
   it('square with negative value', () => {
     expect(convert('square--4')).toBe(
-      '.square--4 { width: var(--square--4, var(--space--4, calc(-4rem * var(--spacer, 0.25))));height: var(--square--4, var(--space--4, calc(-4rem * var(--spacer, 0.25)))); }',
+      '.square--4 { width: var(--square--4, var(--space--4, calc(-4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25))))));height: var(--square--4, var(--space--4, calc(-4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
   it('square important', () => {
     expect(convert('!-square-4')).toBe(
-      '.\\!-square-4 { width: calc(var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1) !important;height: calc(var(--square-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1) !important; }',
+      '.\\!-square-4 { width: calc(var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1) !important;height: calc(var(--square-4, var(--space-4, calc(4rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1) !important; }',
     );
   });
 
@@ -839,13 +839,13 @@ describe('Negative Numbers with Multiple Property Outputs', () => {
 
   it('square with 1 decimal', () => {
     expect(convert('-square-4.5')).toBe(
-      `.-square-4\\.5 { width: calc(var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--spacer, 0.25)))) * -1);height: calc(var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--spacer, 0.25)))) * -1); }`,
+      `.-square-4\\.5 { width: calc(var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1);height: calc(var(--square-4\\.5, var(--space-4\\.5, calc(4.5rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1); }`,
     );
   });
 
   it('square with 2 decimals', () => {
     expect(convert('-square-4.25')).toBe(
-      `.-square-4\\.25 { width: calc(var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--spacer, 0.25)))) * -1);height: calc(var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--spacer, 0.25)))) * -1); }`,
+      `.-square-4\\.25 { width: calc(var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1);height: calc(var(--square-4\\.25, var(--space-4\\.25, calc(4.25rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1); }`,
     );
   });
 
@@ -861,7 +861,7 @@ describe('Negative Numbers with Multiple Property Outputs', () => {
 
   it('square 1', () => {
     expect(convert('-square-1')).toBe(
-      '.-square-1 { width: calc(var(--square-1, var(--space-1, calc(1rem * var(--spacer, 0.25)))) * -1);height: calc(var(--square-1, var(--space-1, calc(1rem * var(--spacer, 0.25)))) * -1); }',
+      '.-square-1 { width: calc(var(--square-1, var(--space-1, calc(1rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1);height: calc(var(--square-1, var(--space-1, calc(1rem * var(--square-spacer, var(--size-spacer, var(--spacer, 0.25)))))) * -1); }',
     );
   });
 

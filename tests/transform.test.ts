@@ -319,13 +319,13 @@ describe('Rotate', () => {
 describe('Translate', () => {
   it('translate with integer', () => {
     expect(convert('tl-15')).toBe(
-      `.tl-15 { --tf-tl: translate(var(--tl-15, var(--space-15, calc(15rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.tl-15 { --tf-tl: translate(var(--tl-15, var(--space-15, calc(15rem * var(--tl-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
   it('translate with 2 integers', () => {
     expect(convert('tl-10_15')).toBe(
-      `.tl-10_15 { --tf-tl: translate(var(--tl-10, var(--space-10, calc(10rem * var(--spacer, 0.25)))),var(--tl-15, var(--space-15, calc(15rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.tl-10_15 { --tf-tl: translate(var(--tl-10, var(--space-10, calc(10rem * var(--tl-spacer, var(--spacer, 0.25))))),var(--tl-15, var(--space-15, calc(15rem * var(--tl-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
@@ -361,49 +361,49 @@ describe('Translate', () => {
 
   it('translate with 3 values', () => {
     expect(convert('tl-2_1.3_0.4')).toBe(
-      `.tl-2_1\\.3_0\\.4 { --tf-tl: translate(var(--tl-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))),var(--tl-1\\.3, var(--space-1\\.3, calc(1.3rem * var(--spacer, 0.25)))),var(--tl-0\\.4, var(--space-0\\.4, calc(0.4rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.tl-2_1\\.3_0\\.4 { --tf-tl: translate(var(--tl-2, var(--space-2, calc(2rem * var(--tl-spacer, var(--spacer, 0.25))))),var(--tl-1\\.3, var(--space-1\\.3, calc(1.3rem * var(--tl-spacer, var(--spacer, 0.25))))),var(--tl-0\\.4, var(--space-0\\.4, calc(0.4rem * var(--tl-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
   it('translate with integer and important', () => {
     expect(convert('!tl-15')).toBe(
-      `.\\!tl-15 { --tf-tl: translate(var(--tl-15, var(--space-15, calc(15rem * var(--spacer, 0.25)))));${vars} !important; }`,
+      `.\\!tl-15 { --tf-tl: translate(var(--tl-15, var(--space-15, calc(15rem * var(--tl-spacer, var(--spacer, 0.25))))));${vars} !important; }`,
     );
   });
 
   it('translate with integers and important', () => {
     expect(convert('!tl-10_15')).toBe(
-      `.\\!tl-10_15 { --tf-tl: translate(var(--tl-10, var(--space-10, calc(10rem * var(--spacer, 0.25)))),var(--tl-15, var(--space-15, calc(15rem * var(--spacer, 0.25)))));${vars} !important; }`,
+      `.\\!tl-10_15 { --tf-tl: translate(var(--tl-10, var(--space-10, calc(10rem * var(--tl-spacer, var(--spacer, 0.25))))),var(--tl-15, var(--space-15, calc(15rem * var(--tl-spacer, var(--spacer, 0.25))))));${vars} !important; }`,
     );
   });
 
   it('translate with float', () => {
     expect(convert('tl-1.5')).toBe(
-      `.tl-1\\.5 { --tf-tl: translate(var(--tl-1\\.5, var(--space-1\\.5, calc(1.5rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.tl-1\\.5 { --tf-tl: translate(var(--tl-1\\.5, var(--space-1\\.5, calc(1.5rem * var(--tl-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
   it('translate with float without integer', () => {
     expect(convert('tl-.5')).toBe(
-      `.tl-\\.5 { --tf-tl: translate(var(--tl-\\.5, var(--space-\\.5, calc(0.5rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.tl-\\.5 { --tf-tl: translate(var(--tl-\\.5, var(--space-\\.5, calc(0.5rem * var(--tl-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
   it('translate with negative integer', () => {
     expect(convert('-tl-10')).toBe(
-      `.-tl-10 { --tf-tl: translate(calc(var(--tl-10, var(--space-10, calc(10rem * var(--spacer, 0.25)))) * -1));${vars}; }`,
+      `.-tl-10 { --tf-tl: translate(calc(var(--tl-10, var(--space-10, calc(10rem * var(--tl-spacer, var(--spacer, 0.25))))) * -1));${vars}; }`,
     );
   });
 
   it('translate with negative float', () => {
     expect(convert('-tl-1.5')).toBe(
-      `.-tl-1\\.5 { --tf-tl: translate(calc(var(--tl-1\\.5, var(--space-1\\.5, calc(1.5rem * var(--spacer, 0.25)))) * -1));${vars}; }`,
+      `.-tl-1\\.5 { --tf-tl: translate(calc(var(--tl-1\\.5, var(--space-1\\.5, calc(1.5rem * var(--tl-spacer, var(--spacer, 0.25))))) * -1));${vars}; }`,
     );
   });
 
   it('translate with negative float without integer', () => {
     expect(convert('-tl-.5')).toBe(
-      `.-tl-\\.5 { --tf-tl: translate(calc(var(--tl-\\.5, var(--space-\\.5, calc(0.5rem * var(--spacer, 0.25)))) * -1));${vars}; }`,
+      `.-tl-\\.5 { --tf-tl: translate(calc(var(--tl-\\.5, var(--space-\\.5, calc(0.5rem * var(--tl-spacer, var(--spacer, 0.25))))) * -1));${vars}; }`,
     );
   });
 
@@ -413,13 +413,13 @@ describe('Translate', () => {
 
   it('translate with negative 3 integers', () => {
     expect(convert('-tl-2_3_4')).toBe(
-      `.-tl-2_3_4 { --tf-tl: translate(calc(var(--tl-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) * -1),calc(var(--tl-3, var(--space-3, calc(3rem * var(--spacer, 0.25)))) * -1),calc(var(--tl-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))) * -1));${vars}; }`,
+      `.-tl-2_3_4 { --tf-tl: translate(calc(var(--tl-2, var(--space-2, calc(2rem * var(--tl-spacer, var(--spacer, 0.25))))) * -1),calc(var(--tl-3, var(--space-3, calc(3rem * var(--tl-spacer, var(--spacer, 0.25))))) * -1),calc(var(--tl-4, var(--space-4, calc(4rem * var(--tl-spacer, var(--spacer, 0.25))))) * -1));${vars}; }`,
     );
   });
 
   it('translate with negative values and custom unit', () => {
     expect(convert('tl-50%_-3_-10px')).toBe(
-      `.tl-50\\%_-3_-10px { --tf-tl: translate(50%,var(--tl--3, var(--space--3, calc(-3rem * var(--spacer, 0.25)))),-10px);${vars}; }`,
+      `.tl-50\\%_-3_-10px { --tf-tl: translate(50%,var(--tl--3, var(--space--3, calc(-3rem * var(--tl-spacer, var(--spacer, 0.25))))),-10px);${vars}; }`,
     );
   });
 

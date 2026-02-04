@@ -50,7 +50,7 @@ describe('Border', () => {
 
   it('border-radius with predefined value', () => {
     expect(convert('rad-4')).toBe(
-      `.rad-4 { border-radius: var(--rad-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }`,
+      `.rad-4 { border-radius: var(--rad-4, var(--space-4, calc(4rem * var(--rad-spacer, var(--br-spacer, var(--spacer, 0.25)))))); }`,
     );
   });
 

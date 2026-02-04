@@ -40,19 +40,19 @@ describe('Ref Variables', () => {
 describe('NoRef Variables', () => {
   it('noref space with single value', () => {
     expect(convertWithRefs('$p-2')).toBe(
-      '.\\$p-2 { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.\\$p-2 { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('noref space with two values', () => {
     expect(convertWithRefs('$p-2_4')).toBe(
-      '.\\$p-2_4 { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }',
+      '.\\$p-2_4 { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))) var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('noref space with one predefined one custom value', () => {
     expect(convertWithRefs('$p-2_2px')).toBe(
-      '.\\$p-2_2px { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))) 2px; }',
+      '.\\$p-2_2px { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))) 2px; }',
     );
   });
 

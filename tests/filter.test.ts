@@ -15,25 +15,25 @@ describe('Filter', () => {
 describe('Blur', () => {
   it('blur with integer', () => {
     expect(convert('blur-4')).toBe(
-      `.blur-4 { --filter-blur: blur(var(--blur-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.blur-4 { --filter-blur: blur(var(--blur-4, var(--space-4, calc(4rem * var(--blur-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
   it('blur with integer and important', () => {
     expect(convert('!blur-4')).toBe(
-      `.\\!blur-4 { --filter-blur: blur(var(--blur-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))));${vars} !important; }`,
+      `.\\!blur-4 { --filter-blur: blur(var(--blur-4, var(--space-4, calc(4rem * var(--blur-spacer, var(--spacer, 0.25))))));${vars} !important; }`,
     );
   });
 
   it('blur with float', () => {
     expect(convert('blur-1.5')).toBe(
-      `.blur-1\\.5 { --filter-blur: blur(var(--blur-1\\.5, var(--space-1\\.5, calc(1.5rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.blur-1\\.5 { --filter-blur: blur(var(--blur-1\\.5, var(--space-1\\.5, calc(1.5rem * var(--blur-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
   it('blur with float without integer', () => {
     expect(convert('blur-.5')).toBe(
-      `.blur-\\.5 { --filter-blur: blur(var(--blur-\\.5, var(--space-\\.5, calc(0.5rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.blur-\\.5 { --filter-blur: blur(var(--blur-\\.5, var(--space-\\.5, calc(0.5rem * var(--blur-spacer, var(--spacer, 0.25))))));${vars}; }`,
     );
   });
 
@@ -532,7 +532,7 @@ describe('Drop Shadow', () => {
       `.dshadow-0px_-1px { --filter-dshadow: drop-shadow(0px -1px);${vars}; }`,
     );
     expect(convert('dshadow-0px_-1')).toBe(
-      `.dshadow-0px_-1 { --filter-dshadow: drop-shadow(0px var(--dshadow--1, var(--space--1, calc(-1rem * var(--spacer, 0.25)))));${vars}; }`,
+      `.dshadow-0px_-1 { --filter-dshadow: drop-shadow(0px var(--dshadow--1, var(--space--1, calc(-1rem * var(--dshadow-spacer, var(--shadow-spacer, var(--spacer, 0.25)))))));${vars}; }`,
     );
     expect(convert('dshadow-0px_1px_red')).toBe(
       `.dshadow-0px_1px_red { --filter-dshadow: drop-shadow(0px 1px oklch(from var(--dshadow-red, var(--shadow-red, var(--color-red, var(--red, red)))) calc(l * var(--dshadow-red-lightness-factor, var(--red-lightness-factor, var(--dshadow-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--dshadow-red-chroma-factor, var(--red-chroma-factor, var(--dshadow-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--dshadow-red-hue-rotate, var(--red-hue-rotate, var(--dshadow-hue-rotate, var(--hue-rotate, 0))))) / alpha));${vars}; }`,
@@ -541,7 +541,7 @@ describe('Drop Shadow', () => {
       `.dshadow-0px_1px_0px_red { --filter-dshadow: drop-shadow(0px 1px 0px oklch(from var(--dshadow-red, var(--shadow-red, var(--color-red, var(--red, red)))) calc(l * var(--dshadow-red-lightness-factor, var(--red-lightness-factor, var(--dshadow-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--dshadow-red-chroma-factor, var(--red-chroma-factor, var(--dshadow-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--dshadow-red-hue-rotate, var(--red-hue-rotate, var(--dshadow-hue-rotate, var(--hue-rotate, 0))))) / alpha));${vars}; }`,
     );
     expect(convert('dshadow-0_1_0_red')).toBe(
-      `.dshadow-0_1_0_red { --filter-dshadow: drop-shadow(0 var(--dshadow-1, var(--space-1, calc(1rem * var(--spacer, 0.25)))) 0 oklch(from var(--dshadow-red, var(--shadow-red, var(--color-red, var(--red, red)))) calc(l * var(--dshadow-red-lightness-factor, var(--red-lightness-factor, var(--dshadow-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--dshadow-red-chroma-factor, var(--red-chroma-factor, var(--dshadow-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--dshadow-red-hue-rotate, var(--red-hue-rotate, var(--dshadow-hue-rotate, var(--hue-rotate, 0))))) / alpha));${vars}; }`,
+      `.dshadow-0_1_0_red { --filter-dshadow: drop-shadow(0 var(--dshadow-1, var(--space-1, calc(1rem * var(--dshadow-spacer, var(--shadow-spacer, var(--spacer, 0.25)))))) 0 oklch(from var(--dshadow-red, var(--shadow-red, var(--color-red, var(--red, red)))) calc(l * var(--dshadow-red-lightness-factor, var(--red-lightness-factor, var(--dshadow-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--dshadow-red-chroma-factor, var(--red-chroma-factor, var(--dshadow-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--dshadow-red-hue-rotate, var(--red-hue-rotate, var(--dshadow-hue-rotate, var(--hue-rotate, 0))))) / alpha));${vars}; }`,
     );
   });
 

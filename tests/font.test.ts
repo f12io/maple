@@ -22,7 +22,7 @@ describe('Font', () => {
 
   it('font-size with predefined value', () => {
     expect(convert('fs-4')).toBe(
-      `.fs-4 { font-size: var(--fs-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }`,
+      `.fs-4 { font-size: var(--fs-4, var(--space-4, calc(4rem * var(--fs-spacer, var(--f-spacer, var(--spacer, 0.25)))))); }`,
     );
   });
 
@@ -54,7 +54,7 @@ describe('Font', () => {
 
   it('line-height with number', () => {
     expect(convert('lh-4')).toBe(
-      `.lh-4 { line-height: var(--lh-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }`,
+      `.lh-4 { line-height: var(--lh-4, var(--space-4, calc(4rem * var(--lh-spacer, var(--f-spacer, var(--spacer, 0.25)))))); }`,
     );
   });
 

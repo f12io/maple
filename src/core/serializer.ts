@@ -26,6 +26,7 @@ import {
   FUNCTION_KEYS,
   PROP_UNIT_MAP,
   SELECTOR_REPLACEMENTS,
+  SPACER_CATEGORY,
   TRANSFORM_KEYS,
   VENDOR_PREFIXES,
 } from './constants/dictionaries';
@@ -271,6 +272,7 @@ function serializeNumberValue({
   utilKey,
   utilVal,
   propKeyCamel,
+  propKeyKebab,
   validVarVal,
   isUtilNegative,
   isNoRef,
@@ -331,10 +333,25 @@ function serializeNumberValue({
         return `${isUtilNegative ? '-' : ''}${utilVal}`;
       }
     } else if (isKnownNumberValue(utilVal)) {
-      fallbackValue =
-        unit === DEFAULT_SPACE_UNIT
-          ? `calc(${numberValue}${unit} * var(--spacer, 0.25))`
-          : `${numberValue}${unit}`;
+      if (unit === DEFAULT_SPACE_UNIT) {
+        const spacerType =
+          SPACER_CATEGORY[utilKey] ??
+          ABBREVIATIONS_REVERSE[propKeyKebab.split('-')[0]];
+
+        let spacer = 'var(--spacer, 0.25)';
+
+        if (spacerType) {
+          spacer = `var(--${spacerType}-spacer, ${spacer})`;
+        }
+
+        if (spacerType !== utilKey) {
+          spacer = `var(--${utilKey}-spacer, ${spacer})`;
+        }
+
+        fallbackValue = `calc(${numberValue}${unit} * ${spacer})`;
+      } else {
+        fallbackValue = `${numberValue}${unit}`;
+      }
     }
 
     let val = serializeValueAsVariable(

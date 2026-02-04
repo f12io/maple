@@ -4,7 +4,7 @@ import { convert } from './helpers/convert.helper';
 describe('Parent', () => {
   it('parent selector', () => {
     expect(convert('^.card:p-2')).toBe(
-      '.card .\\^\\.card\\:p-2 { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.card .\\^\\.card\\:p-2 { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
@@ -24,13 +24,13 @@ describe('Parent', () => {
 describe('Self', () => {
   it('self selector', () => {
     expect(convert('&:hover:p-2')).toBe(
-      '.\\&\\:hover\\:p-2:hover { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.\\&\\:hover\\:p-2:hover { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('self selector with class', () => {
     expect(convert('&.hover:p-2')).toBe(
-      '.\\&\\.hover\\:p-2.hover { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.\\&\\.hover\\:p-2.hover { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
@@ -186,13 +186,13 @@ describe('Parser Stress Tests', () => {
 
   it('slash child not selector with attribute', () => {
     expect(convert("/svg:not([class*='p-']):p-4")).toBe(
-      ".\\/svg\\:not\\(\\[class\\*\\=\\'p-\\'\\]\\)\\:p-4 svg:not([class*='p-']) { padding: var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }",
+      ".\\/svg\\:not\\(\\[class\\*\\=\\'p-\\'\\]\\)\\:p-4 svg:not([class*='p-']) { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }",
     );
   });
 
   it('ampersand child not selector with attribute', () => {
     expect(convert("&_svg:not([class*='p-']):p-4")).toBe(
-      ".\\&_svg\\:not\\(\\[class\\*\\=\\'p-\\'\\]\\)\\:p-4 svg:not([class*='p-']) { padding: var(--p-4, var(--space-4, calc(4rem * var(--spacer, 0.25)))); }",
+      ".\\&_svg\\:not\\(\\[class\\*\\=\\'p-\\'\\]\\)\\:p-4 svg:not([class*='p-']) { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }",
     );
   });
 });
@@ -200,25 +200,25 @@ describe('Parser Stress Tests', () => {
 describe('Replacements', () => {
   it('parent replacement selector', () => {
     expect(convert('^:rtl:p-2')).toBe(
-      '[dir="rtl"] .\\^\\:rtl\\:p-2 { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '[dir="rtl"] .\\^\\:rtl\\:p-2 { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('self replacement selector', () => {
     expect(convert('&:odd:p-2')).toBe(
-      '.\\&\\:odd\\:p-2:nth-child(odd) { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.\\&\\:odd\\:p-2:nth-child(odd) { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('child replacement selector', () => {
     expect(convert('/span:even:p-2')).toBe(
-      '.\\/span\\:even\\:p-2 span:nth-child(even) { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '.\\/span\\:even\\:p-2 span:nth-child(even) { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 
   it('nested replacement selector', () => {
     expect(convert('^:rtl&:odd/span:even:p-2')).toBe(
-      '[dir="rtl"] .\\^\\:rtl\\&\\:odd\\/span\\:even\\:p-2:nth-child(odd) span:nth-child(even) { padding: var(--p-2, var(--space-2, calc(2rem * var(--spacer, 0.25)))); }',
+      '[dir="rtl"] .\\^\\:rtl\\&\\:odd\\/span\\:even\\:p-2:nth-child(odd) span:nth-child(even) { padding: var(--p-2, var(--space-2, calc(2rem * var(--p-spacer, var(--spacer, 0.25))))); }',
     );
   });
 });

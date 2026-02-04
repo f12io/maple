@@ -81,6 +81,26 @@ export const CSS_VARIABLE_CATEGORY: Record<string, string> = {
   prop: 'prop',
 };
 
+export const SPACER_CATEGORY: Record<string, string> = {
+  lh: 'f',
+  ls: 'f',
+  cols: 'size',
+  rows: 'size',
+  col: 'size',
+  row: 'size',
+  mnh: 'size',
+  mnw: 'size',
+  mxh: 'size',
+  mxw: 'size',
+  square: 'size',
+  h: 'size',
+  w: 'size',
+  tshadow: 'shadow',
+  bshadow: 'shadow',
+  dshadow: 'shadow',
+  bdshadow: 'shadow',
+};
+
 export const FUNCTION_KEYS: Record<string, string> = {
   url: 'url',
   linear: 'linear-gradient',

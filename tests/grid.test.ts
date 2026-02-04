@@ -10,7 +10,7 @@ describe('grid-template-columns', () => {
 
   it('columns with multiple integers', () => {
     expect(convert('cols-100_150')).toBe(
-      '.cols-100_150 { grid-template-columns: var(--cols-100, var(--space-100, calc(100rem * var(--spacer, 0.25)))) var(--cols-150, var(--space-150, calc(150rem * var(--spacer, 0.25)))); }',
+      '.cols-100_150 { grid-template-columns: var(--cols-100, var(--space-100, calc(100rem * var(--cols-spacer, var(--size-spacer, var(--spacer, 0.25)))))) var(--cols-150, var(--space-150, calc(150rem * var(--cols-spacer, var(--size-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
@@ -74,13 +74,13 @@ describe('grid-template-columns', () => {
 
   it('columns with multiple units and spacer', () => {
     expect(convert('cols-50%_20_50%')).toBe(
-      '.cols-50\\%_20_50\\% { grid-template-columns: 50% var(--cols-20, var(--space-20, calc(20rem * var(--spacer, 0.25)))) 50%; }',
+      '.cols-50\\%_20_50\\% { grid-template-columns: 50% var(--cols-20, var(--space-20, calc(20rem * var(--cols-spacer, var(--size-spacer, var(--spacer, 0.25)))))) 50%; }',
     );
   });
 
   it('columns with complex value', () => {
     expect(convert('cols-1/2_fr_20_10_css-variable')).toBe(
-      '.cols-1\\/2_fr_20_10_css-variable { grid-template-columns: 50% 1fr var(--cols-20, var(--space-20, calc(20rem * var(--spacer, 0.25)))) var(--cols-10, var(--space-10, calc(10rem * var(--spacer, 0.25)))) var(--cols-css-variable, var(--space-css-variable, var(--css-variable, css-variable))); }',
+      '.cols-1\\/2_fr_20_10_css-variable { grid-template-columns: 50% 1fr var(--cols-20, var(--space-20, calc(20rem * var(--cols-spacer, var(--size-spacer, var(--spacer, 0.25)))))) var(--cols-10, var(--space-10, calc(10rem * var(--cols-spacer, var(--size-spacer, var(--spacer, 0.25)))))) var(--cols-css-variable, var(--space-css-variable, var(--css-variable, css-variable))); }',
     );
   });
 
@@ -106,7 +106,7 @@ describe('grid-template-rows', () => {
 
   it('rows with multiple integers', () => {
     expect(convert('rows-100_150')).toBe(
-      '.rows-100_150 { grid-template-rows: var(--rows-100, var(--space-100, calc(100rem * var(--spacer, 0.25)))) var(--rows-150, var(--space-150, calc(150rem * var(--spacer, 0.25)))); }',
+      '.rows-100_150 { grid-template-rows: var(--rows-100, var(--space-100, calc(100rem * var(--rows-spacer, var(--size-spacer, var(--spacer, 0.25)))))) var(--rows-150, var(--space-150, calc(150rem * var(--rows-spacer, var(--size-spacer, var(--spacer, 0.25)))))); }',
     );
   });
 
@@ -164,13 +164,13 @@ describe('grid-template-rows', () => {
 
   it('rows with multiple units and spacer', () => {
     expect(convert('rows-50%_20_50%')).toBe(
-      '.rows-50\\%_20_50\\% { grid-template-rows: 50% var(--rows-20, var(--space-20, calc(20rem * var(--spacer, 0.25)))) 50%; }',
+      '.rows-50\\%_20_50\\% { grid-template-rows: 50% var(--rows-20, var(--space-20, calc(20rem * var(--rows-spacer, var(--size-spacer, var(--spacer, 0.25)))))) 50%; }',
     );
   });
 
   it('rows with complex value', () => {
     expect(convert('rows-1/2_fr_20_10_css-variable')).toBe(
-      '.rows-1\\/2_fr_20_10_css-variable { grid-template-rows: 50% 1fr var(--rows-20, var(--space-20, calc(20rem * var(--spacer, 0.25)))) var(--rows-10, var(--space-10, calc(10rem * var(--spacer, 0.25)))) var(--rows-css-variable, var(--space-css-variable, var(--css-variable, css-variable))); }',
+      '.rows-1\\/2_fr_20_10_css-variable { grid-template-rows: 50% 1fr var(--rows-20, var(--space-20, calc(20rem * var(--rows-spacer, var(--size-spacer, var(--spacer, 0.25)))))) var(--rows-10, var(--space-10, calc(10rem * var(--rows-spacer, var(--size-spacer, var(--spacer, 0.25)))))) var(--rows-css-variable, var(--space-css-variable, var(--css-variable, css-variable))); }',
     );
   });
 
