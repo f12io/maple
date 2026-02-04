@@ -398,16 +398,25 @@ function serializeColorValue(parsed: ParsedClass): string {
       name,
       CSS_VARIABLE_CATEGORY.color,
     );
-    const [lightnessFactor, chromaFactor, hueRotate] = [
+    const [lightnessFactor, chromaFactor, hueRotate, toneFactor] = [
       ['lightness-factor', 1],
       ['chroma-factor', 1],
       ['hue-rotate', 0],
+      ['tone-factor', 1],
     ].map(
       ([key, defaultValue]) =>
         `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${utilKey}-${key}, var(--${key}, ${defaultValue}))))`,
     );
 
-    const lCalc = amount > 0 ? `(1 - l) * ${amount}` : `l * ${amount}`;
+    /**
+     * Logic:
+     * We multiply the raw amount by the inversion variable.
+     * If amount is positive (>0), we interpolate towards 1 (white).
+     * If amount is negative (<0), we interpolate towards 0 (black).
+     */
+    const adjAmount = `(${amount} * ${toneFactor})`;
+    const lCalc = amount > 0 ? `(1 - l) * ${adjAmount}` : `l * ${adjAmount}`;
+
     const l =
       amount === 0
         ? `calc(l * ${lightnessFactor})`
@@ -581,7 +590,9 @@ function serializeGridTemplate(parsed: ParsedClass): string | undefined {
       if (frItems.length > 1) {
         return serializeProp(
           propKeyKebab,
-          frItems.map((item) => `${item}fr`).join(' '),
+          frItems
+            .map((item) => (isNaN(Number(item)) ? item : `${item}fr`))
+            .join(' '),
           isImportant,
         );
       } else {

@@ -44,6 +44,10 @@ export const SHORTCUTS: Record<string, string> = {
 
   // container
   cnt: 'container-type: inline-size',
+
+  // font smoothing
+  anitialized:
+    '-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;',
 };
 
 export const SELECTOR_REPLACEMENTS: Record<string, string> = {
@@ -194,5 +198,6 @@ export const FLEX_H: Record<string, string> = {
   l: 'flex-start',
   c: 'center',
   r: 'flex-end',
+  s: 'stretch',
   w: 'space-between',
 };

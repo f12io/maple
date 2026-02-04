@@ -64,7 +64,7 @@ describe('NoRef Variables', () => {
 
   it('noref color with shade and alpha', () => {
     expect(convertWithRefs('$c-red-400/50')).toBe(
-      '.\\$c-red-400\\/50 { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * 0.2) * var(--c-red-lightness-factor, var(--red-lightness-factor, var(--c-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--c-red-chroma-factor, var(--red-chroma-factor, var(--c-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--c-red-hue-rotate, var(--red-hue-rotate, var(--c-hue-rotate, var(--hue-rotate, 0))))) / 50%); }',
+      '.\\$c-red-400\\/50 { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * (0.2 * var(--c-red-tone-factor, var(--red-tone-factor, var(--c-tone-factor, var(--tone-factor, 1)))))) * var(--c-red-lightness-factor, var(--red-lightness-factor, var(--c-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--c-red-chroma-factor, var(--red-chroma-factor, var(--c-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--c-red-hue-rotate, var(--red-hue-rotate, var(--c-hue-rotate, var(--hue-rotate, 0))))) / 50%); }',
     );
   });
 

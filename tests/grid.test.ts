@@ -42,6 +42,12 @@ describe('grid-template-columns', () => {
     );
   });
 
+  it('columns with slash', () => {
+    expect(convert('cols-auto/1')).toBe(
+      '.cols-auto\\/1 { grid-template-columns: auto 1fr; }',
+    );
+  });
+
   it('columns with more slashes', () => {
     expect(convert('cols-1/2/1')).toBe(
       '.cols-1\\/2\\/1 { grid-template-columns: 1fr 2fr 1fr; }',

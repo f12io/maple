@@ -744,7 +744,7 @@ describe('Precalculated Property Abbreviations', () => {
   });
 
   // Ensure no abbreviations are removed
-  it('should have exactly 165 abbreviations', () => {
-    expect(Object.keys(PRECALCULATED_PROP_ABBREVIATIONS).length).toBe(165);
+  it('should have exactly 167 abbreviations', () => {
+    expect(Object.keys(PRECALCULATED_PROP_ABBREVIATIONS).length).toBe(167);
   });
 });
