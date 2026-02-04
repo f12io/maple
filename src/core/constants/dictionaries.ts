@@ -46,7 +46,7 @@ export const SHORTCUTS: Record<string, string> = {
   cnt: 'container-type: inline-size',
 
   // font smoothing
-  anitialized:
+  antialiased:
     '-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;',
 };
 
