@@ -31,21 +31,33 @@ describe('Merge - DOM Integration', () => {
     });
   });
 
-  describe('Shorthand/longhand (No Conflict)', () => {
-    it('p-4 vs pt-6', () => {
+  describe('Shorthand/longhand', () => {
+    it('p-4 vs pt-6 (no conflict)', () => {
       testMerge('p-4 pt-6', 'p-4 pt-6');
     });
 
-    it('m-4 vs mx-6', () => {
+    it('m-4 vs mx-6 (no conflict)', () => {
       testMerge('m-4 mx-6', 'm-4 mx-6');
     });
 
-    it('mx-4 vs m-6', () => {
-      testMerge('mx-4 m-6', 'mx-4 m-6');
+    it('mx-4 vs m-6 (conflict)', () => {
+      testMerge('mx-4 m-6', 'm-6');
     });
 
-    it('br-1 vs brt-2', () => {
+    it('br-1 vs brt-2 (no conflict)', () => {
       testMerge('br-1 brt-2', 'br-1 brt-2');
+    });
+
+    it('brt-1 vs br-2 (conflict)', () => {
+      testMerge('brt-1 br-2', 'br-2');
+    });
+
+    it('br-px_solid vs brc-red (no conflict)', () => {
+      testMerge('br-px_solid brc-red', 'br-px_solid brc-red');
+    });
+
+    it('brc-red vs br-px_solid (conflict)', () => {
+      testMerge('brc-red br-px_solid', 'br-px_solid');
     });
   });
 
@@ -223,7 +235,7 @@ describe('Merge - DOM Integration', () => {
     });
 
     it('allows reverse refinements (px-5 p-3)', () => {
-      testMerge('px-5 p-3', 'px-5 p-3');
+      testMerge('px-5 p-3', 'p-3');
     });
   });
 });
