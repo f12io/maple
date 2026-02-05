@@ -1,4 +1,4 @@
-import { generateStylesFromClass } from './generator';
+import { isMergingInProgress, processClassList } from './generator';
 
 export function startObserver() {
   if (typeof document === 'undefined') return;
@@ -6,21 +6,19 @@ export function startObserver() {
   let streaming = 1;
 
   const observer = new MutationObserver((muts) => {
+    if (isMergingInProgress()) return;
+
     for (const mut of muts) {
       if (mut.type === 'childList') {
         for (const node of mut.addedNodes) {
           if (node instanceof Element) {
-            for (const srcClass of node.classList) {
-              generateStylesFromClass(srcClass);
-            }
+            processClassList(node);
 
             if (node.childElementCount > 0 && !streaming) {
               const children = node.getElementsByTagName('*');
 
               for (const child of children) {
-                for (const srcClass of child.classList) {
-                  generateStylesFromClass(srcClass);
-                }
+                processClassList(child);
               }
             }
           }
@@ -28,18 +26,14 @@ export function startObserver() {
       }
 
       if (mut.type === 'attributes' && mut.target instanceof Element) {
-        for (const srcClass of mut.target.classList) {
-          generateStylesFromClass(srcClass);
-        }
+        processClassList(mut.target);
       }
     }
 
     streaming = 0;
   });
 
-  for (const srcClass of document.documentElement.classList) {
-    generateStylesFromClass(srcClass);
-  }
+  processClassList(document.documentElement);
 
   observer.observe(document.documentElement, {
     childList: true,

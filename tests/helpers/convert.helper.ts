@@ -1,5 +1,5 @@
+import { buildRule } from '../../src/core/builder';
 import { OPTIONS } from '../../src/core/constants/config';
-import { buildRule } from '../../src/core/generator';
 import { insert } from '../../src/core/stylesheet';
 
 export function convert(srcClass: string): string | undefined {
