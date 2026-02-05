@@ -134,7 +134,13 @@ function buildSelector({
 
 function buildConflictKey(
   styles: string,
-  { utilKey, parentSel = '', selfSel = '', childSel = '' }: ParsedClass,
+  {
+    utilKey,
+    propKeyKebab,
+    parentSel = '',
+    selfSel = '',
+    childSel = '',
+  }: ParsedClass,
   parsedMediaQuery: ParsedMediaQuery | undefined,
 ): string {
   let propKey;
@@ -145,7 +151,7 @@ function buildConflictKey(
     const colonIndex = styles.indexOf(':');
     propKey = colonIndex > -1 ? styles.slice(0, colonIndex) : styles;
   } else {
-    propKey = utilKey;
+    propKey = propKeyKebab;
   }
 
   return `${parsedMediaQuery?.bucketQuery ?? ''}${parsedMediaQuery?.prefix ?? ''}${parentSel}${selfSel}${childSel}${propKey}`;
