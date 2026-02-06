@@ -170,12 +170,6 @@ describe('Merge', () => {
     });
 
     it('should keep latest p-6 and remove earlier p-6 and p-4', () => {
-      // p-4 p-6 p-4 p-6 -> p-4 (conflict w/ p-6) p-6 (ok) p-4 (conflict w/ p-6) p-6 (ok)
-      // Iterating backwards:
-      // 4. p-6 (keep, seenExactAdd(p-6), seenConflictAdd(padding))
-      // 3. p-4 (conflict padding, remove)
-      // 2. p-6 (seenExact p-6, remove)
-      // 1. p-4 (conflict padding, remove)
       testMerge('p-4 p-6 p-4 p-6', 'p-6');
     });
   });
@@ -236,6 +230,26 @@ describe('Merge', () => {
 
     it('allows reverse refinements (px-5 p-3)', () => {
       testMerge('px-5 p-3', 'p-3');
+    });
+  });
+
+  describe('CSS Variables', () => {
+    it('--tone-factor (conflict)', () => {
+      testMerge('--tone-factor=1 --tone-factor=2', '--tone-factor=2');
+    });
+
+    it('--border --border-color (no conflict)', () => {
+      testMerge(
+        '--border=1px_solid --border-color=red',
+        '--border=1px_solid --border-color=red',
+      );
+    });
+
+    it('--border-color --border (no conflict)', () => {
+      testMerge(
+        '--border-color=red --border=1px_solid',
+        '--border-color=red --border=1px_solid',
+      );
     });
   });
 

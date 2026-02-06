@@ -1,5 +1,6 @@
 import { buildRule } from './builder';
 import { CLASS_CACHE } from './constants/caches';
+import { REF_CHAR_VAR_PREFIX } from './constants/chars';
 import { insert } from './stylesheet';
 
 // Flag to prevent recursive mutations
@@ -43,7 +44,7 @@ export function processClassList(element: Element): void {
       const propParents = conflictKey.slice(colonIndex);
 
       // Skip hierarchy check for specific properties that share a prefix but are not covered by the shorthand
-      if (!isShorthandException(propKey)) {
+      if (!isException(propKey)) {
         let dashIdx = propKey.lastIndexOf('-');
 
         while (dashIdx > 0) {
@@ -105,7 +106,12 @@ function generateStylesFromClass(srcClass: string): string | undefined {
   return srcClass;
 }
 
-function isShorthandException(key: string): boolean {
+function isException(key: string): boolean {
+  // css variable exception
+  if (key.startsWith(REF_CHAR_VAR_PREFIX)) {
+    return true;
+  }
+
   // border-* exceptions
   if (key.startsWith('border-')) {
     return (
