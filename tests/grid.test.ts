@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { convert } from './helpers/convert.helper';
 
 describe('grid-template-columns', () => {
+  it('grid none', () => {
+    expect(convert('gr-none')).toBe('.gr-none { grid: none; }');
+  });
+
   it('columns with integer', () => {
     expect(convert('cols-2')).toBe(
       '.cols-2 { grid-template-columns: repeat(var(--cols-2, 2), minmax(0, 1fr)); }',

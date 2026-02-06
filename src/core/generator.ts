@@ -36,6 +36,28 @@ export function processClassList(element: Element): void {
     if (conflictKey) {
       if (seenConflict.has(conflictKey)) continue;
 
+      let coveredByShorthand = false;
+
+      const colonIndex = conflictKey.indexOf(':');
+      const propKey = conflictKey.slice(0, colonIndex);
+      const propParents = conflictKey.slice(colonIndex);
+
+      // Skip hierarchy check for specific properties that share a prefix but are not covered by the shorthand
+      if (!isShorthandException(propKey)) {
+        let dashIdx = propKey.lastIndexOf('-');
+
+        while (dashIdx > 0) {
+          const parentKey = propKey.slice(0, dashIdx);
+          if (seenConflict.has(parentKey + propParents)) {
+            coveredByShorthand = true;
+            break;
+          }
+          dashIdx = propKey.lastIndexOf('-', dashIdx - 1);
+        }
+      }
+
+      if (coveredByShorthand) continue;
+
       seenConflict.add(conflictKey);
     }
 
@@ -81,4 +103,52 @@ function generateStylesFromClass(srcClass: string): string | undefined {
   }
 
   return srcClass;
+}
+
+function isShorthandException(key: string): boolean {
+  // border-* exceptions
+  if (key.startsWith('border-')) {
+    return (
+      key.includes('radius') ||
+      key.includes('image') ||
+      key === 'border-collapse' ||
+      key === 'border-spacing'
+    );
+  }
+  // flex-* exceptions
+  if (key.startsWith('flex-')) {
+    return (
+      key === 'flex-direction' || key === 'flex-wrap' || key === 'flex-flow'
+    );
+  }
+
+  // grid-* exceptions
+  if (key.includes('grid-')) {
+    // grid shorthand resets grid-template-*, but NOT grid-column/row/area (item props)
+    // We must be specific to avoid catching grid-template-columns/rows/areas
+    return (
+      key.startsWith('grid-column') ||
+      key.startsWith('grid-row') ||
+      key.startsWith('grid-area')
+    );
+  }
+
+  // transform-* exceptions
+  if (key.includes('transform-')) {
+    return (
+      key.includes('origin') || key.includes('style') || key.includes('box')
+    );
+  }
+
+  // overflow-* exceptions
+  if (key.includes('overflow-')) {
+    return key.includes('wrap') || key.includes('anchor');
+  }
+
+  // outline-* exceptions
+  if (key.includes('outline-')) {
+    return key.includes('offset');
+  }
+
+  return false;
 }

@@ -8,7 +8,7 @@ function testMerge(className: string, expected: string) {
   expect(el.className).toBe(expected);
 }
 
-describe('Merge - DOM Integration', () => {
+describe('Merge', () => {
   describe('Same property conflicts', () => {
     it('p-4 vs p-6', () => {
       testMerge('p-4 p-6', 'p-6');
@@ -236,6 +236,82 @@ describe('Merge - DOM Integration', () => {
 
     it('allows reverse refinements (px-5 p-3)', () => {
       testMerge('px-5 p-3', 'p-3');
+    });
+  });
+
+  describe('Edge Cases (O(depth) check)', () => {
+    it('rad-px br-px (no conflict between border and border-radius)', () => {
+      testMerge('rad-px br-px', 'rad-px br-px');
+      testMerge('br-px rad-px', 'br-px rad-px');
+      testMerge('md:rad-px md:br-px', 'md:rad-px md:br-px');
+      testMerge('md:br-px md:rad-px', 'md:br-px md:rad-px');
+    });
+
+    it('mx-2 mr-4 (no conflict)', () => {
+      testMerge('mx-2 mr-4', 'mx-2 mr-4');
+      testMerge('mr-4 mx-2', 'mr-4 mx-2');
+    });
+
+    it('fxdir=row fx-1 (no conflict between flex and flex-direction)', () => {
+      testMerge('fxdir=row fx-1', 'fxdir=row fx-1');
+      testMerge('fx-1 fxdir=row', 'fx-1 fxdir=row');
+    });
+
+    it('br-px brimg-none (no conflict)', () => {
+      testMerge('brimg-none br-px', 'brimg-none br-px');
+      testMerge('br-px brimg-none', 'br-px brimg-none');
+    });
+
+    it('tfo=center scale-1.5 (no conflict)', () => {
+      testMerge('tfo=center scale-1.5', 'tfo=center scale-1.5');
+      testMerge('scale-1.5 tfo=center', 'scale-1.5 tfo=center');
+    });
+
+    it('tfo=center tf-lg (no conflict)', () => {
+      testMerge('tfo=center tf-lg', 'tfo=center tf-lg');
+      testMerge('tf-lg tfo=center', 'tf-lg tfo=center');
+    });
+
+    it('of=hidden ofwr=anywhere (no conflict)', () => {
+      testMerge('ofwr=anywhere of=hidden', 'ofwr=anywhere of=hidden');
+      testMerge('of=hidden ofwr=anywhere', 'of=hidden ofwr=anywhere');
+    });
+
+    it('ol-none oloff-2 (no conflict)', () => {
+      testMerge('oloff-2 ol-none', 'oloff-2 ol-none');
+      testMerge('ol-none oloff-2', 'ol-none oloff-2');
+    });
+
+    it('cols-1 col-2 (no conflict between grid-template-columns and grid-column)', () => {
+      testMerge('cols-1 col-2', 'cols-1 col-2');
+      testMerge('cols-2 col-1', 'cols-2 col-1');
+    });
+
+    it('gr-none col-2 (no conflict between grid and grid-column)', () => {
+      testMerge('gr-none col-2', 'gr-none col-2');
+    });
+
+    it('cols-1 gr-none (conflict between grid and grid-template-columns)', () => {
+      testMerge('cols-1 gr-none', 'gr-none');
+    });
+
+    it('text-decoration (shorthand) vs thickness (no conflict)', () => {
+      testMerge(
+        'tdeco-none textDecorationThickness-px',
+        'tdeco-none textDecorationThickness-px',
+      );
+    });
+
+    it('text-decoration (shorthand) vs thickness (conflict)', () => {
+      testMerge('textDecorationThickness-px tdeco-none', 'tdeco-none');
+    });
+
+    it('mask (shorthand) vs mask-image (no conflict)', () => {
+      testMerge('mask-none maskImage-url', 'mask-none maskImage-url');
+    });
+
+    it('mask (shorthand) vs mask-image (conflict)', () => {
+      testMerge('maskImage-url mask-none', 'mask-none');
     });
   });
 });
