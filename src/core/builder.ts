@@ -147,5 +147,5 @@ function buildConflictKey(
     propKey = propKeyKebab;
   }
 
-  return `${parsedMediaQuery?.bucketQuery ?? ''}${parsedMediaQuery?.prefix ?? ''}${parentSel}${selfSel}${childSel}${propKey}`;
+  return `${propKey}:${childSel}${selfSel}${parentSel}${parsedMediaQuery?.prefix ?? ''}${parsedMediaQuery?.bucketQuery ?? ''}`;
 }
