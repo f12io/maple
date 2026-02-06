@@ -31,7 +31,7 @@ export interface Bucket {
   key: string;
   type: BucketType;
   val: number;
-  rule: CSSGroupingRule;
+  rule?: CSSGroupingRule;
 }
 
 export type MediaQueryBucketParams = [
@@ -75,5 +75,12 @@ export interface ParsedClass {
   propKeyCamel: string;
   propKeyKebab: string;
   validVarVal: string;
+  conflictKey?: string;
   varCat?: string;
+}
+
+export interface RuleData {
+  style: string;
+  parsedMediaQuery: ParsedMediaQuery | undefined;
+  parsed: ParsedClass;
 }

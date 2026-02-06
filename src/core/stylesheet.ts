@@ -4,29 +4,41 @@ import {
   REGEX_CSS_ESCAPED_CHARS,
   REGEX_NUMBER_WITH_UNIT,
 } from './constants/regex';
-import { Bucket, BucketType, ParsedMediaQuery } from './types';
+import { Bucket, BucketType, ParsedMediaQuery, RuleData } from './types';
 
-const buckets: Array<Bucket> = [];
+type Sheet = CSSStyleSheet | null;
+type Layer = CSSLayerBlockRule | undefined;
+type Group = CSSGroupingRule | undefined;
+
+const buckets: Record<string, Array<Bucket> | undefined> = {};
 const BASE_KEY = 'base';
-let sheet: CSSStyleSheet | null = null;
-let refNumbersLayer: CSSGroupingRule | null = null;
-let refColorsLayer: CSSGroupingRule | null = null;
-let refCustomLayer: CSSGroupingRule | null = null;
-let utilsLayer: CSSGroupingRule | null = null;
+let sheet: Sheet = null;
+let refNumbersLayer: Group;
+let refColorsLayer: Group;
+let refCustomLayer: Group;
+let utilsLayer: Group;
 
-export function insert(cssRule: string, parsedMediaQuery?: ParsedMediaQuery) {
+export function insert({ style, parsedMediaQuery, parsed }: RuleData) {
   if (!sheet) initStyleSheet();
   if (!sheet) return;
 
+  const typeIndex = parsed.propType;
+  const priorityIndex = parsed.propKeyKebab
+    ? parsed.propKeyKebab.split('-').length - 1
+    : 0;
+  const layer = getOrInsertLayer(typeIndex, priorityIndex);
+
+  if (!layer) return;
+
+  const layerKey = getLayerKey(layer);
   const targetKey = parsedMediaQuery?.bucketKey ?? BASE_KEY;
-  let bucket = buckets.find((b) => b.key === targetKey);
+  let bucket = buckets[layerKey]?.find((b) => b.key === targetKey);
 
   if (!bucket && parsedMediaQuery) {
-    insertBucket(targetKey, parsedMediaQuery);
-    bucket = buckets.find((b) => b.key === targetKey);
+    bucket = insertBucket(layer, targetKey, parsedMediaQuery);
   }
 
-  bucket?.rule.insertRule(cssRule, bucket.rule.cssRules.length);
+  bucket?.rule?.insertRule(style, bucket.rule.cssRules.length);
 }
 
 export function insertRefVar(
@@ -60,6 +72,53 @@ export function insertRefVar(
   );
 }
 
+function getLayerKey(layer: Layer) {
+  return `${(layer?.parentRule as Layer)?.name ?? ''}${layer?.name}`;
+}
+
+function getOrInsertLayer(typeIndex: number, priorityIndex: number) {
+  let typeLayer = utilsLayer?.cssRules[typeIndex] as Layer;
+
+  if (!typeLayer) {
+    for (
+      let index = utilsLayer?.cssRules.length ?? 0;
+      index <= typeIndex;
+      index++
+    ) {
+      utilsLayer?.insertRule(`@layer t${index} {}`, index);
+    }
+  }
+
+  typeLayer = utilsLayer?.cssRules[typeIndex] as Layer;
+
+  let priorityLayer = typeLayer?.cssRules[priorityIndex] as Layer;
+
+  if (!priorityLayer) {
+    for (
+      let index = typeLayer?.cssRules.length ?? 0;
+      index <= priorityIndex;
+      index++
+    ) {
+      typeLayer?.insertRule(`@layer p${index} {}`, index);
+
+      const layer = typeLayer?.cssRules[index] as Layer;
+
+      layer?.insertRule('@layer base {}', 0);
+      buckets[getLayerKey(layer)] ??= [];
+      buckets[getLayerKey(layer)]?.push({
+        key: BASE_KEY,
+        type: BASE_KEY,
+        val: 0,
+        rule: layer?.cssRules[0] as CSSGroupingRule,
+      });
+    }
+  }
+
+  priorityLayer = typeLayer?.cssRules[priorityIndex] as Layer;
+
+  return priorityLayer;
+}
+
 function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
   const match = REGEX_NUMBER_WITH_UNIT.exec(parsedMediaQuery.bucketVal);
 
@@ -78,11 +137,7 @@ function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {
   if (unit === 'mm') return rawValue * (96 / 25.4);
   if (unit === 'pt') return rawValue * (96 / 72);
 
-  /**
-   * Unknown Units (vw, vh, ch, ex)
-   * We return the raw value because we can't convert them.
-   * Strict sorting is impossible for these mixed types.
-   */
+  // For unconvertible units, result is raw value (best effort sort)
   return rawValue;
 }
 
@@ -112,30 +167,37 @@ function compareBuckets(
   return b.val - a.val;
 }
 
-function insertBucket(key: string, parsedMediaQuery: ParsedMediaQuery) {
-  if (!sheet || !utilsLayer) return;
+function insertBucket(
+  layer: Layer,
+  key: string,
+  parsedMediaQuery: ParsedMediaQuery,
+) {
+  if (!sheet) return;
 
   const val = parsePriority(parsedMediaQuery);
   const type = parsedMediaQuery.bucketType;
   const compareParam = { type, val, key };
+  const layerKey = getLayerKey(layer);
+  const layerBuckets = buckets[layerKey] ?? [];
   let insertIndex = 0;
 
-  for (let i = 0; i < buckets.length; i++) {
-    if (compareBuckets(compareParam, buckets[i]) < 0) {
+  for (let i = 0; i < layerBuckets.length; i++) {
+    if (compareBuckets(compareParam, layerBuckets[i]) < 0) {
       insertIndex = i;
       break;
     }
     insertIndex = i + 1;
   }
 
-  utilsLayer.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
+  layer?.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
 
-  buckets.splice(insertIndex, 0, {
-    key,
-    type,
-    val,
-    rule: utilsLayer.cssRules[insertIndex] as CSSGroupingRule,
-  });
+  const rule = layer?.cssRules[insertIndex] as Group;
+  const bucket = { key, type, val, rule };
+
+  layerBuckets.splice(insertIndex, 0, bucket);
+  buckets[layerKey] = layerBuckets;
+
+  return bucket;
 }
 
 function initStyleSheet() {
@@ -172,12 +234,4 @@ function initStyleSheet() {
   }
 
   utilsLayer = sheet.cssRules[1] as CSSGroupingRule;
-  utilsLayer.insertRule('@layer base {}', 0);
-
-  buckets.push({
-    key: BASE_KEY,
-    type: BASE_KEY,
-    val: 0,
-    rule: utilsLayer.cssRules[0] as CSSGroupingRule,
-  });
 }

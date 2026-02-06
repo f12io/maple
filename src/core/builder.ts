@@ -20,7 +20,7 @@ import {
   TYPE_MODIFIERS,
   VALUE_MODIFIERS,
 } from './serializer';
-import { ParsedClass, ParsedMediaQuery } from './types';
+import { ParsedClass, ParsedMediaQuery, RuleData } from './types';
 
 // Composable keys - these don't conflict with each other
 const COMPOSABLE_KEYS = new Set([
@@ -29,14 +29,7 @@ const COMPOSABLE_KEYS = new Set([
   ...Object.keys(TRANSFORM_KEYS),
 ]);
 
-export function buildRule(srcClass: string):
-  | {
-      rule: string;
-      conflictKey: string;
-      parsedMediaQuery: ParsedMediaQuery | undefined;
-      parsed: ParsedClass;
-    }
-  | undefined {
+export function buildRule(srcClass: string): RuleData | undefined {
   const parsed = parseClass(srcClass);
   const styles = buildProp(parsed);
 
@@ -48,12 +41,12 @@ export function buildRule(srcClass: string):
 
   const parsedMediaQuery = parseMediaQuery(parsed);
   const block = `${selector} { ${styles} }`;
-  const rule = parsedMediaQuery
+  const style = parsedMediaQuery
     ? `${parsedMediaQuery.prefix}${block} ${parsedMediaQuery.suffix}`.trim()
     : block;
-  const conflictKey = buildConflictKey(styles, parsed, parsedMediaQuery);
+  parsed.conflictKey = buildConflictKey(styles, parsed, parsedMediaQuery);
 
-  return { rule, conflictKey, parsedMediaQuery, parsed };
+  return { style, parsedMediaQuery, parsed };
 }
 
 function buildProp(parsed: ParsedClass) {

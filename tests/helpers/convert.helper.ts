@@ -3,7 +3,7 @@ import { OPTIONS } from '../../src/core/constants/config';
 import { insert } from '../../src/core/stylesheet';
 
 export function convert(srcClass: string): string | undefined {
-  return processResult(buildRule(srcClass));
+  return processRule(buildRule(srcClass));
 }
 
 export function convertWithRefs(srcClass: string): string | undefined {
@@ -11,19 +11,15 @@ export function convertWithRefs(srcClass: string): string | undefined {
   const result = buildRule(srcClass);
   OPTIONS.refs = 0;
 
-  return processResult(result);
+  return processRule(result);
 }
 
-function processResult(
-  result: ReturnType<typeof buildRule>,
-): string | undefined {
-  if (!result) return;
+function processRule(rule: ReturnType<typeof buildRule>): string | undefined {
+  if (!rule) return;
 
-  const { rule, parsedMediaQuery } = result;
+  insert(rule);
 
-  insert(rule, parsedMediaQuery);
-
-  return parsedMediaQuery?.bucketQuery
-    ? `${parsedMediaQuery.bucketQuery} { ${rule} }`
-    : rule;
+  return rule.parsedMediaQuery?.bucketQuery
+    ? `${rule.parsedMediaQuery.bucketQuery} { ${rule.style} }`
+    : rule.style;
 }

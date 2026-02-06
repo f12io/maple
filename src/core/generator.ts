@@ -69,12 +69,12 @@ function generateStylesFromClass(srcClass: string): string | undefined {
   CLASS_CACHE.set(srcClass, srcClass);
 
   try {
-    const result = buildRule(srcClass);
+    const rule = buildRule(srcClass);
 
-    if (result) {
-      CLASS_CACHE.set(srcClass, result.conflictKey);
-      insert(result.rule, result.parsedMediaQuery);
-      return result.conflictKey;
+    if (rule) {
+      CLASS_CACHE.set(srcClass, rule.parsed.conflictKey);
+      insert(rule);
+      return rule.parsed.conflictKey;
     }
   } catch (error) {
     console.error(error);
