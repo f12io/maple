@@ -22,6 +22,39 @@ let refColorsLayer: Group;
 let refCustomLayer: Group;
 let utilsLayer: Group;
 
+const pendingRules: Array<{
+  rule: CSSGroupingRule | CSSStyleSheet;
+  style: string;
+}> = [];
+
+const pendingVars: Array<{
+  rule: CSSStyleRule;
+  key: string;
+  val: string;
+}> = [];
+
+let isScheduled = false;
+
+export function flush() {
+  for (const { rule, style } of pendingRules) {
+    rule.insertRule(style, rule.cssRules.length);
+  }
+
+  for (const { rule, key, val } of pendingVars) {
+    rule.style.setProperty(key, val);
+  }
+
+  pendingRules.length = 0;
+  pendingVars.length = 0;
+  isScheduled = false;
+}
+
+function scheduleFlush() {
+  if (isScheduled) return;
+  isScheduled = true;
+  queueMicrotask(flush);
+}
+
 export function insert({ style, parsedMediaQuery, parsed }: RuleData) {
   if (!sheet) initStyleSheet();
   if (!sheet) return;
@@ -43,7 +76,12 @@ export function insert({ style, parsedMediaQuery, parsed }: RuleData) {
     bucket = insertBucket(layer, targetKey, parsedMediaQuery);
   }
 
-  bucket?.rule?.insertRule(style, bucket.rule.cssRules.length);
+  if (OPTIONS.batching && bucket?.rule) {
+    pendingRules.push({ rule: bucket.rule, style });
+    scheduleFlush();
+  } else {
+    bucket?.rule?.insertRule(style, bucket.rule.cssRules.length);
+  }
 }
 
 export function insertRefVar(
@@ -71,10 +109,19 @@ export function insertRefVar(
 
   key = key.replace(REGEX_CSS_ESCAPED_CHARS, '');
 
-  (refsLayer.cssRules[0] as CSSStyleRule).style.setProperty(
-    `--ref-${key}`,
-    val,
-  );
+  if (OPTIONS.batching) {
+    pendingVars.push({
+      rule: refsLayer.cssRules[0] as CSSStyleRule,
+      key: `--ref-${key}`,
+      val,
+    });
+    scheduleFlush();
+  } else {
+    (refsLayer.cssRules[0] as CSSStyleRule).style.setProperty(
+      `--ref-${key}`,
+      val,
+    );
+  }
 }
 
 function getLayerKey(layer: Layer) {

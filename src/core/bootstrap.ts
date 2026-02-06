@@ -18,6 +18,10 @@ function prepareOptions() {
       OPTIONS.nomerge = 1;
     }
 
+    if (key === 'batching') {
+      OPTIONS.batching = 1;
+    }
+
     OPTIONS.breakpoints[key] = value;
   }
 }
