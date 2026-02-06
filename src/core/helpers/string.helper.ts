@@ -7,6 +7,7 @@ import {
   CHAR_OPEN_BRACKET,
   CHAR_OPEN_PAREN,
   CHAR_SINGLE_QUOTE,
+  REF_CHAR_VAR_PREFIX,
 } from '../constants/chars';
 import {
   REGEX_LOWERCASE_UPPERCASE,
@@ -71,7 +72,10 @@ export function toCamelCase(str: string | undefined) {
 }
 
 export function escapeVariable(str: string) {
-  return escapeClass(`--${str}`).replace('--', '');
+  return escapeClass(`${REF_CHAR_VAR_PREFIX}${str}`).replace(
+    REF_CHAR_VAR_PREFIX,
+    '',
+  );
 }
 
 export function startsWithNegative(value: string): 1 | 0 {

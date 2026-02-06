@@ -1,10 +1,11 @@
 import { PRECALCULATED_PROP_TYPES } from 'internal:precalculated-prop-types';
 import { PROP_TYPE_CACHE } from '../constants/caches';
-import { CHAR_DASH } from '../constants/chars';
+import { CHAR_DASH, REF_CHAR_VAR_PREFIX } from '../constants/chars';
 import {
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
+  PROP_TYPE_VARIABLE,
 } from '../constants/config';
 import {
   REGEX_ANGLE_VALUE,
@@ -30,6 +31,12 @@ export function resolveType(
 
   if (PROP_TYPE_CACHE.has(propKeyKebab)) {
     return PROP_TYPE_CACHE.get(propKeyKebab) ?? type;
+  }
+
+  if (propKeyKebab.startsWith(REF_CHAR_VAR_PREFIX)) {
+    type = PROP_TYPE_VARIABLE;
+    setCacheItem(PROP_TYPE_CACHE, propKeyKebab, type);
+    return type;
   }
 
   if (propKeyCamel in PRECALCULATED_PROP_TYPES) {

@@ -22,6 +22,7 @@ export const COLOR_MID_TONE = 500;
 export const PROP_TYPE_OTHER = 0;
 export const PROP_TYPE_SPACE = 1;
 export const PROP_TYPE_COLOR = 2;
+export const PROP_TYPE_VARIABLE = 3;
 
 export const MEDIA_BUCKET_TYPE_ORDER: Record<BucketType, number> = {
   base: 1,

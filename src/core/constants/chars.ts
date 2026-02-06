@@ -10,6 +10,7 @@ export const REF_CHAR_VALUE_PARTS = ',';
 export const REF_CHAR_FUNCTION_START = '-';
 export const REF_CHAR_FUNCTION_COMMA = '|';
 export const REF_CHAR_NON_FUNCTION_START = '__';
+export const REF_CHAR_VAR_PREFIX = '--';
 
 export const CHAR_SINGLE_QUOTE = 39; // '
 export const CHAR_DOUBLE_QUOTE = 34; // "

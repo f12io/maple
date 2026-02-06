@@ -1,5 +1,9 @@
 import { CHAR_AT } from './constants/chars';
-import { MEDIA_BUCKET_TYPE_ORDER, OPTIONS } from './constants/config';
+import {
+  MEDIA_BUCKET_TYPE_ORDER,
+  OPTIONS,
+  PROP_TYPE_VARIABLE,
+} from './constants/config';
 import {
   REGEX_CSS_ESCAPED_CHARS,
   REGEX_NUMBER_WITH_UNIT,
@@ -23,9 +27,10 @@ export function insert({ style, parsedMediaQuery, parsed }: RuleData) {
   if (!sheet) return;
 
   const typeIndex = parsed.propType;
-  const priorityIndex = parsed.propKeyKebab
-    ? parsed.propKeyKebab.split('-').length - 1
-    : 0;
+  const priorityIndex =
+    parsed.propKeyKebab && parsed.propType !== PROP_TYPE_VARIABLE
+      ? parsed.propKeyKebab.split('-').length - 1
+      : 0;
   const layer = getOrInsertLayer(typeIndex, priorityIndex);
 
   if (!layer) return;
