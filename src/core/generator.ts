@@ -1,6 +1,7 @@
 import { buildRule } from './builder';
 import { CLASS_CACHE } from './constants/caches';
 import { REF_CHAR_VAR_PREFIX } from './constants/chars';
+import { OPTIONS } from './constants/config';
 import { insert } from './stylesheet';
 
 // Flag to prevent recursive mutations
@@ -15,6 +16,14 @@ export function processClassList(element: Element): void {
   let i = classList.length;
 
   if (i === 0) return;
+
+  if (OPTIONS.nomerge) {
+    for (const srcClass of classList) {
+      generateStylesFromClass(srcClass);
+    }
+
+    return;
+  }
 
   const seenExact = new Set<string>();
   const seenConflict = new Set<string>();

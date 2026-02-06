@@ -3,6 +3,7 @@ import {
   REF_CHAR_SPACE,
   REF_CHAR_VALUE_PARTS,
 } from './constants/chars';
+import { OPTIONS } from './constants/config';
 import {
   BACKDROP_FILTER_KEYS,
   FILTER_KEYS,
@@ -44,7 +45,9 @@ export function buildRule(srcClass: string): RuleData | undefined {
   const style = parsedMediaQuery
     ? `${parsedMediaQuery.prefix}${block} ${parsedMediaQuery.suffix}`.trim()
     : block;
-  parsed.conflictKey = buildConflictKey(styles, parsed, parsedMediaQuery);
+  parsed.conflictKey = OPTIONS.nomerge
+    ? '1'
+    : buildConflictKey(styles, parsed, parsedMediaQuery);
 
   return { style, parsedMediaQuery, parsed };
 }

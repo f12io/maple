@@ -14,6 +14,10 @@ function prepareOptions() {
       OPTIONS.refs = 1;
     }
 
+    if (key === 'nomerge') {
+      OPTIONS.nomerge = 1;
+    }
+
     OPTIONS.breakpoints[key] = value;
   }
 }
