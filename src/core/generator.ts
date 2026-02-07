@@ -4,8 +4,7 @@ import { REF_CHAR_VAR_PREFIX } from './constants/chars';
 import { OPTIONS } from './constants/config';
 import { insert } from './stylesheet';
 
-// Flag to prevent recursive mutations
-let isMerging = false;
+const mergeCache = new WeakMap<Element, string>();
 
 /**
  * Processes an element's classList, removing earlier conflicting classes.
@@ -13,7 +12,18 @@ let isMerging = false;
  */
 export function processClassList(element: Element): void {
   const classList = element.classList;
+  const currentClass = classList.toString();
   let i = classList.length;
+
+  if (mergeCache.has(element)) {
+    const previousClass = mergeCache.get(element);
+
+    mergeCache.delete(element);
+
+    if (previousClass === currentClass) {
+      return;
+    }
+  }
 
   if (i === 0) return;
 
@@ -27,7 +37,7 @@ export function processClassList(element: Element): void {
 
   const seenExact = new Set<string>();
   const seenConflict = new Set<string>();
-  let newClassVal = '';
+  let newClass = '';
 
   // Reverse iterate: later classes win
   while (i--) {
@@ -71,23 +81,14 @@ export function processClassList(element: Element): void {
       seenConflict.add(conflictKey);
     }
 
-    newClassVal = srcClass + (newClassVal ? ' ' : '') + newClassVal;
+    newClass = srcClass + (newClass ? ' ' : '') + newClass;
   }
 
   // Rebuild classList if anything changed
-  if (classList.toString().length !== newClassVal.length) {
-    isMerging = true;
-    element.setAttribute('class', newClassVal);
-    isMerging = false;
+  if (currentClass !== newClass) {
+    mergeCache.set(element, newClass);
+    element.setAttribute('class', newClass);
   }
-}
-
-/**
- * Check if we're currently in a merge operation.
- * Used by observer to skip mutations caused by merge.
- */
-export function isMergingInProgress(): boolean {
-  return isMerging;
 }
 
 function generateStylesFromClass(srcClass: string): string | undefined {

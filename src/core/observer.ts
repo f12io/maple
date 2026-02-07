@@ -1,4 +1,4 @@
-import { isMergingInProgress, processClassList } from './generator';
+import { processClassList } from './generator';
 
 export function startObserver() {
   if (typeof document === 'undefined') return;
@@ -6,8 +6,6 @@ export function startObserver() {
   let streaming = 1;
 
   const observer = new MutationObserver((muts) => {
-    if (isMergingInProgress()) return;
-
     for (const mut of muts) {
       if (mut.type === 'childList') {
         for (const node of mut.addedNodes) {
