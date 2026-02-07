@@ -104,8 +104,15 @@ function generateStylesFromClass(srcClass: string): string | undefined {
     const rule = buildRule(srcClass);
 
     if (rule) {
-      CLASS_CACHE.set(srcClass, rule.parsed.conflictKey);
+      if (rule.parsed.isDynamic) {
+        // Dynamic rules are not cached
+        CLASS_CACHE.delete(srcClass);
+      } else {
+        CLASS_CACHE.set(srcClass, rule.parsed.conflictKey);
+      }
+
       insert(rule);
+
       return rule.parsed.conflictKey;
     }
   } catch (error) {

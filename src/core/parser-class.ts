@@ -35,22 +35,33 @@ import { ParsedClass, ParsedSelector } from './types';
 
 export function parseClass(srcClass: string): ParsedClass {
   const originalClass = srcClass;
+  let isImportant: 1 | 0 = 0;
+  let isDynamic: 1 | 0 = 0;
+  let isNoRef: 1 | 0 = 1;
 
   // Handle "Important" flag
-  let isImportant: 1 | 0 = 0;
   if (srcClass.charCodeAt(0) === CHAR_EXCLAMATION_MARK) {
     isImportant = 1;
     srcClass = srcClass.slice(1);
   }
 
-  // Handle "No Ref" flag if refs are enabled
-  let isNoRef: 1 | 0 = 1;
-  if (OPTIONS.refs) {
-    isNoRef = 0;
+  // Handle "Dynamic" flag
+  if (
+    srcClass.charCodeAt(0) === CHAR_DOLLAR &&
+    srcClass.charCodeAt(1) === CHAR_DOLLAR
+  ) {
+    // When the rule is dynamic, noref mode becomes default
+    isDynamic = 1;
+    srcClass = srcClass.slice(2);
+  } else {
+    // Handle "No Ref" flag if refs are enabled
+    if (OPTIONS.refs) {
+      isNoRef = 0;
 
-    if (srcClass.charCodeAt(0) === CHAR_DOLLAR) {
-      isNoRef = 1;
-      srcClass = srcClass.slice(1);
+      if (srcClass.charCodeAt(0) === CHAR_DOLLAR) {
+        isNoRef = 1;
+        srcClass = srcClass.slice(1);
+      }
     }
   }
 
@@ -72,6 +83,7 @@ export function parseClass(srcClass: string): ParsedClass {
     srcSel: '.' + escapeClass(originalClass),
     isImportant,
     isNoRef,
+    isDynamic,
   };
 
   return parsed;

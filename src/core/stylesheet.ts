@@ -21,6 +21,7 @@ let refNumbersLayer: Group;
 let refColorsLayer: Group;
 let refCustomLayer: Group;
 let utilsLayer: Group;
+let dynamicLayer: Group;
 
 const pendingRules: Array<{
   rule: CSSGroupingRule | CSSStyleSheet;
@@ -36,6 +37,12 @@ const pendingVars: Array<{
 let isScheduled = false;
 
 export function flush() {
+  if (dynamicLayer && dynamicLayer.cssRules.length > 0) {
+    while (dynamicLayer.cssRules.length > 0) {
+      dynamicLayer.deleteRule(0);
+    }
+  }
+
   for (const { rule, style } of pendingRules) {
     rule.insertRule(style, rule.cssRules.length);
   }
@@ -58,6 +65,14 @@ function scheduleFlush() {
 export function insert({ style, parsedMediaQuery, parsed }: RuleData) {
   if (!sheet) initStyleSheet();
   if (!sheet) return;
+
+  if (parsed.isDynamic) {
+    if (dynamicLayer) {
+      pendingRules.push({ rule: dynamicLayer, style });
+      scheduleFlush();
+    }
+    return;
+  }
 
   const typeIndex = parsed.propType;
   const priorityIndex =
@@ -273,6 +288,7 @@ function initStyleSheet() {
 
   sheet.insertRule('@layer refs {}', 0);
   sheet.insertRule('@layer utils {}', 1);
+  sheet.insertRule('@layer dynamic {}', 2);
 
   if (OPTIONS.refs) {
     const refsLayer = sheet.cssRules[0] as CSSGroupingRule;
@@ -286,4 +302,5 @@ function initStyleSheet() {
   }
 
   utilsLayer = sheet.cssRules[1] as CSSGroupingRule;
+  dynamicLayer = sheet.cssRules[2] as CSSGroupingRule;
 }
