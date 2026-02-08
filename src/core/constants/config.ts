@@ -37,7 +37,9 @@ export const MEDIA_BUCKET_TYPE_ORDER: Record<BucketType, number> = {
   orientation: 60,
   style: 70,
   scroll: 80,
-  prefers: 90,
-  supports: 100,
-  static: 110,
+  light: 90,
+  dark: 100,
+  prefers: 110,
+  supports: 120,
+  static: 130,
 };

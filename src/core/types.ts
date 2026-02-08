@@ -24,6 +24,8 @@ export type BucketType =
   | 'orientation'
   | 'style'
   | 'scroll'
+  | 'light'
+  | 'dark'
   | 'prefers'
   | 'static';
 

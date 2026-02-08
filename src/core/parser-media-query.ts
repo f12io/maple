@@ -268,7 +268,7 @@ export function parseMediaQuery({
 
       if (mq === 'dark' || mq === 'light') {
         collect(cacheKey, [
-          'prefers',
+          mq,
           bucketKey,
           mq,
           `${prefixWithNot}(prefers-color-scheme: ${mq})`,
