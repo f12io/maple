@@ -43,7 +43,7 @@ export function buildRule(srcClass: string): RuleData | undefined {
   const parsedMediaQuery = parseMediaQuery(parsed);
   const block = `${selector} { ${styles} }`;
   const style = parsedMediaQuery
-    ? `${parsedMediaQuery.prefix}${block} ${parsedMediaQuery.suffix}`.trim()
+    ? `${parsedMediaQuery.prefix}${parsedMediaQuery.rootSelector}${block} ${parsedMediaQuery.suffix}`.trim()
     : block;
   parsed.conflictKey = OPTIONS.nomerge
     ? '1'

@@ -272,6 +272,7 @@ export function parseMediaQuery({
           bucketKey,
           mq,
           `${prefixWithNot}(prefers-color-scheme: ${mq})`,
+          `:not(.${not ? mq : mq === 'dark' ? 'light' : 'dark'})`,
         ]);
 
         continue;
@@ -444,6 +445,7 @@ export function parseMediaQuery({
   // Build the parsed media query
   const [bucketType, bucketKey, bucketVal, bucketQuery] =
     collection[winnerIndex];
+  const rootSelector = [];
 
   const parsedMediaQuery: ParsedMediaQuery = {
     bucketType,
@@ -452,6 +454,7 @@ export function parseMediaQuery({
     bucketQuery,
     prefix: '',
     suffix: '',
+    rootSelector: '',
   };
 
   /**
@@ -459,12 +462,20 @@ export function parseMediaQuery({
    * We maintain the original order, just skipping the winner
    */
   for (let i = 0; i < collection.length; i++) {
+    if (collection[i][4]) {
+      rootSelector.push(collection[i][4]);
+    }
+
     // Skip the winner (it's the wrapper bucket)
     if (i === winnerIndex) continue;
 
     // collection[i][3] is the query string
     parsedMediaQuery.prefix += collection[i][3] + ' { ';
     parsedMediaQuery.suffix += '} ';
+  }
+
+  if (rootSelector.length) {
+    parsedMediaQuery.rootSelector = `:root${rootSelector.join('')} `;
   }
 
   return parsedMediaQuery;

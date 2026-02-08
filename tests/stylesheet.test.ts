@@ -141,6 +141,7 @@ describe('Stylesheet', () => {
         bucketQuery: '@media (min-width: 1024px)',
         prefix: '@media (min-width: 1024px)',
         suffix: '',
+        rootSelector: '',
       },
     });
 
@@ -158,6 +159,7 @@ describe('Stylesheet', () => {
         bucketQuery: '@media (min-width: 768px)',
         prefix: '@media (min-width: 768px)',
         suffix: '',
+        rootSelector: '',
       },
     });
 
