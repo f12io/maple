@@ -482,7 +482,7 @@ export function parseMediaQuery({
   }
 
   if (rootSelector.length) {
-    parsedMediaQuery.rootSelector = `:root${rootSelector.join('')} `;
+    parsedMediaQuery.rootSelector = `:root${rootSelector.join('')}`;
   }
 
   if (overrideRootSelector.length) {

@@ -42,13 +42,17 @@ export function buildRule(srcClass: string): RuleData | undefined {
   if (!selector) return;
 
   const parsedMediaQuery = parseMediaQuery(parsed);
-  const style = `${selector} { ${styleContent} }`;
-  const content = parsedMediaQuery
-    ? `${parsedMediaQuery.prefix}${parsedMediaQuery.rootSelector}${style} ${parsedMediaQuery.suffix}`.trim()
-    : style;
+  const content = buildRuleContent(
+    parsedMediaQuery?.prefix,
+    parsedMediaQuery?.rootSelector,
+    selector,
+    styleContent,
+    parsedMediaQuery?.suffix,
+  );
   const overrideRule = buildOverrideRule(
     srcClass,
-    style,
+    selector,
+    styleContent,
     parsedMediaQuery?.overrideRootSelector,
   );
 
@@ -61,14 +65,13 @@ export function buildRule(srcClass: string): RuleData | undefined {
 
 function buildOverrideRule(
   srcClass: string,
-  style: string,
+  selector: string,
+  styleContent: string,
   overrideRootSelector: string | undefined,
 ): RuleData | undefined {
   if (!overrideRootSelector) {
     return;
   }
-
-  style = `${overrideRootSelector} ${style}`;
 
   const parsed = parseClass(
     srcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''),
@@ -77,11 +80,38 @@ function buildOverrideRule(
   const rootSelector = parsedMediaQuery?.rootSelector
     ? parsedMediaQuery.rootSelector.replace(':root', '')
     : '';
-  const content = parsedMediaQuery
-    ? `${parsedMediaQuery.prefix}${style}${rootSelector} ${parsedMediaQuery.suffix}`.trim()
-    : style;
+
+  overrideRootSelector += rootSelector;
+
+  const content = buildRuleContent(
+    parsedMediaQuery?.prefix,
+    overrideRootSelector,
+    selector,
+    styleContent,
+    parsedMediaQuery?.suffix,
+  );
 
   return { content, parsed, parsedMediaQuery };
+}
+
+function buildRuleContent(
+  prefix: string | undefined,
+  rootSelector: string | undefined,
+  selector: string,
+  styleContent: string,
+  suffix: string | undefined,
+) {
+  if (rootSelector) {
+    selector = `${rootSelector}${selector}, ${rootSelector} ${selector}`;
+  }
+
+  const style = `${selector} { ${styleContent} }`;
+
+  if (prefix && suffix) {
+    return `${prefix}${style} ${suffix}`.trim();
+  }
+
+  return style;
 }
 
 function buildProp(parsed: ParsedClass) {
