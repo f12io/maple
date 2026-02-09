@@ -62,7 +62,9 @@ function scheduleFlush() {
   queueMicrotask(flush);
 }
 
-export function insert(rule: RuleData) {
+export function insert(rule: RuleData | undefined) {
+  if (!rule) return;
+
   if (!sheet) initStyleSheet();
   if (!sheet) return;
 

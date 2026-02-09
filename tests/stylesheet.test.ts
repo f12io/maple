@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { buildRule } from '../src/core/builder';
 import {
   OPTIONS,
   PROP_TYPE_OTHER,
@@ -183,5 +184,48 @@ describe('Stylesheet', () => {
 
     expect(css).toMatch(/@layer refs {\s*[\s\S]*@layer numbers/);
     expect(css).toContain('--ref-spacing-4: 1rem');
+  });
+
+  it('validates hybrid rules: @not-dark:o-0', () => {
+    const rule = buildRule('@not-dark:o-0');
+
+    insert(rule);
+
+    const css = getSheetCSS();
+
+    /* System Rule: @media not (prefers-color-scheme: dark)
+     * Should be in 'dark' bucket (Priority 100)
+     */
+    expect(css).toContain('@media not (prefers-color-scheme: dark)');
+    expect(css).toContain(':root:not(.dark) .\\@not-dark\\:o-0');
+
+    /* Manual Rule: .light (derived from not-dark)
+     * Should be in 'base' bucket (no media query)
+     */
+    expect(css).toContain(':root.light .\\@not-dark\\:o-0');
+  });
+
+  it('validates hybrid nested rules: @mnw!=600px:@dark:o-0', () => {
+    const rule = buildRule('@mnw!=600px:@dark:o-0');
+
+    insert(rule);
+
+    const css = getSheetCSS();
+
+    /* System Rule: @media (prefers-color-scheme: dark)
+     * Inside: @media not (min-width: 600px)
+     */
+    expect(css).toContain('@media (prefers-color-scheme: dark)');
+    expect(css).toContain(
+      ':root:not(.light) .\\@mnw\\!\\=600px\\:\\@dark\\:o-0',
+    );
+
+    /* Manual Override:
+     * Regex removes @dark:. String becomes: @mnw!=600px:o-0
+     * This has a media query: @media not (min-width: 600px).
+     * So this should go into the 'mnw' bucket.
+     */
+    expect(css).toContain('@media not (min-width: 600px)');
+    expect(css).toContain(':root.dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0');
   });
 });
