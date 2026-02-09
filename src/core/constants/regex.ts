@@ -16,7 +16,7 @@ export const REGEX_COLOR_FUNCTIONAL =
 export const REGEX_GRADIENT_DIRECTION =
   /^(to|from|at|in|circle|ellipse|closest-side|closest-corner|farthest-corner|farthest-side)$/i;
 export const REGEX_RESERVED_KEYWORDS =
-  /^(initial|inherit|unset|revert|revert-layer|none|auto|transparent|currentColor)$/i;
+  /^(initial|inherit|unset|revert|revert-layer|none|auto|transparent|currentColor|solid|dashed|dotted|double|groove|ridge|inset|outset)$/i;
 export const REGEX_OVERRIDABLE_MEDIA_QUERY =
   /@dark:|@not-dark:|@light:|@not-light:/g;
 

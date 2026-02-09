@@ -4,13 +4,23 @@ import { convert } from './helpers/convert.helper';
 describe('Border', () => {
   it('border with variable', () => {
     expect(convert('br-card')).toBe(
-      `.br-card { border: var(--br-card, var(--space-card, var(--card, card))); }`,
+      `.br-card { border: var(--br-card, var(--card, card)); }`,
     );
   });
 
   it('border with variable', () => {
-    expect(convert('br-px_solid')).toBe(
-      `.br-px_solid { border: 1px var(--br-solid, var(--space-solid, var(--solid, solid))); }`,
+    expect(convert('br-xs_primary')).toBe(
+      `.br-xs_primary { border: var(--br-xs, var(--xs, xs)) oklch(from var(--br-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--br-primary-lightness-factor, var(--primary-lightness-factor, var(--br-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--br-primary-chroma-factor, var(--primary-chroma-factor, var(--br-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--br-primary-hue-rotate, var(--primary-hue-rotate, var(--br-hue-rotate, var(--hue-rotate, 0))))) / alpha); }`,
+    );
+  });
+
+  it('border with variable', () => {
+    expect(convert('br-px_solid')).toBe(`.br-px_solid { border: 1px solid; }`);
+  });
+
+  it('border with variable', () => {
+    expect(convert('br-px_solid_primary')).toBe(
+      `.br-px_solid_primary { border: 1px solid oklch(from var(--br-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--br-primary-lightness-factor, var(--primary-lightness-factor, var(--br-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--br-primary-chroma-factor, var(--primary-chroma-factor, var(--br-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--br-primary-hue-rotate, var(--primary-hue-rotate, var(--br-hue-rotate, var(--hue-rotate, 0))))) / alpha); }`,
     );
   });
 
@@ -20,7 +30,7 @@ describe('Border', () => {
 
   it('border-style with variable', () => {
     expect(convert('brst-dashed')).toBe(
-      `.brst-dashed { border-style: var(--brst-dashed, var(--dashed, dashed)); }`,
+      `.brst-dashed { border-style: dashed; }`,
     );
   });
 

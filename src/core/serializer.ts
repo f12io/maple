@@ -83,8 +83,10 @@ export const TYPE_MODIFIERS: Modifiers = {
 
 export const VALUE_MODIFIERS: ValueModifiers = {
   ts: serializeTransitionValue,
-  bshadow: serializeShadowValue,
-  tshadow: serializeShadowValue,
+  bshadow: serializeMultipleValues,
+  tshadow: serializeMultipleValues,
+  br: serializeMultipleValues,
+  ol: serializeMultipleValues,
 };
 
 export const PART_MODIFIERS: ValueModifiers = {
@@ -553,7 +555,7 @@ function serializeFilter(
 
         if (parsed.utilKey === 'dshadow' || parsed.utilKey === 'bdshadow') {
           serializedValue.push(
-            serializeShadowValue(
+            serializeMultipleValues(
               { ...parsed, utilKey: 'dshadow' },
               valueItem,
               i,
@@ -747,16 +749,12 @@ function serializeTransitionValue(
   });
 }
 
-function serializeShadowValue(
+function serializeMultipleValues(
   parsed: ParsedClass,
   valueItem: string,
   index: number,
   items: Array<string>,
 ): string | undefined {
-  if (valueItem === 'inset') {
-    return 'inset';
-  }
-
   let type = PROP_TYPE_OTHER;
 
   if (isKnownNumberValue(valueItem)) {
