@@ -78,9 +78,6 @@ describe('Stylesheet', () => {
     const p0 = findLayer(t0, 'p0');
     const styleRule = findStyleRule(p0, '.d-block');
 
-    expect(utils).toBeDefined();
-    expect(t0).toBeDefined();
-    expect(p0).toBeDefined();
     expect(styleRule?.style.display).toBe('var(--ref-d-block)');
   });
 
@@ -95,9 +92,6 @@ describe('Stylesheet', () => {
     const p1 = findLayer(t1, 'p1');
     const styleRule = findStyleRule(p1, '.ml-4');
 
-    expect(utils).toBeDefined();
-    expect(t1).toBeDefined();
-    expect(p1).toBeDefined();
     expect(styleRule?.style.marginLeft).toBe('var(--ref-ml-4)');
   });
 
@@ -112,9 +106,6 @@ describe('Stylesheet', () => {
     const p0 = findLayer(t1, 'p0');
     const styleRule = findStyleRule(p0, '.p-4');
 
-    expect(utils).toBeDefined();
-    expect(t1).toBeDefined();
-    expect(p0).toBeDefined();
     expect(styleRule?.style.padding).toBe('var(--ref-p-4)');
   });
 
@@ -131,9 +122,6 @@ describe('Stylesheet', () => {
     const p3 = findLayer(t3, 'p3');
     const styleRule = findStyleRule(p0, '.--custom-long-var-name\\=1');
 
-    expect(utils).toBeDefined();
-    expect(t3).toBeDefined();
-    expect(p0).toBeDefined();
     expect(p3).toBeUndefined(); // Should NOT exist
     expect(styleRule?.style.getPropertyValue('--custom-long-var-name')).toBe(
       '1',
@@ -213,10 +201,6 @@ describe('Stylesheet', () => {
     const systemRule = findMediaRule(sheet, 'not (prefers-color-scheme: dark)');
     const manualRule = findStyleRule(base, ':root.light .\\@not-dark\\:o-0');
 
-    expect(utils).toBeDefined();
-    expect(t0).toBeDefined();
-    expect(p0).toBeDefined();
-    expect(base).toBeDefined();
     expect(systemRule?.cssRules[0].cssText).toContain(
       ':root:not(.dark) .\\@not-dark\\:o-0',
     );
@@ -247,10 +231,79 @@ describe('Stylesheet', () => {
       ':root.dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0',
     );
 
-    expect(outerMedia).toBeDefined();
-    expect(innerMedia).toBeDefined();
     expect(systemRule).toBeDefined();
-    expect(manualMedia).toBeDefined();
     expect(manualRule).toBeDefined();
+  });
+
+  it('handles $$ prefix (Dynamic flag)', async () => {
+    // $$w-100px -> width: 100px (No ref, direct value)
+    const rule = buildRule('$$w-100px');
+    insert(rule);
+
+    // Dynamic rules are async, need to wait for microtask queue
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+
+    const sheet = getSheet();
+    const dynamic = findLayer(sheet, 'dynamic');
+    const styleRule = findStyleRule(dynamic, '.\\$\\$w-100px');
+
+    expect(styleRule?.style.width).toBe('100px');
+  });
+
+  it('handles equal sign syntax', () => {
+    // w=100px -> width: 100px
+    const rule = buildRule('w=100px');
+    insert(rule);
+
+    const sheet = getSheet();
+    const utils = findLayer(sheet, 'utils');
+    const t1 = findLayer(utils, 't1');
+    const p0 = findLayer(t1, 'p0'); // w=... has 0 dashes in key -> Priority 0
+    const styleRule = findStyleRule(p0, '.w\\=100px');
+
+    expect(styleRule?.style.width).toBe('100px');
+  });
+
+  it('handles bracket syntax', () => {
+    // w=[100px] -> width: 100px
+    const rule = buildRule('w=[100px]');
+    insert(rule);
+
+    const sheet = getSheet();
+    const utils = findLayer(sheet, 'utils');
+    const t1 = findLayer(utils, 't1');
+    const p0 = findLayer(t1, 'p0');
+    const styleRule = findStyleRule(p0, '.w\\=\\[100px\\]');
+
+    expect(styleRule?.style.width).toBe('100px');
+  });
+
+  it('handles underscores in dynamic values', () => {
+    // br=1px_solid_black -> border: 1px solid black
+    const rule = buildRule('br=1px_solid_black');
+    insert(rule);
+
+    const sheet = getSheet();
+    const utils = findLayer(sheet, 'utils');
+    const t1 = findLayer(utils, 't1'); // border is Type 1 (Space)
+    const p0 = findLayer(t1, 'p0');
+    const styleRule = findStyleRule(p0, '.br\\=1px_solid_black');
+
+    expect(styleRule?.style.borderWidth).toBe('1px');
+    expect(styleRule?.style.borderStyle).toBe('solid');
+    expect(styleRule?.style.borderColor).toBe('black');
+  });
+
+  it('handles complex values with brackets and spaces', () => {
+    const rule = buildRule('m-4_[calc(100%_-_20px)]');
+    insert(rule);
+
+    const sheet = getSheet();
+    const utils = findLayer(sheet, 'utils');
+    const t1 = findLayer(utils, 't1');
+    const p0 = findLayer(t1, 'p0');
+    const styleRule = findStyleRule(p0, '.m-4_\\[calc\\(100\\%_-_20px\\)\\]');
+
+    expect(styleRule?.style.margin).toContain('calc(100% - 20px)');
   });
 });
