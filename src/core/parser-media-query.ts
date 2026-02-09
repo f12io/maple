@@ -481,12 +481,14 @@ export function parseMediaQuery({
     parsedMediaQuery.suffix += '} ';
   }
 
-  if (rootSelector.length) {
-    parsedMediaQuery.rootSelector = `:root${rootSelector.join('')}`;
-  }
+  if (!OPTIONS.nohybrid) {
+    if (rootSelector.length) {
+      parsedMediaQuery.rootSelector = `:root${rootSelector.join('')}`;
+    }
 
-  if (overrideRootSelector.length) {
-    parsedMediaQuery.overrideRootSelector = `:root${overrideRootSelector.join('')}`;
+    if (overrideRootSelector.length) {
+      parsedMediaQuery.overrideRootSelector = `:root${overrideRootSelector.join('')}`;
+    }
   }
 
   return parsedMediaQuery;
