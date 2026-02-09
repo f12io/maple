@@ -42,6 +42,7 @@ export type MediaQueryBucketParams = [
   bucketVal: string,
   bucketQuery: string,
   rootSelector?: string,
+  overrideRootSelector?: string,
 ];
 
 export interface ParsedMediaQuery {
@@ -52,6 +53,7 @@ export interface ParsedMediaQuery {
   prefix: string;
   suffix: string;
   rootSelector: string;
+  overrideRootSelector: string;
 }
 
 export interface ParsedSelector {
@@ -85,7 +87,8 @@ export interface ParsedClass {
 }
 
 export interface RuleData {
-  style: string;
+  content: string;
+  overrideRule?: RuleData;
   parsedMediaQuery: ParsedMediaQuery | undefined;
   parsed: ParsedClass;
 }

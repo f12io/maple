@@ -273,6 +273,7 @@ export function parseMediaQuery({
           mq,
           `${prefixWithNot}(prefers-color-scheme: ${mq})`,
           `:not(.${not ? mq : mq === 'dark' ? 'light' : 'dark'})`,
+          `.${not ? (mq === 'dark' ? 'light' : 'dark') : mq}`,
         ]);
 
         continue;
@@ -446,6 +447,7 @@ export function parseMediaQuery({
   const [bucketType, bucketKey, bucketVal, bucketQuery] =
     collection[winnerIndex];
   const rootSelector = [];
+  const overrideRootSelector = [];
 
   const parsedMediaQuery: ParsedMediaQuery = {
     bucketType,
@@ -455,6 +457,7 @@ export function parseMediaQuery({
     prefix: '',
     suffix: '',
     rootSelector: '',
+    overrideRootSelector: '',
   };
 
   /**
@@ -464,6 +467,10 @@ export function parseMediaQuery({
   for (let i = 0; i < collection.length; i++) {
     if (collection[i][4]) {
       rootSelector.push(collection[i][4]);
+    }
+
+    if (collection[i][5]) {
+      overrideRootSelector.push(collection[i][5]);
     }
 
     // Skip the winner (it's the wrapper bucket)
@@ -476,6 +483,10 @@ export function parseMediaQuery({
 
   if (rootSelector.length) {
     parsedMediaQuery.rootSelector = `:root${rootSelector.join('')} `;
+  }
+
+  if (overrideRootSelector.length) {
+    parsedMediaQuery.overrideRootSelector = `:root${overrideRootSelector.join('')}`;
   }
 
   return parsedMediaQuery;

@@ -294,25 +294,25 @@ describe('Media Query', () => {
 
   it('media with dark', () => {
     expect(convert('@dark:o-0')).toBe(
-      '@media (prefers-color-scheme: dark) { :root:not(.light) .\\@dark\\:o-0 { opacity: 0; } }',
+      '@media (prefers-color-scheme: dark) { :root:not(.light) .\\@dark\\:o-0 { opacity: 0; } } :root.dark .\\@dark\\:o-0 { opacity: 0; }',
     );
   });
 
   it('media with not dark', () => {
     expect(convert('@not-dark:o-0')).toBe(
-      '@media not (prefers-color-scheme: dark) { :root:not(.dark) .\\@not-dark\\:o-0 { opacity: 0; } }',
+      '@media not (prefers-color-scheme: dark) { :root:not(.dark) .\\@not-dark\\:o-0 { opacity: 0; } } :root.light .\\@not-dark\\:o-0 { opacity: 0; }',
     );
   });
 
   it('media with light', () => {
     expect(convert('@light:o-0')).toBe(
-      '@media (prefers-color-scheme: light) { :root:not(.dark) .\\@light\\:o-0 { opacity: 0; } }',
+      '@media (prefers-color-scheme: light) { :root:not(.dark) .\\@light\\:o-0 { opacity: 0; } } :root.light .\\@light\\:o-0 { opacity: 0; }',
     );
   });
 
   it('media with not light', () => {
     expect(convert('@not-light:o-0')).toBe(
-      '@media not (prefers-color-scheme: light) { :root:not(.light) .\\@not-light\\:o-0 { opacity: 0; } }',
+      '@media not (prefers-color-scheme: light) { :root:not(.light) .\\@not-light\\:o-0 { opacity: 0; } } :root.dark .\\@not-light\\:o-0 { opacity: 0; }',
     );
   });
 
@@ -498,7 +498,7 @@ describe('Not with "Not Equal" Sign', () => {
 describe('Nested Queries', () => {
   it('media with not custom min width and dark', () => {
     expect(convert('@mnw!=600px:@dark:o-0')).toBe(
-      '@media (prefers-color-scheme: dark) { @media not (min-width: 600px) { :root:not(.light) .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } } }',
+      '@media (prefers-color-scheme: dark) { @media not (min-width: 600px) { :root:not(.light) .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } } } @media not (min-width: 600px) { :root.dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } }',
     );
   });
 

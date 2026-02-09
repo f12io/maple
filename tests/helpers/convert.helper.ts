@@ -19,7 +19,19 @@ function processRule(rule: ReturnType<typeof buildRule>): string | undefined {
 
   insert(rule);
 
+  let content = getContent(rule);
+
+  if (rule.overrideRule) {
+    content += ' ' + getContent(rule.overrideRule);
+  }
+
+  return content;
+}
+
+function getContent(rule: ReturnType<typeof buildRule>) {
+  if (!rule) return '';
+
   return rule.parsedMediaQuery?.bucketQuery
-    ? `${rule.parsedMediaQuery.bucketQuery} { ${rule.style} }`
-    : rule.style;
+    ? `${rule.parsedMediaQuery.bucketQuery} { ${rule.content} }`
+    : rule.content;
 }

@@ -25,7 +25,7 @@ let dynamicLayer: Group;
 
 const pendingRules: Array<{
   rule: CSSGroupingRule | CSSStyleSheet;
-  style: string;
+  content: string;
 }> = [];
 
 const pendingVars: Array<{
@@ -43,8 +43,8 @@ export function flush() {
     }
   }
 
-  for (const { rule, style } of pendingRules) {
-    rule.insertRule(style, rule.cssRules.length);
+  for (const { rule, content } of pendingRules) {
+    rule.insertRule(content, rule.cssRules.length);
   }
 
   for (const { rule, key, val } of pendingVars) {
@@ -62,40 +62,14 @@ function scheduleFlush() {
   queueMicrotask(flush);
 }
 
-export function insert({ style, parsedMediaQuery, parsed }: RuleData) {
+export function insert(rule: RuleData) {
   if (!sheet) initStyleSheet();
   if (!sheet) return;
 
-  if (parsed.isDynamic) {
-    if (dynamicLayer) {
-      pendingRules.push({ rule: dynamicLayer, style });
-      scheduleFlush();
-    }
-    return;
-  }
+  insertRule(rule);
 
-  const typeIndex = parsed.propType;
-  const priorityIndex =
-    parsed.propKeyKebab && parsed.propType !== PROP_TYPE_VARIABLE
-      ? parsed.propKeyKebab.split('-').length - 1
-      : 0;
-  const layer = getOrInsertLayer(typeIndex, priorityIndex);
-
-  if (!layer) return;
-
-  const layerKey = getLayerKey(layer);
-  const targetKey = parsedMediaQuery?.bucketKey ?? BASE_KEY;
-  let bucket = buckets[layerKey]?.find((b) => b.key === targetKey);
-
-  if (!bucket && parsedMediaQuery) {
-    bucket = insertBucket(layer, targetKey, parsedMediaQuery);
-  }
-
-  if (OPTIONS.batching && bucket?.rule) {
-    pendingRules.push({ rule: bucket.rule, style });
-    scheduleFlush();
-  } else {
-    bucket?.rule?.insertRule(style, bucket.rule.cssRules.length);
+  if (rule.overrideRule) {
+    insertRule(rule.overrideRule);
   }
 }
 
@@ -136,6 +110,42 @@ export function insertRefVar(
       `--ref-${key}`,
       val,
     );
+  }
+}
+
+function insertRule({ content, parsedMediaQuery, parsed }: RuleData) {
+  if (!sheet) return;
+
+  if (parsed.isDynamic) {
+    if (dynamicLayer) {
+      pendingRules.push({ rule: dynamicLayer, content });
+      scheduleFlush();
+    }
+    return;
+  }
+
+  const typeIndex = parsed.propType;
+  const priorityIndex =
+    parsed.propKeyKebab && parsed.propType !== PROP_TYPE_VARIABLE
+      ? parsed.propKeyKebab.split('-').length - 1
+      : 0;
+  const layer = getOrInsertLayer(typeIndex, priorityIndex);
+
+  if (!layer) return;
+
+  const layerKey = getLayerKey(layer);
+  const targetKey = parsedMediaQuery?.bucketKey ?? BASE_KEY;
+  let bucket = buckets[layerKey]?.find((b) => b.key === targetKey);
+
+  if (!bucket && parsedMediaQuery) {
+    bucket = insertBucket(layer, targetKey, parsedMediaQuery);
+  }
+
+  if (OPTIONS.batching && bucket?.rule) {
+    pendingRules.push({ rule: bucket.rule, content });
+    scheduleFlush();
+  } else {
+    bucket?.rule?.insertRule(content, bucket.rule.cssRules.length);
   }
 }
 

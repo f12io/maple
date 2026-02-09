@@ -17,6 +17,8 @@ export const REGEX_GRADIENT_DIRECTION =
   /^(to|from|at|in|circle|ellipse|closest-side|closest-corner|farthest-corner|farthest-side)$/i;
 export const REGEX_RESERVED_KEYWORDS =
   /^(initial|inherit|unset|revert|revert-layer|none|auto|transparent|currentColor)$/i;
+export const REGEX_OVERRIDABLE_MEDIA_QUERY =
+  /@dark:|@not-dark:|@light:|@not-light:/g;
 
 // This creates a pattern like: /^([0-9]*\.?[0-9]+)?(px|rem|vmin|vmax|...)?$/i
 export const REGEX_NUMBER_VALUE = new RegExp(

@@ -57,7 +57,7 @@ describe('Stylesheet', () => {
   it('inserts base rules into correct layers', () => {
     // Custom prop (Type 0, Priority 0)
     insert({
-      style: '.custom-class { color: red; }',
+      content: '.custom-class { color: red; }',
       parsedMediaQuery: undefined,
       parsed: {
         propType: PROP_TYPE_OTHER,
@@ -75,7 +75,7 @@ describe('Stylesheet', () => {
   it('layers margin (space) correctly (Type 1)', () => {
     // margin-left (Space Type 1, "margin-left" -> 1 dash -> Priority 1)
     insert({
-      style: '.ml-4 { margin-left: 1rem; }',
+      content: '.ml-4 { margin-left: 1rem; }',
       parsedMediaQuery: undefined,
       parsed: {
         propType: PROP_TYPE_SPACE,
@@ -92,7 +92,7 @@ describe('Stylesheet', () => {
   it('layers padding (space) correctly (Type 1, Priority 0)', () => {
     // padding (Space Type 1, "padding" -> 0 dashes -> Priority 0)
     insert({
-      style: '.p-4 { padding: 1rem; }',
+      content: '.p-4 { padding: 1rem; }',
       parsedMediaQuery: undefined,
       parsed: {
         propType: PROP_TYPE_SPACE,
@@ -110,7 +110,7 @@ describe('Stylesheet', () => {
     // --custom-long-var-name (Variable Type 3, many dashes)
     // Should be Priority 0 forced
     insert({
-      style: '.var-test { --custom-long-var-name: 1; }',
+      content: '.var-test { --custom-long-var-name: 1; }',
       parsedMediaQuery: undefined,
       parsed: {
         propType: PROP_TYPE_VARIABLE,
@@ -129,7 +129,8 @@ describe('Stylesheet', () => {
     // Insert @lg rule (global) - Should fail if sorting is wrong
     // Larger min-width should be AFTER smaller min-width for mobile-first
     insert({
-      style: '@media (min-width: 1024px) { .lg-class { margin-left: 2rem; } }',
+      content:
+        '@media (min-width: 1024px) { .lg-class { margin-left: 2rem; } }',
       parsed: {
         propType: PROP_TYPE_SPACE,
         propKeyKebab: 'margin-left',
@@ -142,12 +143,13 @@ describe('Stylesheet', () => {
         prefix: '@media (min-width: 1024px)',
         suffix: '',
         rootSelector: '',
+        overrideRootSelector: '',
       },
     });
 
     // Insert @md rule (global)
     insert({
-      style: '@media (min-width: 768px) { .md-class { margin-left: 1rem; } }',
+      content: '@media (min-width: 768px) { .md-class { margin-left: 1rem; } }',
       parsed: {
         propType: PROP_TYPE_SPACE,
         propKeyKebab: 'margin-left',
@@ -160,6 +162,7 @@ describe('Stylesheet', () => {
         prefix: '@media (min-width: 768px)',
         suffix: '',
         rootSelector: '',
+        overrideRootSelector: '',
       },
     });
 

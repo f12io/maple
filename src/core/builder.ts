@@ -10,6 +10,7 @@ import {
   SHORTCUTS,
   TRANSFORM_KEYS,
 } from './constants/dictionaries';
+import { REGEX_OVERRIDABLE_MEDIA_QUERY } from './constants/regex';
 import { escapeVariable, split } from './helpers/string.helper';
 import { parseClass } from './parser-class';
 import { parseMediaQuery } from './parser-media-query';
@@ -32,24 +33,55 @@ const COMPOSABLE_KEYS = new Set([
 
 export function buildRule(srcClass: string): RuleData | undefined {
   const parsed = parseClass(srcClass);
-  const styles = buildProp(parsed);
+  const styleContent = buildProp(parsed);
 
-  if (!styles) return;
+  if (!styleContent) return;
 
   const selector = buildSelector(parsed);
 
   if (!selector) return;
 
   const parsedMediaQuery = parseMediaQuery(parsed);
-  const block = `${selector} { ${styles} }`;
-  const style = parsedMediaQuery
-    ? `${parsedMediaQuery.prefix}${parsedMediaQuery.rootSelector}${block} ${parsedMediaQuery.suffix}`.trim()
-    : block;
+  const style = `${selector} { ${styleContent} }`;
+  const content = parsedMediaQuery
+    ? `${parsedMediaQuery.prefix}${parsedMediaQuery.rootSelector}${style} ${parsedMediaQuery.suffix}`.trim()
+    : style;
+  const overrideRule = buildOverrideRule(
+    srcClass,
+    style,
+    parsedMediaQuery?.overrideRootSelector,
+  );
+
   parsed.conflictKey = OPTIONS.nomerge
     ? '1'
-    : buildConflictKey(styles, parsed, parsedMediaQuery);
+    : buildConflictKey(styleContent, parsed, parsedMediaQuery);
 
-  return { style, parsedMediaQuery, parsed };
+  return { content, overrideRule, parsedMediaQuery, parsed };
+}
+
+function buildOverrideRule(
+  srcClass: string,
+  style: string,
+  overrideRootSelector: string | undefined,
+): RuleData | undefined {
+  if (!overrideRootSelector) {
+    return;
+  }
+
+  style = `${overrideRootSelector} ${style}`;
+
+  const parsed = parseClass(
+    srcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''),
+  );
+  const parsedMediaQuery = parseMediaQuery(parsed);
+  const rootSelector = parsedMediaQuery?.rootSelector
+    ? parsedMediaQuery.rootSelector.replace(':root', '')
+    : '';
+  const content = parsedMediaQuery
+    ? `${parsedMediaQuery.prefix}${style}${rootSelector} ${parsedMediaQuery.suffix}`.trim()
+    : style;
+
+  return { content, parsed, parsedMediaQuery };
 }
 
 function buildProp(parsed: ParsedClass) {
@@ -129,7 +161,7 @@ function buildSelector({
 }
 
 function buildConflictKey(
-  styles: string,
+  styleContent: string,
   {
     utilKey,
     propKeyKebab,
@@ -144,8 +176,9 @@ function buildConflictKey(
   if (COMPOSABLE_KEYS.has(utilKey)) {
     propKey = utilKey;
   } else if (SHORTCUTS[utilKey]) {
-    const colonIndex = styles.indexOf(':');
-    propKey = colonIndex > -1 ? styles.slice(0, colonIndex) : styles;
+    const colonIndex = styleContent.indexOf(':');
+    propKey =
+      colonIndex > -1 ? styleContent.slice(0, colonIndex) : styleContent;
   } else {
     propKey = propKeyKebab;
   }
