@@ -1,7 +1,7 @@
 import { buildRule } from './builder';
 import { CLASS_CACHE } from './constants/caches';
-import { REF_CHAR_VAR_PREFIX } from './constants/chars';
 import { OPTIONS } from './constants/config';
+import { isMergeException } from './helpers/merge.helper';
 import { insert } from './stylesheet';
 
 const mergeCache = new WeakMap<Element, string>();
@@ -63,7 +63,7 @@ export function processClassList(element: Element): void {
       const propParents = conflictKey.slice(colonIndex);
 
       // Skip hierarchy check for specific properties that share a prefix but are not covered by the shorthand
-      if (!isException(propKey)) {
+      if (!isMergeException(propKey)) {
         let dashIdx = propKey.lastIndexOf('-');
 
         while (dashIdx > 0) {
@@ -121,57 +121,4 @@ function generateStylesFromClass(srcClass: string): string | undefined {
   }
 
   return srcClass;
-}
-
-function isException(key: string): boolean {
-  // css variable exception
-  if (key.startsWith(REF_CHAR_VAR_PREFIX)) {
-    return true;
-  }
-
-  // border-* exceptions
-  if (key.startsWith('border-')) {
-    return (
-      key.includes('radius') ||
-      key.includes('image') ||
-      key === 'border-collapse' ||
-      key === 'border-spacing'
-    );
-  }
-  // flex-* exceptions
-  if (key.startsWith('flex-')) {
-    return (
-      key === 'flex-direction' || key === 'flex-wrap' || key === 'flex-flow'
-    );
-  }
-
-  // grid-* exceptions
-  if (key.includes('grid-')) {
-    // grid shorthand resets grid-template-*, but NOT grid-column/row/area (item props)
-    // We must be specific to avoid catching grid-template-columns/rows/areas
-    return (
-      key.startsWith('grid-column') ||
-      key.startsWith('grid-row') ||
-      key.startsWith('grid-area')
-    );
-  }
-
-  // transform-* exceptions
-  if (key.includes('transform-')) {
-    return (
-      key.includes('origin') || key.includes('style') || key.includes('box')
-    );
-  }
-
-  // overflow-* exceptions
-  if (key.includes('overflow-')) {
-    return key.includes('wrap') || key.includes('anchor');
-  }
-
-  // outline-* exceptions
-  if (key.includes('outline-')) {
-    return key.includes('offset');
-  }
-
-  return false;
 }
