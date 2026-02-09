@@ -86,6 +86,16 @@ export const VALUE_MODIFIERS: ValueModifiers = {
   bshadow: serializeMultipleValues,
   tshadow: serializeMultipleValues,
   br: serializeMultipleValues,
+  brt: serializeMultipleValues,
+  brl: serializeMultipleValues,
+  brb: serializeMultipleValues,
+  brr: serializeMultipleValues,
+  brx: serializeMultipleValues,
+  brxe: serializeMultipleValues,
+  brxs: serializeMultipleValues,
+  bry: serializeMultipleValues,
+  brye: serializeMultipleValues,
+  brys: serializeMultipleValues,
   ol: serializeMultipleValues,
 };
 

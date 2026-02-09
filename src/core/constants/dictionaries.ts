@@ -41,6 +41,12 @@ export const SHORTCUTS: Record<string, string> = {
   brr: 'border-right-width: 1px; border-right-style: solid',
   brb: 'border-bottom-width: 1px; border-bottom-style: solid',
   brl: 'border-left-width: 1px; border-left-style: solid',
+  brx: 'border-inline-width: 1px; border-inline-style: solid',
+  brxs: 'border-inline-start-width: 1px; border-inline-start-style: solid',
+  brxe: 'border-inline-end-width: 1px; border-inline-end-style: solid',
+  bry: 'border-block-width: 1px; border-block-style: solid',
+  brys: 'border-block-start-width: 1px; border-block-start-style: solid',
+  brye: 'border-block-end-width: 1px; border-block-end-style: solid',
 
   // container
   cnt: 'container-type: inline-size',

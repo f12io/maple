@@ -18,6 +18,24 @@ describe('Border', () => {
     expect(convert('br-px_solid')).toBe(`.br-px_solid { border: 1px solid; }`);
   });
 
+  it('border-left with variable', () => {
+    expect(convert('brl-px_solid')).toBe(
+      `.brl-px_solid { border-left: 1px solid; }`,
+    );
+  });
+
+  it('border-inline with variable', () => {
+    expect(convert('brx-px_solid')).toBe(
+      `.brx-px_solid { border-inline: 1px solid; }`,
+    );
+  });
+
+  it('border-block with variable', () => {
+    expect(convert('bry-px_solid')).toBe(
+      `.bry-px_solid { border-block: 1px solid; }`,
+    );
+  });
+
   it('border with variable', () => {
     expect(convert('br-px_solid_primary')).toBe(
       `.br-px_solid_primary { border: 1px solid oklch(from var(--br-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--br-primary-lightness-factor, var(--primary-lightness-factor, var(--br-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--br-primary-chroma-factor, var(--primary-chroma-factor, var(--br-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--br-primary-hue-rotate, var(--primary-hue-rotate, var(--br-hue-rotate, var(--hue-rotate, 0))))) / alpha); }`,

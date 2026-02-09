@@ -126,6 +126,42 @@ describe('Shortcuts', () => {
     );
   });
 
+  it('border inline', () => {
+    expect(convert('brx')).toBe(
+      `.brx { border-inline-width: 1px; border-inline-style: solid; }`,
+    );
+  });
+
+  it('border inline start', () => {
+    expect(convert('brxs')).toBe(
+      `.brxs { border-inline-start-width: 1px; border-inline-start-style: solid; }`,
+    );
+  });
+
+  it('border inline end', () => {
+    expect(convert('brxe')).toBe(
+      `.brxe { border-inline-end-width: 1px; border-inline-end-style: solid; }`,
+    );
+  });
+
+  it('border block', () => {
+    expect(convert('bry')).toBe(
+      `.bry { border-block-width: 1px; border-block-style: solid; }`,
+    );
+  });
+
+  it('border block start', () => {
+    expect(convert('brys')).toBe(
+      `.brys { border-block-start-width: 1px; border-block-start-style: solid; }`,
+    );
+  });
+
+  it('border block end', () => {
+    expect(convert('brye')).toBe(
+      `.brye { border-block-end-width: 1px; border-block-end-style: solid; }`,
+    );
+  });
+
   it('container', () => {
     expect(convert('cnt')).toBe(`.cnt { container-type: inline-size; }`);
   });
