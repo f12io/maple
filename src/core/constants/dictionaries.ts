@@ -221,3 +221,32 @@ export const FLEX_H: Record<string, string> = {
   s: 'stretch',
   w: 'space-between',
 };
+
+// Properties that should be effectively 'demoted' in priority
+// (Logical properties that overlap with physical peers)
+export const DEMOTED_PROPERTIES = new Set([
+  'margin-inline',
+  'margin-block',
+  'padding-inline',
+  'padding-block',
+  'inset-inline',
+  'inset-block',
+  'scroll-margin-inline',
+  'scroll-margin-block',
+  'scroll-padding-inline',
+  'scroll-padding-block',
+  'border-inline',
+  'border-block',
+]);
+
+// Properties that should be effectively 'promoted' in priority
+// (Physical properties that have 0 hyphens but should beat global/logical overlaps)
+export const PROMOTED_PROPERTIES = new Set([
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'border-width',
+  'border-style',
+  'border-color',
+]);

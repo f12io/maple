@@ -5,6 +5,10 @@ import {
   PROP_TYPE_VARIABLE,
 } from './constants/config';
 import {
+  DEMOTED_PROPERTIES,
+  PROMOTED_PROPERTIES,
+} from './constants/dictionaries';
+import {
   REGEX_CSS_ESCAPED_CHARS,
   REGEX_NUMBER_WITH_UNIT,
 } from './constants/regex';
@@ -127,10 +131,19 @@ function insertRule({ content, parsedMediaQuery, parsed }: RuleData) {
   }
 
   const typeIndex = parsed.propType;
-  const priorityIndex =
-    parsed.propKeyKebab && parsed.propType !== PROP_TYPE_VARIABLE
-      ? parsed.propKeyKebab.split('-').length - 1
-      : 0;
+  let priorityIndex = 0;
+
+  if (parsed.propKeyKebab && parsed.propType !== PROP_TYPE_VARIABLE) {
+    const hyphenCount = parsed.propKeyKebab.split('-').length - 1;
+    priorityIndex = hyphenCount * 2;
+
+    if (DEMOTED_PROPERTIES.has(parsed.propKeyKebab)) {
+      priorityIndex -= 1;
+    } else if (PROMOTED_PROPERTIES.has(parsed.propKeyKebab)) {
+      priorityIndex += 1;
+    }
+  }
+
   const layer = getOrInsertLayer(typeIndex, priorityIndex);
 
   if (!layer) return;
