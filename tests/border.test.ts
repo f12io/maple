@@ -24,6 +24,12 @@ describe('Border', () => {
     );
   });
 
+  it('outline with variable', () => {
+    expect(convert('ol-thick_double_#32a1ce')).toBe(
+      `.ol-thick_double_\\#32a1ce { outline: var(--ol-thick, var(--thick, thick)) double #32a1ce; }`,
+    );
+  });
+
   it('border with predefined value', () => {
     expect(convert('br-px')).toBe(`.br-px { border: 1px; }`);
   });
