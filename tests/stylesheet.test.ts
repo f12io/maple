@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildRule } from '../src/core/builder';
-import {
-  OPTIONS,
-  PROP_TYPE_OTHER,
-  PROP_TYPE_SPACE,
-  PROP_TYPE_VARIABLE,
-} from '../src/core/constants/config';
+import { OPTIONS } from '../src/core/constants/config';
 import { insert, insertRefVar } from '../src/core/stylesheet';
-import { ParsedClass } from '../src/core/types';
 
 // Enable refs for testing
 OPTIONS.refs = 1;
@@ -52,125 +46,76 @@ function getLayerContent(layer: CSSGroupingRule, indent: string): string {
 }
 
 describe('Stylesheet', () => {
-  // Reset DOM before tests? Singleton sheet persists, so we must be additive or check structure.
-  // We'll rely on inspecting structure.
-
   it('inserts base rules into correct layers', () => {
-    // Custom prop (Type 0, Priority 0)
-    insert({
-      content: '.custom-class { color: red; }',
-      parsedMediaQuery: undefined,
-      parsed: {
-        propType: PROP_TYPE_OTHER,
-        propKeyKebab: 'custom-class',
-      } as unknown as ParsedClass,
-    });
+    // d-block -> display: block (Type 0, Priority 0)
+    const rule = buildRule('d-block');
+    insert(rule);
 
     const css = getSheetCSS();
     expect(css).toContain('@layer utils');
     // Expect Type 0 (t0), Priority 0 (p0)
     expect(css).toMatch(/@layer t0 {\s*[\s\S]*@layer p0/);
-    expect(css).toContain('.custom-class { color: red; }');
+    expect(css).toContain('.d-block { display: var(--ref-d-block); }');
   });
 
   it('layers margin (space) correctly (Type 1)', () => {
-    // margin-left (Space Type 1, "margin-left" -> 1 dash -> Priority 1)
-    insert({
-      content: '.ml-4 { margin-left: 1rem; }',
-      parsedMediaQuery: undefined,
-      parsed: {
-        propType: PROP_TYPE_SPACE,
-        propKeyKebab: 'margin-left',
-      } as unknown as ParsedClass,
-    });
+    // ml-4 -> margin-left: 1rem (Space Type 1, "margin-left" -> 1 dash -> Priority 1)
+    const rule = buildRule('ml-4');
+    insert(rule);
 
     const css = getSheetCSS();
     // Expect Type 1 (t1), Priority 1 (p1)
     expect(css).toMatch(/@layer t1 {\s*[\s\S]*@layer p1/);
-    expect(css).toContain('.ml-4 { margin-left: 1rem; }');
+    expect(css).toContain('.ml-4 { margin-left: var(--ref-ml-4); }');
   });
 
   it('layers padding (space) correctly (Type 1, Priority 0)', () => {
-    // padding (Space Type 1, "padding" -> 0 dashes -> Priority 0)
-    insert({
-      content: '.p-4 { padding: 1rem; }',
-      parsedMediaQuery: undefined,
-      parsed: {
-        propType: PROP_TYPE_SPACE,
-        propKeyKebab: 'padding',
-      } as unknown as ParsedClass,
-    });
+    // p-4 -> padding: 1rem (Space Type 1, "padding" -> 0 dashes -> Priority 0)
+    const rule = buildRule('p-4');
+    insert(rule);
 
     const css = getSheetCSS();
     // Expect Type 1 (t1), Priority 0 (p0)
     expect(css).toMatch(/@layer t1 {\s*[\s\S]*@layer p0/);
-    expect(css).toContain('.p-4 { padding: 1rem; }');
+    expect(css).toContain('.p-4 { padding: var(--ref-p-4); }');
   });
 
   it('flattens CSS variables to Priority 0', () => {
-    // --custom-long-var-name (Variable Type 3, many dashes)
+    // --custom-long-var-name=1 (Variable Type 3, many dashes)
     // Should be Priority 0 forced
-    insert({
-      content: '.var-test { --custom-long-var-name: 1; }',
-      parsedMediaQuery: undefined,
-      parsed: {
-        propType: PROP_TYPE_VARIABLE,
-        propKeyKebab: '--custom-long-var-name',
-      } as unknown as ParsedClass,
-    });
+    const rule = buildRule('--custom-long-var-name=1');
+    insert(rule);
 
     const css = getSheetCSS();
     // If it obeyed dashes, it would be p3. We expect p0 for variables (Type 3)
     // Note: Type index for variables is PROP_TYPE_VARIABLE (3 in config)
     expect(css).toMatch(/@layer t3 {\s*[\s\S]*@layer p0/);
     expect(css).not.toMatch(/@layer t3 {\s*[\s\S]*@layer p3/);
+    expect(css).toContain(
+      '.--custom-long-var-name\\=1 { --custom-long-var-name: 1; }',
+    );
   });
 
   it('sorts media queries correctly in buckets', () => {
     // Insert @lg rule (global) - Should fail if sorting is wrong
     // Larger min-width should be AFTER smaller min-width for mobile-first
-    insert({
-      content:
-        '@media (min-width: 1024px) { .lg-class { margin-left: 2rem; } }',
-      parsed: {
-        propType: PROP_TYPE_SPACE,
-        propKeyKebab: 'margin-left',
-      } as unknown as ParsedClass,
-      parsedMediaQuery: {
-        bucketType: 'mnw',
-        bucketVal: '1024px',
-        bucketKey: '@lg',
-        bucketQuery: '@media (min-width: 1024px)',
-        prefix: '@media (min-width: 1024px)',
-        suffix: '',
-        rootSelector: '',
-        overrideRootSelector: '',
-      },
-    });
+    const lgRule = buildRule('@lg:ml-8'); // ml-8 -> 2rem
+    insert(lgRule);
 
     // Insert @md rule (global)
-    insert({
-      content: '@media (min-width: 768px) { .md-class { margin-left: 1rem; } }',
-      parsed: {
-        propType: PROP_TYPE_SPACE,
-        propKeyKebab: 'margin-left',
-      } as unknown as ParsedClass,
-      parsedMediaQuery: {
-        bucketType: 'mnw',
-        bucketVal: '768px',
-        bucketKey: '@md',
-        bucketQuery: '@media (min-width: 768px)',
-        prefix: '@media (min-width: 768px)',
-        suffix: '',
-        rootSelector: '',
-        overrideRootSelector: '',
-      },
-    });
+    const mdRule = buildRule('@md:ml-4'); // ml-4 -> 1rem
+    insert(mdRule);
 
     const css = getSheetCSS();
     // Check order
     const idxMd = css.indexOf('@media (min-width: 768px)');
     const idxLg = css.indexOf('@media (min-width: 1024px)');
+
+    // Both should exist
+    expect(idxMd).toBeGreaterThan(-1);
+    expect(idxLg).toBeGreaterThan(-1);
+
+    // md (768px) should come BEFORE lg (1024px)
     expect(idxMd).toBeLessThan(idxLg);
   });
 
@@ -188,7 +133,6 @@ describe('Stylesheet', () => {
 
   it('validates hybrid rules: @not-dark:o-0', () => {
     const rule = buildRule('@not-dark:o-0');
-
     insert(rule);
 
     const css = getSheetCSS();
@@ -207,7 +151,6 @@ describe('Stylesheet', () => {
 
   it('validates hybrid nested rules: @mnw!=600px:@dark:o-0', () => {
     const rule = buildRule('@mnw!=600px:@dark:o-0');
-
     insert(rule);
 
     const css = getSheetCSS();
