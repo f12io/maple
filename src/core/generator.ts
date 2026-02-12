@@ -3,6 +3,7 @@ import { CLASS_CACHE } from './constants/caches';
 import { OPTIONS } from './constants/config';
 import { isMergeException } from './helpers/merge.helper';
 import { insert } from './stylesheet';
+import { RuleData } from './types';
 
 const mergeCache = new WeakMap<Element, string>();
 
@@ -29,7 +30,7 @@ export function processClassList(element: Element): void {
 
   if (OPTIONS.nomerge) {
     for (const srcClass of classList) {
-      generateStylesFromClass(srcClass);
+      generateStylesFromClass(srcClass, true);
     }
 
     return;
@@ -37,6 +38,7 @@ export function processClassList(element: Element): void {
 
   const seenExact = new Set<string>();
   const seenConflict = new Set<string>();
+  const rules: Array<RuleData> = [];
   let newClass = '';
 
   // Reverse iterate: later classes win
@@ -49,8 +51,11 @@ export function processClassList(element: Element): void {
     seenExact.add(srcClass);
 
     // Get conflict key from cache, or generate styles and cache key
-    const conflictKey =
-      CLASS_CACHE.get(srcClass) ?? generateStylesFromClass(srcClass);
+    const { conflictKey, rule } = generateStylesFromClass(srcClass, false);
+
+    if (rule) {
+      rules.push(rule);
+    }
 
     // Conflict check
     if (conflictKey) {
@@ -84,6 +89,12 @@ export function processClassList(element: Element): void {
     newClass = srcClass + (newClass ? ' ' : '') + newClass;
   }
 
+  let j = rules.length;
+
+  while (j--) {
+    insert(rules[j]);
+  }
+
   // Rebuild classList if anything changed
   if (currentClass !== newClass) {
     mergeCache.set(element, newClass);
@@ -91,13 +102,20 @@ export function processClassList(element: Element): void {
   }
 }
 
-function generateStylesFromClass(srcClass: string): string | undefined {
+function generateStylesFromClass(
+  srcClass: string,
+  canInsert?: boolean,
+): { conflictKey?: string; rule?: RuleData } {
   /**
    * The class cache should leave as long as the
    * application is running. This will prevent the
    * same class from being parsed and inserted multiple times.
    */
-  if (CLASS_CACHE.has(srcClass)) return;
+  if (CLASS_CACHE.has(srcClass)) {
+    return {
+      conflictKey: CLASS_CACHE.get(srcClass),
+    };
+  }
 
   CLASS_CACHE.set(srcClass, srcClass);
 
@@ -112,13 +130,20 @@ function generateStylesFromClass(srcClass: string): string | undefined {
         CLASS_CACHE.set(srcClass, rule.parsed.conflictKey);
       }
 
-      insert(rule);
+      if (canInsert) {
+        insert(rule);
+      }
 
-      return rule.parsed.conflictKey;
+      return {
+        rule,
+        conflictKey: rule.parsed.conflictKey,
+      };
     }
   } catch (error) {
     console.error(error);
   }
 
-  return srcClass;
+  return {
+    conflictKey: srcClass,
+  };
 }
