@@ -37,21 +37,21 @@ export function buildRule(srcClass: string): RuleData | undefined {
 
   if (!styleContent) return;
 
-  const selector = buildSelector(parsed);
+  const selectors = buildSelector(parsed);
 
-  if (!selector) return;
+  if (!selectors.length) return;
 
   const parsedMediaQuery = parseMediaQuery(parsed);
   const content = buildRuleContent(
     parsedMediaQuery?.prefix,
     parsedMediaQuery?.rootSelector,
-    selector,
+    selectors,
     styleContent,
     parsedMediaQuery?.suffix,
   );
   const overrideRule = buildOverrideRule(
     srcClass,
-    selector,
+    selectors,
     styleContent,
     parsedMediaQuery?.overrideRootSelector,
   );
@@ -65,7 +65,7 @@ export function buildRule(srcClass: string): RuleData | undefined {
 
 function buildOverrideRule(
   srcClass: string,
-  selector: string,
+  selectors: Array<string>,
   styleContent: string,
   overrideRootSelector: string | undefined,
 ): RuleData | undefined {
@@ -86,7 +86,7 @@ function buildOverrideRule(
   const content = buildRuleContent(
     parsedMediaQuery?.prefix,
     overrideRootSelector,
-    selector,
+    selectors,
     styleContent,
     parsedMediaQuery?.suffix,
   );
@@ -97,15 +97,22 @@ function buildOverrideRule(
 function buildRuleContent(
   prefix: string | undefined,
   rootSelector: string | undefined,
-  selector: string,
+  selectors: Array<string>,
   styleContent: string,
   suffix: string | undefined,
 ) {
   if (rootSelector) {
-    selector = `${rootSelector}${selector}, ${rootSelector} ${selector}`;
+    selectors = selectors.map((selector) => {
+      /**
+       * rootSelector already includes :root, so we need to remove it
+       * to prevent duplicate :root selectors
+       */
+      selector = selector.replace(':root ', '');
+      return `${rootSelector}${selector}, ${rootSelector} ${selector}`;
+    });
   }
 
-  const style = `${selector} { ${styleContent} }`;
+  const style = `${selectors.join(', ')} { ${styleContent} }`;
 
   if (prefix && suffix) {
     return `${prefix}${style} ${suffix}`.trim();
@@ -186,8 +193,35 @@ function buildSelector({
   parentSel = '',
   selfSel = '',
   childSel = '',
-}: ParsedClass) {
-  return `${serializeSelector(parentSel)} ${srcSel}${serializeSelector(selfSel)} ${serializeSelector(childSel)}`.trim();
+  isMultiSelector,
+}: ParsedClass): Array<string> {
+  const serializedParent = serializeSelector(parentSel);
+  const serializedSelf = serializeSelector(selfSel);
+  const serializedChild = serializeSelector(childSel);
+  const res = [];
+
+  if (isMultiSelector) {
+    const self = `:root ${srcSel}${serializedSelf} ${serializedChild}`.trim();
+
+    if (self) {
+      res.push(self);
+    }
+
+    const parent = `${serializedSelf} ${srcSel} ${serializedChild}`.trim();
+
+    if (parent) {
+      res.push(parent);
+    }
+  } else {
+    const selector =
+      `${serializedParent} ${srcSel}${serializedSelf} ${serializedChild}`.trim();
+
+    if (selector) {
+      res.push(selector);
+    }
+  }
+
+  return res;
 }
 
 function buildConflictKey(

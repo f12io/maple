@@ -316,6 +316,12 @@ describe('Media Query', () => {
     );
   });
 
+  it('parent and self selector', () => {
+    expect(convert('@dark:^&[info]/span:c=red')).toBe(
+      '@media (prefers-color-scheme: dark) { :root:not(.light).\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root:not(.light) .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root:not(.light)[info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span, :root:not(.light) [info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span { color: red; } } :root.dark.\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root.dark .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root.dark[info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span, :root.dark [info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span { color: red; }',
+    );
+  });
+
   it('media with motion-reduce', () => {
     expect(convert('@motion-reduce:o-0')).toBe(
       '@media (prefers-reduced-motion: reduce) { .\\@motion-reduce\\:o-0 { opacity: 0; } }',
