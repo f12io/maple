@@ -31,7 +31,10 @@ const COMPOSABLE_KEYS = new Set([
   ...Object.keys(TRANSFORM_KEYS),
 ]);
 
-export function buildRule(srcClass: string): RuleData | undefined {
+export function buildRule(
+  srcClass: string,
+  isRoot = false,
+): RuleData | undefined {
   const parsed = parseClass(srcClass);
   const styleContent = buildProp(parsed);
 
@@ -48,12 +51,14 @@ export function buildRule(srcClass: string): RuleData | undefined {
     selectors,
     styleContent,
     parsedMediaQuery?.suffix,
+    isRoot,
   );
   const overrideRule = buildOverrideRule(
     srcClass,
     selectors,
     styleContent,
     parsedMediaQuery?.overrideRootSelector,
+    isRoot,
   );
 
   parsed.conflictKey = OPTIONS.nomerge
@@ -68,6 +73,7 @@ function buildOverrideRule(
   selectors: Array<string>,
   styleContent: string,
   overrideRootSelector: string | undefined,
+  isRoot: boolean,
 ): RuleData | undefined {
   if (!overrideRootSelector) {
     return;
@@ -89,6 +95,7 @@ function buildOverrideRule(
     selectors,
     styleContent,
     parsedMediaQuery?.suffix,
+    isRoot,
   );
 
   return { content, parsed, parsedMediaQuery };
@@ -100,16 +107,29 @@ function buildRuleContent(
   selectors: Array<string>,
   styleContent: string,
   suffix: string | undefined,
+  isRoot: boolean,
 ) {
   if (rootSelector) {
-    selectors = selectors.map((selector) => {
+    if (isRoot) {
       /**
-       * rootSelector already includes :root, so we need to remove it
-       * to prevent duplicate :root selectors
+       * Strip the utility class from selectors if we
+       * generate styles for the html element.
+       *
+       * This approach provides style leaking if only we are on
+       * the root element and there is internal class selectors, like
+       * .dark and .light
        */
-      selector = selector.replace(':root ', '');
-      return `${rootSelector}${selector}, ${rootSelector} ${selector}`;
-    });
+      selectors = [rootSelector];
+    } else {
+      selectors = selectors.map((selector) => {
+        /**
+         * rootSelector already includes :root, so we need to remove it
+         * to prevent duplicate :root selectors
+         */
+        selector = selector.replace(':root ', '');
+        return `${rootSelector}${selector}, ${rootSelector} ${selector}`;
+      });
+    }
   }
 
   const style = `${selectors.join(', ')} { ${styleContent} }`;

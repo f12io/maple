@@ -292,33 +292,39 @@ describe('Media Query', () => {
     );
   });
 
+  it('media with dark on html element', () => {
+    expect(convert('@dark:o-0', true)).toBe(
+      '@media (prefers-color-scheme: dark) { :root:not(.light) { opacity: 0; } } .dark { opacity: 0; }',
+    );
+  });
+
   it('media with dark', () => {
     expect(convert('@dark:o-0')).toBe(
-      '@media (prefers-color-scheme: dark) { :root:not(.light).\\@dark\\:o-0, :root:not(.light) .\\@dark\\:o-0 { opacity: 0; } } :root.dark.\\@dark\\:o-0, :root.dark .\\@dark\\:o-0 { opacity: 0; }',
+      '@media (prefers-color-scheme: dark) { :root:not(.light).\\@dark\\:o-0, :root:not(.light) .\\@dark\\:o-0 { opacity: 0; } } .dark.\\@dark\\:o-0, .dark .\\@dark\\:o-0 { opacity: 0; }',
     );
   });
 
   it('media with not dark', () => {
     expect(convert('@not-dark:o-0')).toBe(
-      '@media not (prefers-color-scheme: dark) { :root:not(.dark).\\@not-dark\\:o-0, :root:not(.dark) .\\@not-dark\\:o-0 { opacity: 0; } } :root.light.\\@not-dark\\:o-0, :root.light .\\@not-dark\\:o-0 { opacity: 0; }',
+      '@media not (prefers-color-scheme: dark) { :root:not(.dark).\\@not-dark\\:o-0, :root:not(.dark) .\\@not-dark\\:o-0 { opacity: 0; } } .light.\\@not-dark\\:o-0, .light .\\@not-dark\\:o-0 { opacity: 0; }',
     );
   });
 
   it('media with light', () => {
     expect(convert('@light:o-0')).toBe(
-      '@media (prefers-color-scheme: light) { :root:not(.dark).\\@light\\:o-0, :root:not(.dark) .\\@light\\:o-0 { opacity: 0; } } :root.light.\\@light\\:o-0, :root.light .\\@light\\:o-0 { opacity: 0; }',
+      '@media (prefers-color-scheme: light) { :root:not(.dark).\\@light\\:o-0, :root:not(.dark) .\\@light\\:o-0 { opacity: 0; } } .light.\\@light\\:o-0, .light .\\@light\\:o-0 { opacity: 0; }',
     );
   });
 
   it('media with not light', () => {
     expect(convert('@not-light:o-0')).toBe(
-      '@media not (prefers-color-scheme: light) { :root:not(.light).\\@not-light\\:o-0, :root:not(.light) .\\@not-light\\:o-0 { opacity: 0; } } :root.dark.\\@not-light\\:o-0, :root.dark .\\@not-light\\:o-0 { opacity: 0; }',
+      '@media not (prefers-color-scheme: light) { :root:not(.light).\\@not-light\\:o-0, :root:not(.light) .\\@not-light\\:o-0 { opacity: 0; } } .dark.\\@not-light\\:o-0, .dark .\\@not-light\\:o-0 { opacity: 0; }',
     );
   });
 
   it('parent and self selector', () => {
     expect(convert('@dark:^&[info]/span:c=red')).toBe(
-      '@media (prefers-color-scheme: dark) { :root:not(.light).\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root:not(.light) .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root:not(.light)[info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span, :root:not(.light) [info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span { color: red; } } :root.dark.\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root.dark .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root.dark[info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span, :root.dark [info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span { color: red; }',
+      '@media (prefers-color-scheme: dark) { :root:not(.light).\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root:not(.light) .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, :root:not(.light)[info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span, :root:not(.light) [info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span { color: red; } } .dark.\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, .dark .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, .dark[info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span, .dark [info] .\\@dark\\:\\^\\&\\[info\\]\\/span\\:c\\=red span { color: red; }',
     );
   });
 
@@ -504,7 +510,13 @@ describe('Not with "Not Equal" Sign', () => {
 describe('Nested Queries', () => {
   it('media with not custom min width and dark', () => {
     expect(convert('@mnw!=600px:@dark:o-0')).toBe(
-      '@media (prefers-color-scheme: dark) { @media not (min-width: 600px) { :root:not(.light).\\@mnw\\!\\=600px\\:\\@dark\\:o-0, :root:not(.light) .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } } } @media not (min-width: 600px) { :root.dark.\\@mnw\\!\\=600px\\:\\@dark\\:o-0, :root.dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } }',
+      '@media (prefers-color-scheme: dark) { @media not (min-width: 600px) { :root:not(.light).\\@mnw\\!\\=600px\\:\\@dark\\:o-0, :root:not(.light) .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } } } @media not (min-width: 600px) { .dark.\\@mnw\\!\\=600px\\:\\@dark\\:o-0, .dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0 { opacity: 0; } }',
+    );
+  });
+
+  it('media with not custom min width and dark on html element', () => {
+    expect(convert('@mnw!=600px:@dark:o-0', true)).toBe(
+      '@media (prefers-color-scheme: dark) { @media not (min-width: 600px) { :root:not(.light) { opacity: 0; } } } @media not (min-width: 600px) { .dark { opacity: 0; } }',
     );
   });
 

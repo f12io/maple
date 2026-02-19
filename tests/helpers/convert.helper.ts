@@ -2,13 +2,19 @@ import { buildRule } from '../../src/core/builder';
 import { OPTIONS } from '../../src/core/constants/config';
 import { insert } from '../../src/core/stylesheet';
 
-export function convert(srcClass: string): string | undefined {
-  return processRule(buildRule(srcClass));
+export function convert(
+  srcClass: string,
+  isRoot?: boolean,
+): string | undefined {
+  return processRule(buildRule(srcClass, isRoot));
 }
 
-export function convertWithRefs(srcClass: string): string | undefined {
+export function convertWithRefs(
+  srcClass: string,
+  isRoot?: boolean,
+): string | undefined {
   OPTIONS.refs = 1;
-  const result = buildRule(srcClass);
+  const result = buildRule(srcClass, isRoot);
   OPTIONS.refs = 0;
 
   return processRule(result);

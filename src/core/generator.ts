@@ -28,9 +28,11 @@ export function processClassList(element: Element): void {
 
   if (i === 0) return;
 
+  const isRoot = element.tagName.toLowerCase() === 'html';
+
   if (OPTIONS.nomerge) {
     for (const srcClass of classList) {
-      generateStylesFromClass(srcClass, true);
+      generateStylesFromClass(srcClass, isRoot, true);
     }
 
     return;
@@ -51,7 +53,11 @@ export function processClassList(element: Element): void {
     seenExact.add(srcClass);
 
     // Get conflict key from cache, or generate styles and cache key
-    const { conflictKey, rule } = generateStylesFromClass(srcClass, false);
+    const { conflictKey, rule } = generateStylesFromClass(
+      srcClass,
+      isRoot,
+      false,
+    );
 
     if (rule) {
       rules.push(rule);
@@ -104,6 +110,7 @@ export function processClassList(element: Element): void {
 
 function generateStylesFromClass(
   srcClass: string,
+  isRoot: boolean,
   canInsert?: boolean,
 ): { conflictKey?: string; rule?: RuleData } {
   /**
@@ -120,7 +127,7 @@ function generateStylesFromClass(
   CLASS_CACHE.set(srcClass, srcClass);
 
   try {
-    const rule = buildRule(srcClass);
+    const rule = buildRule(srcClass, isRoot);
 
     if (rule) {
       if (rule.parsed.isDynamic) {
