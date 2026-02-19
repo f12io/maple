@@ -2,6 +2,7 @@ import { SELECTOR_REPLACEMENTS } from './dictionaries';
 import { ALL_UNITS, ANGLE_UNITS } from './units';
 
 export const REGEX_CSS_ESCAPED_CHARS = /\\/g;
+export const REGEX_WHITESPACE = /\s+/;
 export const REGEX_UNSAFE_CLASS_CHARS = /([^a-zA-Z0-9_-])/g;
 export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
 export const REGEX_TO_CAMEL_CASE = /[^a-zA-Z0-9]+(.)/g;

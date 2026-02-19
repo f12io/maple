@@ -1,6 +1,7 @@
 import { buildRule } from './builder';
 import { CLASS_CACHE } from './constants/caches';
 import { OPTIONS } from './constants/config';
+import { REGEX_WHITESPACE } from './constants/regex';
 import { isMergeException } from './helpers/merge.helper';
 import { insert } from './stylesheet';
 import { RuleData } from './types';
@@ -8,13 +9,13 @@ import { RuleData } from './types';
 const mergeCache = new WeakMap<Element, string>();
 
 /**
- * Processes an element's classList, removing earlier conflicting classes.
- * Uses reverse loop: later classes in classList always win.
+ * Processes an element's classes, removing earlier conflicting classes.
+ * Uses reverse loop: later classes always win.
  */
 export function processClassList(element: Element): void {
-  const classList = element.classList;
-  const currentClass = classList.toString();
-  let i = classList.length;
+  const currentClass = element.getAttribute('class') ?? '';
+
+  if (!currentClass) return;
 
   if (mergeCache.has(element)) {
     const previousClass = mergeCache.get(element);
@@ -25,6 +26,15 @@ export function processClassList(element: Element): void {
       return;
     }
   }
+
+  /**
+   * Use class attribute value as the source of classes.
+   * classList has its own deduplication logic, in Maple
+   * we need to process all the classes to let the later
+   * classes override the earlier ones.
+   */
+  const classList = currentClass.trim().split(REGEX_WHITESPACE);
+  let i = classList.length;
 
   if (i === 0) return;
 

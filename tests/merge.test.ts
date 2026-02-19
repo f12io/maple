@@ -165,6 +165,10 @@ describe('Merge', () => {
       testMerge('p-4 p-4 p-6', 'p-6');
     });
 
+    it('should deduplicate multiple occurrences p-4 p-6 p-4', () => {
+      testMerge('p-4 p-6 p-4', 'p-4');
+    });
+
     it('should deduplicate fx fx', () => {
       testMerge('fx fx', 'fx');
     });
