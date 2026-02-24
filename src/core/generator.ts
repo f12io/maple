@@ -28,7 +28,7 @@ export function processClassList(element: Element): void {
   }
 
   /**
-   * Use class attribute value as the source of classes.
+   * Use class attribute's value as the source of classes.
    * classList has its own deduplication logic, in Maple
    * we need to process all the classes to let the later
    * classes override the earlier ones.
