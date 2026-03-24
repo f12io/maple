@@ -8,7 +8,8 @@ import {
   REF_CHAR_VALUE_PARTS,
 } from './constants/chars';
 import {
-  COLOR_MID_TONE,
+  COLOR_MAX_TONE,
+  COLOR_MIN_TONE,
   OPTIONS,
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
@@ -415,9 +416,21 @@ function serializeColorValue(parsed: ParsedClass): string {
     }
 
     const name = tokenParts[1];
-    const tone = Number(tokenParts[2]) || COLOR_MID_TONE;
+    const hasToneShift = !!tokenParts[2];
+    const maxTone = COLOR_MAX_TONE;
+    const minTone = COLOR_MIN_TONE;
+    const midTone = (minTone + maxTone) / 2;
+    const tone = Number(tokenParts[2]) || midTone;
     const opacity = tokenParts[3] ? Number(tokenParts[3]) : null;
-    const amount = (COLOR_MID_TONE - tone) / COLOR_MID_TONE;
+
+    /**
+     * Lightness CSS Targeting
+     * Scale mapping: Tone 50 = 1.0 Lightness, Tone 950 = 0.0 Lightness.
+     */
+    const mappedTone =
+      Math.round(((tone - minTone) / (maxTone - minTone)) * 10000) / 10000;
+    const mappedMidpoint =
+      Math.round(((midTone - minTone) / (maxTone - minTone)) * 10000) / 10000;
 
     const nameVar = serializeValueAsVariable(
       utilKey,
@@ -427,30 +440,35 @@ function serializeColorValue(parsed: ParsedClass): string {
       name,
       CSS_VARIABLE_CATEGORY.color,
     );
-    const [lightnessFactor, chromaFactor, hueRotate, toneFactor] = [
-      ['lightness-factor', 1],
-      ['chroma-factor', 1],
-      ['hue-rotate', 0],
-      ['tone-factor', 1],
+    const [lightnessScale, lightnessShift, chromaScale, hueRotate] = [
+      ['l-scale', 1],
+      ['l-shift', 1],
+      ['c-scale', 1],
+      ['h-rotate', 0],
     ].map(
       ([key, defaultValue]) =>
         `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${utilKey}-${key}, var(--${key}, ${defaultValue}))))`,
     );
 
-    /**
-     * If amount is positive (>0), we interpolate towards 1 (white).
-     * If amount is negative (<0), we interpolate towards 0 (black).
-     */
-    const adjAmount = `(${amount} * ${toneFactor})`;
-    const lCalc = amount > 0 ? `(1 - l) * ${adjAmount}` : `l * ${adjAmount}`;
+    const lightnessEdgeShift = `var(--l-edge-shift, 0.5)`;
+    const chromaCurve = `var(--c-curve, 0.5)`;
 
-    const l =
-      amount === 0
-        ? `calc(l * ${lightnessFactor})`
-        : `calc((l + ${lCalc}) * ${lightnessFactor})`;
-    const c = `calc(c * ${chromaFactor})`;
+    let l = `calc(l * ${lightnessScale})`;
+    let c = `calc(c * ${chromaScale})`;
     const h = `calc(h + ${hueRotate})`;
     const alpha = opacity && opacity < 100 ? `${opacity}%` : 'alpha';
+
+    if (hasToneShift) {
+      const midDistanceSq = `pow(abs(${mappedTone} - ${mappedMidpoint}) * 2, 2)`;
+      const edgeDampener = `calc(${lightnessEdgeShift} + ((1 - ${lightnessEdgeShift}) * ${midDistanceSq}))`;
+      const shiftMagnitude = `((${lightnessShift} * (${mappedMidpoint} - ${mappedTone})) + (abs(${lightnessShift}) * (0.5 - l)))`;
+      const lShift = `(${shiftMagnitude} * ${edgeDampener})`;
+      const cCurve = `calc(1 - (${midDistanceSq} * ${chromaCurve}))`;
+
+      l = `calc((l + ${lShift}) * ${lightnessScale})`;
+      c = `calc(c * ${cCurve} * ${chromaScale})`;
+    }
+
     const val = `oklch(from ${nameVar} ${l} ${c} ${h} / ${alpha})`;
 
     if (isNoRefMode) {
