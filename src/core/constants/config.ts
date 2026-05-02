@@ -12,6 +12,7 @@ export const OPTIONS: {
   batching: 0,
   nohybrid: 0,
   breakpoints: {
+    xs: '480px',
     sm: '640px',
     md: '768px',
     lg: '1024px',
