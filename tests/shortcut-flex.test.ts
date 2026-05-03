@@ -8,15 +8,15 @@ describe('Flex Row Shortcuts', () => {
     );
   });
 
-  it('fxrow-tl (top-left)', () => {
-    expect(convert('fxrow-tl')).toBe(
-      `.fxrow-tl { display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start; }`,
+  it('fxrow-ss (top-left)', () => {
+    expect(convert('fxrow-ss')).toBe(
+      `.fxrow-ss { display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start; }`,
     );
   });
 
-  it('fxrow-br (bottom-right)', () => {
-    expect(convert('fxrow-br')).toBe(
-      `.fxrow-br { display: flex;flex-direction: row;justify-content: flex-end;align-items: flex-end; }`,
+  it('fxrow-ee (bottom-right)', () => {
+    expect(convert('fxrow-ee')).toBe(
+      `.fxrow-ee { display: flex;flex-direction: row;justify-content: flex-end;align-items: flex-end; }`,
     );
   });
 
@@ -26,9 +26,9 @@ describe('Flex Row Shortcuts', () => {
     );
   });
 
-  it('fxrow-sl (stretch-left)', () => {
-    expect(convert('fxrow-sl')).toBe(
-      `.fxrow-sl { display: flex;flex-direction: row;justify-content: flex-start;align-items: stretch; }`,
+  it('fxrow-hs (stretch-left)', () => {
+    expect(convert('fxrow-hs')).toBe(
+      `.fxrow-hs { display: flex;flex-direction: row;justify-content: flex-start;align-items: stretch; }`,
     );
   });
 
@@ -46,15 +46,15 @@ describe('Flex Column Shortcuts', () => {
     );
   });
 
-  it('fxcol-tl (top-left)', () => {
-    expect(convert('fxcol-tl')).toBe(
-      `.fxcol-tl { display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start; }`,
+  it('fxcol-ss (top-left)', () => {
+    expect(convert('fxcol-ss')).toBe(
+      `.fxcol-ss { display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start; }`,
     );
   });
 
-  it('fxcol-br (bottom-right)', () => {
-    expect(convert('fxcol-br')).toBe(
-      `.fxcol-br { display: flex;flex-direction: column;justify-content: flex-end;align-items: flex-end; }`,
+  it('fxcol-ee (bottom-right)', () => {
+    expect(convert('fxcol-ee')).toBe(
+      `.fxcol-ee { display: flex;flex-direction: column;justify-content: flex-end;align-items: flex-end; }`,
     );
   });
 
@@ -92,15 +92,15 @@ describe('Flex Self Shortcuts', () => {
     );
   });
 
-  it('fxrowself-tl (top-left)', () => {
-    expect(convert('fxrowself-tl')).toBe(
-      `.fxrowself-tl { justify-self: flex-start;align-self: flex-start; }`,
+  it('fxrowself-ss (top-left)', () => {
+    expect(convert('fxrowself-ss')).toBe(
+      `.fxrowself-ss { justify-self: flex-start;align-self: flex-start; }`,
     );
   });
 
-  it('fxrowself-br (bottom-right)', () => {
-    expect(convert('fxrowself-br')).toBe(
-      `.fxrowself-br { justify-self: flex-end;align-self: flex-end; }`,
+  it('fxrowself-ee (bottom-right)', () => {
+    expect(convert('fxrowself-ee')).toBe(
+      `.fxrowself-ee { justify-self: flex-end;align-self: flex-end; }`,
     );
   });
 
@@ -110,9 +110,9 @@ describe('Flex Self Shortcuts', () => {
     );
   });
 
-  it('fxcolself-tl (top-left)', () => {
-    expect(convert('fxcolself-tl')).toBe(
-      `.fxcolself-tl { justify-self: flex-start;align-self: flex-start; }`,
+  it('fxcolself-ss (top-left)', () => {
+    expect(convert('fxcolself-ss')).toBe(
+      `.fxcolself-ss { justify-self: flex-start;align-self: flex-start; }`,
     );
   });
 

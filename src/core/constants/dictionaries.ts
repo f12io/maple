@@ -214,17 +214,17 @@ export const VENDOR_PREFIXES: Record<string, Array<string> | undefined> = {
 
 // Flex position value mappings (compact)
 export const FLEX_V: Record<string, string> = {
-  t: 'flex-start',
+  s: 'flex-start',
   c: 'center',
-  b: 'flex-end',
-  s: 'stretch',
+  e: 'flex-end',
+  h: 'stretch',
   w: 'space-between',
 };
 export const FLEX_H: Record<string, string> = {
-  l: 'flex-start',
+  s: 'flex-start',
   c: 'center',
-  r: 'flex-end',
-  s: 'stretch',
+  e: 'flex-end',
+  h: 'stretch',
   w: 'space-between',
 };
 
