@@ -37,7 +37,12 @@ import {
   REGEX_NON_FUNCTION_PARAM_SPLITTER,
   REGEX_SELECTOR_REPLACEMENTS,
 } from './constants/regex';
-import { COVER_UNITS, DEFAULT_SPACE_UNIT, ONE_UNITS } from './constants/units';
+import {
+  COVER_UNITS,
+  DEFAULT_SPACE_UNIT,
+  DEFAULT_TIME_UNIT,
+  ONE_UNITS,
+} from './constants/units';
 import {
   isGradientDirection,
   isKnownAngleValue,
@@ -307,11 +312,13 @@ function serializeNumberValue({
   if (isNoRefMode || !VARIABLE_CACHE.has(refKey)) {
     const numberValue = Number(utilVal);
 
-    if (numberValue === 0) return '0';
-
     const transformFnName = TRANSFORM_KEYS[utilKey];
     const unit =
       PROP_UNIT_MAP[transformFnName || propKeyCamel] ?? DEFAULT_SPACE_UNIT;
+
+    if (numberValue === 0) {
+      return unit === DEFAULT_TIME_UNIT ? `0${unit}` : '0';
+    }
 
     let fallbackValue = utilVal;
 

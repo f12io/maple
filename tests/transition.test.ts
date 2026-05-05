@@ -51,6 +51,12 @@ describe('Transition', () => {
   });
 
   it('transition with duration and abbr color property', () => {
+    expect(convert('ts-c_300_ease_0')).toBe(
+      `.ts-c_300_ease_0 { transition: var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))) var(--tsdur-300, var(--time-300, 300ms)) var(--tstf-ease, var(--time-ease, var(--ease, ease))) 0ms; }`,
+    );
+  });
+
+  it('transition with duration and abbr color property', () => {
     expect(convert('ts-c_300_ease_200')).toBe(
       `.ts-c_300_ease_200 { transition: var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))) var(--tsdur-300, var(--time-300, 300ms)) var(--tstf-ease, var(--time-ease, var(--ease, ease))) var(--tsdel-200, var(--time-200, 200ms)); }`,
     );
