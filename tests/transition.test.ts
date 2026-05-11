@@ -34,49 +34,49 @@ describe('Transition', () => {
 
   it('transition with duration and property', () => {
     expect(convert('ts-300_color')).toBe(
-      `.ts-300_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))); }`,
+      `.ts-300_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsprop-c, var(--prop-c, var(--c, color))); }`,
     );
   });
 
   it('transition with duration and abbr color property', () => {
     expect(convert('ts-300_c')).toBe(
-      `.ts-300_c { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))); }`,
+      `.ts-300_c { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsprop-c, var(--prop-c, var(--c, color))); }`,
     );
   });
 
   it('transition with duration and abbr color property', () => {
     expect(convert('ts-c_300')).toBe(
-      `.ts-c_300 { transition: var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))) var(--tsdur-300, var(--time-300, 300ms)); }`,
+      `.ts-c_300 { transition: var(--tsprop-c, var(--prop-c, var(--c, color))) var(--tsdur-300, var(--time-300, 300ms)); }`,
     );
   });
 
   it('transition with duration and abbr color property', () => {
     expect(convert('ts-c_300_ease_0')).toBe(
-      `.ts-c_300_ease_0 { transition: var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))) var(--tsdur-300, var(--time-300, 300ms)) var(--tstf-ease, var(--time-ease, var(--ease, ease))) 0ms; }`,
+      `.ts-c_300_ease_0 { transition: var(--tsprop-c, var(--prop-c, var(--c, color))) var(--tsdur-300, var(--time-300, 300ms)) var(--tstf-ease, var(--ease, ease)) 0ms; }`,
     );
   });
 
   it('transition with duration and abbr color property', () => {
     expect(convert('ts-c_300_ease_200')).toBe(
-      `.ts-c_300_ease_200 { transition: var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))) var(--tsdur-300, var(--time-300, 300ms)) var(--tstf-ease, var(--time-ease, var(--ease, ease))) var(--tsdel-200, var(--time-200, 200ms)); }`,
+      `.ts-c_300_ease_200 { transition: var(--tsprop-c, var(--prop-c, var(--c, color))) var(--tsdur-300, var(--time-300, 300ms)) var(--tstf-ease, var(--ease, ease)) var(--tsdel-200, var(--time-200, 200ms)); }`,
     );
   });
 
   it('transition with duration and abbr translate property', () => {
     expect(convert('ts-300_tl')).toBe(
-      `.ts-300_tl { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsprop-tl, var(--time-tl, var(--prop-tl, var(--tl, translate)))); }`,
+      `.ts-300_tl { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsprop-tl, var(--prop-tl, var(--tl, translate))); }`,
     );
   });
 
   it('transition with duration, delay and property', () => {
     expect(convert('ts-300_200_color')).toBe(
-      `.ts-300_200_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))); }`,
+      `.ts-300_200_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-c, var(--prop-c, var(--c, color))); }`,
     );
   });
 
   it('transition with duration, delay, property and timing function', () => {
     expect(convert('ts-300_200_bgc_ease')).toBe(
-      `.ts-300_200_bgc_ease { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--time-bgc, var(--prop-bgc, var(--bgc, background-color)))) var(--tstf-ease, var(--time-ease, var(--ease, ease))); }`,
+      `.ts-300_200_bgc_ease { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--prop-bgc, var(--bgc, background-color))) var(--tstf-ease, var(--ease, ease)); }`,
     );
   });
 
@@ -100,25 +100,25 @@ describe('Transition', () => {
 
   it('transition with duration, delay, property with dash and timing function', () => {
     expect(convert('ts-300_200_background-color_ease')).toBe(
-      `.ts-300_200_background-color_ease { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--time-bgc, var(--prop-bgc, var(--bgc, background-color)))) var(--tstf-ease, var(--time-ease, var(--ease, ease))); }`,
+      `.ts-300_200_background-color_ease { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--prop-bgc, var(--bgc, background-color))) var(--tstf-ease, var(--ease, ease)); }`,
     );
   });
 
   it('transition with duration, delay, property with camelCase and timing function', () => {
     expect(convert('ts-300_200_backgroundColor_ease')).toBe(
-      `.ts-300_200_backgroundColor_ease { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--time-bgc, var(--prop-bgc, var(--bgc, background-color)))) var(--tstf-ease, var(--time-ease, var(--ease, ease))); }`,
+      `.ts-300_200_backgroundColor_ease { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--prop-bgc, var(--bgc, background-color))) var(--tstf-ease, var(--ease, ease)); }`,
     );
   });
 
   it('transition with multiple properties', () => {
     expect(convert('ts-300_200_bgc_ease,200_color')).toBe(
-      `.ts-300_200_bgc_ease\\,200_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--time-bgc, var(--prop-bgc, var(--bgc, background-color)))) var(--tstf-ease, var(--time-ease, var(--ease, ease))), var(--tsdur-200, var(--time-200, 200ms)) var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))); }`,
+      `.ts-300_200_bgc_ease\\,200_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--prop-bgc, var(--bgc, background-color))) var(--tstf-ease, var(--ease, ease)), var(--tsdur-200, var(--time-200, 200ms)) var(--tsprop-c, var(--prop-c, var(--c, color))); }`,
     );
   });
 
   it('transition with multiple properties and important', () => {
     expect(convert('!ts-300_200_bgc_ease,200_color')).toBe(
-      `.\\!ts-300_200_bgc_ease\\,200_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--time-bgc, var(--prop-bgc, var(--bgc, background-color)))) var(--tstf-ease, var(--time-ease, var(--ease, ease))), var(--tsdur-200, var(--time-200, 200ms)) var(--tsprop-c, var(--time-c, var(--prop-c, var(--c, color)))) !important; }`,
+      `.\\!ts-300_200_bgc_ease\\,200_color { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsdel-200, var(--time-200, 200ms)) var(--tsprop-bgc, var(--prop-bgc, var(--bgc, background-color))) var(--tstf-ease, var(--ease, ease)), var(--tsdur-200, var(--time-200, 200ms)) var(--tsprop-c, var(--prop-c, var(--c, color))) !important; }`,
     );
   });
 
@@ -191,6 +191,12 @@ describe('Transition', () => {
   it('transition-timing-function', () => {
     expect(convert('tstf-ease')).toBe(
       `.tstf-ease { transition-timing-function: var(--tstf-ease, var(--ease, ease)); }`,
+    );
+  });
+
+  it('transition with custom variable property', () => {
+    expect(convert('ts-300_colors_linear')).toBe(
+      `.ts-300_colors_linear { transition: var(--tsdur-300, var(--time-300, 300ms)) var(--tsprop-colors, var(--prop-colors, var(--colors, colors))) var(--tstf-linear, var(--linear, linear)); }`,
     );
   });
 });

@@ -104,3 +104,11 @@ export function isReservedKeyword(val: string): boolean {
 export function isGradientDirection(value: string): boolean {
   return REGEX_GRADIENT_DIRECTION.test(value);
 }
+
+export function isKnownTimingFunction(val: string): boolean {
+  return (
+    /^(ease|linear|ease-in|ease-out|ease-in-out|step-start|step-end)$/i.test(
+      val,
+    ) || /^(steps|cubic-bezier|linear)\(/i.test(val)
+  );
+}

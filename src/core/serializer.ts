@@ -50,6 +50,7 @@ import {
   isKnownNumberValue,
   isKnownProperty,
   isReservedKeyword,
+  isKnownTimingFunction,
 } from './helpers/property.helper';
 import {
   escapeVariable,
@@ -754,7 +755,9 @@ function serializeTransitionValue(
     ? toKebabCase(ABBREVIATIONS[valueItem])
     : valueItem;
 
-  if (isKnownProperty(mappedValueItem)) {
+  if (isKnownTimingFunction(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.transitionTimingFunction;
+  } else if (isKnownProperty(mappedValueItem)) {
     varCat = CSS_VARIABLE_CATEGORY.prop;
     utilKey = ABBREVIATIONS_REVERSE.transitionProperty;
   } else if (isKnownNumberValue(valueItem)) {
@@ -772,7 +775,22 @@ function serializeTransitionValue(
       utilKey = ABBREVIATIONS_REVERSE.transitionDelay;
     }
   } else if (items.length > 1) {
-    utilKey = ABBREVIATIONS_REVERSE.transitionTimingFunction;
+    utilKey = ABBREVIATIONS_REVERSE.transitionProperty;
+    varCat = CSS_VARIABLE_CATEGORY.prop;
+  }
+
+  if (
+    utilKey === ABBREVIATIONS_REVERSE.transitionTimingFunction ||
+    utilKey === ABBREVIATIONS_REVERSE.transitionProperty
+  ) {
+    return serializeValueAsVariable(
+      utilKey,
+      escapeVariable(valueItem),
+      mappedValueItem,
+      parsed.isNoRef,
+      undefined,
+      varCat,
+    );
   }
 
   return serializeNumberValue({
