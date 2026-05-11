@@ -70,6 +70,27 @@ export const CONTAINER_TYPES = [
   'normal',
 ];
 
+export const ANIMATION_DEFAULTS: Record<string, string> = {
+  'fade-in': 'fade-in_300_ease-out_forwards',
+  'fade-out': 'fade-out_300_ease-out_forwards',
+  'fade-in-up': 'fade-in-up_300_ease-out_forwards',
+  'fade-in-down': 'fade-in-down_300_ease-out_forwards',
+  'fade-in-left': 'fade-in-left_300_ease-out_forwards',
+  'fade-in-right': 'fade-in-right_300_ease-out_forwards',
+  'scale-in': 'scale-in_300_ease-out_forwards',
+  'scale-out': 'scale-out_300_ease-out_forwards',
+  'slide-in-up': 'slide-in-up_300_ease-out_forwards',
+  'slide-in-down': 'slide-in-down_300_ease-out_forwards',
+  'slide-in-left': 'slide-in-left_300_ease-out_forwards',
+  'slide-in-right': 'slide-in-right_300_ease-out_forwards',
+  spin: 'spin_1000_linear_infinite',
+  ping: 'ping_1000_cubic-bezier(0,0,0.2,1)_infinite',
+  pulse: 'pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite',
+  bounce: 'bounce_1000_infinite',
+  shake: 'shake_300_ease-in-out',
+  wiggle: 'wiggle_300_ease-in-out',
+};
+
 export const CSS_VARIABLE_CATEGORY: Record<string, string> = {
   [DEFAULT_SPACE_UNIT]: 'space',
   [DEFAULT_TIME_UNIT]: 'time',

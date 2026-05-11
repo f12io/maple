@@ -18,6 +18,7 @@ import {
 import {
   ABBREVIATIONS,
   ABBREVIATIONS_REVERSE,
+  ANIMATION_DEFAULTS,
   BACKDROP_FILTER_KEYS,
   CONTAINER_TYPES,
   CSS_VARIABLE_CATEGORY,
@@ -851,6 +852,26 @@ function serializeAnimationValue(
       utilKey = ABBREVIATIONS_REVERSE.animationIterationCount;
     }
   } else {
+    if (
+      index === 0 &&
+      items.length === 1 &&
+      ANIMATION_DEFAULTS[mappedValueItem]
+    ) {
+      const defaultItems = split(
+        ANIMATION_DEFAULTS[mappedValueItem],
+        REF_CHAR_SPACE,
+      );
+
+      if (defaultItems.length > 1) {
+        return defaultItems
+          .map((item, i) =>
+            serializeAnimationValue(parsed, item, i, defaultItems),
+          )
+          .filter(Boolean)
+          .join(' ');
+      }
+    }
+
     utilKey = ABBREVIATIONS_REVERSE.animationName;
   }
 

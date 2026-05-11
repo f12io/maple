@@ -2,6 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { convert } from './helpers/convert.helper';
 
 describe('Animation', () => {
+  it('animation alias expansion', () => {
+    expect(convert('anim-fade-in')).toBe(
+      `.anim-fade-in { animation: var(--animname-fade-in, var(--fade-in, fade-in)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease-out, var(--ease-out, ease-out)) forwards; }`,
+    );
+
+    expect(convert('anim-spin')).toBe(
+      `.anim-spin { animation: var(--animname-spin, var(--spin, spin)) var(--animdur-1000, var(--time-1000, 1000ms)) var(--animtf-linear, var(--linear, linear)) infinite; }`,
+    );
+  });
+
   it('animation with name and duration', () => {
     expect(convert('anim-fade_300')).toBe(
       `.anim-fade_300 { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)); }`,
