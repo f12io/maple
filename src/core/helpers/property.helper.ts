@@ -112,3 +112,15 @@ export function isKnownTimingFunction(val: string): boolean {
     ) || /^(steps|cubic-bezier|linear)\(/i.test(val)
   );
 }
+
+export function isKnownAnimationDirection(val: string): boolean {
+  return /^(normal|reverse|alternate|alternate-reverse)$/i.test(val);
+}
+
+export function isKnownAnimationFillMode(val: string): boolean {
+  return /^(none|forwards|backwards|both)$/i.test(val);
+}
+
+export function isKnownAnimationPlayState(val: string): boolean {
+  return /^(running|paused)$/i.test(val);
+}

@@ -3,6 +3,7 @@
 # compiled output
 /dist
 /examples/maple.js
+/examples/animations.css
 /tmp
 /out-tsc
 # Only exists if Bazel was run

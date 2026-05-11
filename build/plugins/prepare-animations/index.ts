@@ -7,8 +7,10 @@ export function prepareAnimations() {
     closeBundle: async () => {
       try {
         const src = resolve(process.cwd(), 'src/animations.css');
-        const dest = resolve(process.cwd(), 'dist/animations.css');
-        await copyFile(src, dest);
+        const dest1 = resolve(process.cwd(), 'dist/animations.css');
+        const dest2 = resolve(process.cwd(), 'examples/animations.css');
+        await copyFile(src, dest1);
+        await copyFile(src, dest2);
       } catch (e) {
         console.error(`[prepare-animations] Failed to copy file:`, e);
       }

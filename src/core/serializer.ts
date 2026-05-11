@@ -46,6 +46,9 @@ import {
 import {
   isGradientDirection,
   isKnownAngleValue,
+  isKnownAnimationDirection,
+  isKnownAnimationFillMode,
+  isKnownAnimationPlayState,
   isKnownColorValue,
   isKnownNumberValue,
   isKnownProperty,
@@ -90,6 +93,7 @@ export const TYPE_MODIFIERS: Modifiers = {
 
 export const VALUE_MODIFIERS: ValueModifiers = {
   ts: serializeTransitionValue,
+  anim: serializeAnimationValue,
   bshadow: serializeMultipleValues,
   tshadow: serializeMultipleValues,
   br: serializeMultipleValues,
@@ -791,6 +795,86 @@ function serializeTransitionValue(
       undefined,
       varCat,
     );
+  }
+
+  return serializeNumberValue({
+    ...parsed,
+    utilKey,
+    utilVal: mappedValueItem,
+    validVarVal: escapeVariable(valueItem),
+    varCat,
+  });
+}
+
+function serializeAnimationValue(
+  parsed: ParsedClass,
+  valueItem: string,
+  index: number,
+  items: Array<string>,
+): string | undefined {
+  let mappedValueItem = valueItem;
+  let varCat;
+  let utilKey = parsed.utilKey;
+
+  valueItem =
+    ABBREVIATIONS_REVERSE[valueItem] ||
+    ABBREVIATIONS_REVERSE[toCamelCase(valueItem)] ||
+    valueItem;
+  mappedValueItem = ABBREVIATIONS[valueItem]
+    ? toKebabCase(ABBREVIATIONS[valueItem])
+    : valueItem;
+
+  if (isKnownTimingFunction(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationTimingFunction;
+  } else if (isKnownAnimationDirection(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationDirection;
+  } else if (isKnownAnimationFillMode(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationFillMode;
+  } else if (isKnownAnimationPlayState(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationPlayState;
+  } else if (mappedValueItem.toLowerCase() === 'infinite') {
+    utilKey = ABBREVIATIONS_REVERSE.animationIterationCount;
+  } else if (isKnownNumberValue(valueItem)) {
+    let numberCount = 0;
+
+    for (let i = 0; i <= index; i++) {
+      if (isKnownNumberValue(items[i])) {
+        numberCount++;
+      }
+    }
+
+    if (numberCount === 1) {
+      utilKey = ABBREVIATIONS_REVERSE.animationDuration;
+    } else if (numberCount === 2) {
+      utilKey = ABBREVIATIONS_REVERSE.animationDelay;
+    } else {
+      utilKey = ABBREVIATIONS_REVERSE.animationIterationCount;
+    }
+  } else {
+    utilKey = ABBREVIATIONS_REVERSE.animationName;
+  }
+
+  if (
+    utilKey === ABBREVIATIONS_REVERSE.animationTimingFunction ||
+    utilKey === ABBREVIATIONS_REVERSE.animationName
+  ) {
+    return serializeValueAsVariable(
+      utilKey,
+      escapeVariable(valueItem),
+      mappedValueItem,
+      parsed.isNoRef,
+      undefined,
+      varCat,
+    );
+  }
+
+  if (
+    utilKey === ABBREVIATIONS_REVERSE.animationDirection ||
+    utilKey === ABBREVIATIONS_REVERSE.animationFillMode ||
+    utilKey === ABBREVIATIONS_REVERSE.animationPlayState ||
+    utilKey === ABBREVIATIONS_REVERSE.animationIterationCount
+  ) {
+    return removeBrackets(mappedValueItem);
   }
 
   return serializeNumberValue({
