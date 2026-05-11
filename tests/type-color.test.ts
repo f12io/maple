@@ -80,6 +80,12 @@ describe('Color', () => {
     );
   });
 
+  it('background color', () => {
+    expect(convert('bgc-blue-600/0')).toBe(
+      '.bgc-blue-600\\/0 { background-color: oklch(from var(--bgc-blue, var(--color-blue, var(--blue, blue))) calc((l + (((var(--bgc-blue-l-shift, var(--blue-l-shift, var(--bgc-l-shift, var(--l-shift, 1)))) * (0.5 - 0.6111)) + (abs(var(--bgc-blue-l-shift, var(--blue-l-shift, var(--bgc-l-shift, var(--l-shift, 1))))) * (0.5 - l))) * calc(var(--l-edge-shift, 0.5) + ((1 - var(--l-edge-shift, 0.5)) * pow(abs(0.6111 - 0.5) * 2, 2))))) * var(--bgc-blue-l-scale, var(--blue-l-scale, var(--bgc-l-scale, var(--l-scale, 1))))) calc(c * calc(1 - (pow(abs(0.6111 - 0.5) * 2, 2) * var(--c-curve, 0.5))) * var(--bgc-blue-c-scale, var(--blue-c-scale, var(--bgc-c-scale, var(--c-scale, 1))))) calc(h + var(--bgc-blue-h-rotate, var(--blue-h-rotate, var(--bgc-h-rotate, var(--h-rotate, 0))))) / 0%); }',
+    );
+  });
+
   it('background', () => {
     expect(convert('bg-blue-600')).toBe(
       '.bg-blue-600 { background: oklch(from var(--bgc-blue, var(--color-blue, var(--blue, blue))) calc((l + (((var(--bgc-blue-l-shift, var(--blue-l-shift, var(--bgc-l-shift, var(--l-shift, 1)))) * (0.5 - 0.6111)) + (abs(var(--bgc-blue-l-shift, var(--blue-l-shift, var(--bgc-l-shift, var(--l-shift, 1))))) * (0.5 - l))) * calc(var(--l-edge-shift, 0.5) + ((1 - var(--l-edge-shift, 0.5)) * pow(abs(0.6111 - 0.5) * 2, 2))))) * var(--bgc-blue-l-scale, var(--blue-l-scale, var(--bgc-l-scale, var(--l-scale, 1))))) calc(c * calc(1 - (pow(abs(0.6111 - 0.5) * 2, 2) * var(--c-curve, 0.5))) * var(--bgc-blue-c-scale, var(--blue-c-scale, var(--bgc-c-scale, var(--c-scale, 1))))) calc(h + var(--bgc-blue-h-rotate, var(--blue-h-rotate, var(--bgc-h-rotate, var(--h-rotate, 0))))) / alpha); }',

@@ -49,8 +49,8 @@ import {
   isKnownColorValue,
   isKnownNumberValue,
   isKnownProperty,
-  isReservedKeyword,
   isKnownTimingFunction,
+  isReservedKeyword,
 } from './helpers/property.helper';
 import {
   escapeVariable,
@@ -464,7 +464,7 @@ function serializeColorValue(parsed: ParsedClass): string {
     let l = `calc(l * ${lightnessScale})`;
     let c = `calc(c * ${chromaScale})`;
     const h = `calc(h + ${hueRotate})`;
-    const alpha = opacity && opacity < 100 ? `${opacity}%` : 'alpha';
+    const alpha = opacity !== null && opacity < 100 ? `${opacity}%` : 'alpha';
 
     if (hasToneShift) {
       const midDistanceSq = `pow(abs(${mappedTone} - ${mappedMidpoint}) * 2, 2)`;
