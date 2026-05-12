@@ -10,6 +10,14 @@ describe('Animation', () => {
     expect(convert('anim-spin')).toBe(
       `.anim-spin { animation: var(--animname-spin, var(--spin, spin)) var(--anim-spin-duration, var(--animdur-1000, var(--time-1000, 1000ms))) var(--anim-spin-easing, var(--animtf-linear, var(--linear, linear))) infinite; }`,
     );
+
+    expect(convert('anim-fade-out-up')).toBe(
+      `.anim-fade-out-up { animation: var(--animname-fade-out-up, var(--fade-out-up, fade-out-up)) var(--anim-fade-out-up-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-out-up-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards; }`,
+    );
+
+    expect(convert('anim-slide-out-down')).toBe(
+      `.anim-slide-out-down { animation: var(--animname-slide-out-down, var(--slide-out-down, slide-out-down)) var(--anim-slide-out-down-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-slide-out-down-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards; }`,
+    );
   });
 
   it('animation with name and duration', () => {

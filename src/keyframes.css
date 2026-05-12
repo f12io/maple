@@ -68,6 +68,50 @@
   }
 }
 
+@keyframes fade-out-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(calc(var(--fade-distance, 20px) * -1));
+  }
+}
+
+@keyframes fade-out-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--fade-distance, 20px));
+  }
+}
+
+@keyframes fade-out-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(var(--fade-distance, 20px) * -1));
+  }
+}
+
+@keyframes fade-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--fade-distance, 20px));
+  }
+}
+
 /* ============================================
    Scale Animations
    ============================================ */
@@ -131,6 +175,42 @@
   }
   to {
     transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(var(--slide-distance, 100%) * -1));
+  }
+}
+
+@keyframes slide-out-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--slide-distance, 100%));
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(var(--slide-distance, 100%) * -1));
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--slide-distance, 100%));
   }
 }
 

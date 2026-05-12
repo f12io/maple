@@ -1597,7 +1597,9 @@ Variables can be combined with selectors and media queries.
 
 ### 10. Working with Animations
 
-Maple provides animation utilities for all animation properties. For convenience, include `keyframes.css` which provides common keyframes with CSS variable support.
+Maple provides utilities for every CSS animation property. The `anim-*` utility also supports animation shorthand values: Maple splits shorthand tokens on `_`, classifies each token, and serializes the result as the CSS `animation` property.
+
+For convenience, include `keyframes.css` when you want to use Maple's built-in animation names. The serializer only writes animation declarations; the keyframes themselves must still exist in CSS.
 
 #### Setup
 
@@ -1611,46 +1613,47 @@ Maple provides animation utilities for all animation properties. For convenience
 </head>
 ```
 
-#### Supported Animations
-
-| Animation        | Description                 | Variables                          |
-| ---------------- | --------------------------- | ---------------------------------- |
-| `fade-in`        | Fade from transparent       | -                                  |
-| `fade-out`       | Fade to transparent         | -                                  |
-| `fade-in-up`     | Fade in from below          | `--fade-distance` (default: 20px)  |
-| `fade-in-down`   | Fade in from above          | `--fade-distance`                  |
-| `fade-in-left`   | Fade in from right          | `--fade-distance`                  |
-| `fade-in-right`  | Fade in from left           | `--fade-distance`                  |
-| `scale-in`       | Scale up while fading in    | `--scale-from` (default: 0.9)      |
-| `scale-out`      | Scale down while fading out | `--scale-to` (default: 0.9)        |
-| `slide-in-up`    | Slide in from bottom        | `--slide-distance` (default: 100%) |
-| `slide-in-down`  | Slide in from top           | `--slide-distance`                 |
-| `slide-in-left`  | Slide in from right         | `--slide-distance`                 |
-| `slide-in-right` | Slide in from left          | `--slide-distance`                 |
-| `spin`           | Continuous rotation         | -                                  |
-| `ping`           | Radar ping effect           | `--ping-scale` (default: 2)        |
-| `pulse`          | Fade in/out loop            | `--pulse-opacity` (default: 0.5)   |
-| `bounce`         | Bouncing motion             | `--bounce-distance` (default: 25%) |
-| `shake`          | Horizontal shake            | `--shake-distance` (default: 10px) |
-| `wiggle`         | Rotational wiggle           | `--wiggle-angle` (default: 3deg)   |
-
 #### Animation Utilities
 
 ```html
-<!-- Works out of the box (includes duration, timing, fill mode) -->
+<!-- Preset shorthand: expands to fade-in_300_ease-out_forwards -->
 <div class="anim-fade-in">Fades in over 300ms</div>
 
-<!-- Loading spinner (infinite by default) -->
+<!-- Preset shorthand: expands to spin_1000_linear_infinite -->
 <div class="anim-spin">⟳</div>
 
-<!-- Override defaults with utilities -->
-<div class="anim-fade-in-up animdur-500 animdel-200">
-  Custom: 500ms duration, 200ms delay
-</div>
+<!-- Explicit shorthand: name, duration, timing function, delay, fill mode -->
+<div class="anim-fade-in-up_500_ease-out_200_both">Custom animation</div>
 
 <!-- Hover-triggered animation -->
 <div class="&:hover:anim-shake">Shakes on hover</div>
 ```
+
+#### Animation Shorthand Parsing
+
+In `anim-*`, separate shorthand tokens with `_`.
+
+```html
+<div class="anim-fade-in_300_ease-out_forwards"></div>
+<div class="anim-spin_1000_linear_infinite"></div>
+<div class="anim-fade-in_300_ease-out,spin_1000_linear_infinite"></div>
+```
+
+Maple classifies shorthand tokens in this order:
+
+| Token Type           | Serialized As               | Examples                                                    |
+| -------------------- | --------------------------- | ----------------------------------------------------------- |
+| Timing function      | `animation-timing-function` | `linear`, `ease-out`, `steps(4)`, `cubic-bezier(0,0,0.2,1)` |
+| Direction            | `animation-direction`       | `normal`, `reverse`, `alternate`, `alternate-reverse`       |
+| Fill mode            | `animation-fill-mode`       | `none`, `forwards`, `backwards`, `both`                     |
+| Play state           | `animation-play-state`      | `running`, `paused`                                         |
+| `infinite`           | `animation-iteration-count` | `infinite`                                                  |
+| First numeric token  | `animation-duration`        | `300`, `1s`, `250ms`                                        |
+| Second numeric token | `animation-delay`           | `200`, `0.15s`                                              |
+| Later numeric tokens | `animation-iteration-count` | `3`                                                         |
+| Any other token      | `animation-name`            | `fade-in`, `spin`, `custom-loader`                          |
+
+Numeric duration and delay values use Maple's default time unit, so `300` serializes as `300ms`. Use explicit units when needed, such as `1s` or `250ms`.
 
 #### Animation Properties
 
@@ -1668,30 +1671,92 @@ Maple provides animation utilities for all animation properties. For convenience
 
 #### Customizing Animations
 
-Since animation shortcuts like `anim-fade-in` are automatically expanded into their full utility definitions, they utilize a hierarchical CSS variable fallback system. This allows you to globally customize specific animations.
+When `anim-*` contains an animation name, Maple can wrap the shorthand duration, delay, and timing function with animation-specific CSS variable fallbacks.
 
 ```css
 var(--anim-fade-in-duration, var(--animdur-300, var(--time-300, 300ms)))
 var(--anim-fade-in-easing, var(--animtf-ease-out, var(--ease-out, ease-out)))
 ```
 
-You can customize animations using these fallback variables or by using standard utility overrides:
+This means you can customize preset defaults with variables, or override individual properties with normal animation utilities:
 
 ```html
-<!-- 1. Customize globally via Animation-Specific Variables -->
+<!-- Customize animation-specific defaults -->
 <html class="--anim-fade-in-duration=500ms --anim-spin-duration=2s">
-  <!-- This fade-in will now take 500ms by default everywhere! -->
   <div class="anim-fade-in">Slow fade</div>
 
-  <!-- 2. Use Utility Overrides on Specific Elements -->
+  <!-- Override one property on a specific element -->
   <div class="anim-fade-in animdur-200">Fast fade just for this element</div>
 
-  <!-- 3. Customize Keyframe Behavior via Variables -->
-  <!-- Many @keyframes definitions expose internal variables to tweak their behavior -->
+  <!-- Customize keyframe behavior exposed by keyframes.css -->
   <div class="--fade-distance=40px anim-fade-in-up">Slides from further</div>
   <div class="--pulse-opacity=0.1 anim-pulse">Deeper pulse</div>
 </html>
 ```
+
+#### Supported Animations
+
+These built-in names are recognized by `anim-*` as presets when used by themselves, such as `anim-fade-in`. Each preset expands to a complete animation shorthand.
+
+Maple does not provide a way to define custom preset expansions. Only the presets listed below expand automatically. For custom keyframes, include the animation properties you need directly in the class, such as duration, timing function, delay, iteration count, direction, fill mode, or play state.
+
+| Animation         | Description                 | Variables                          |
+| ----------------- | --------------------------- | ---------------------------------- |
+| `fade-in`         | Fade from transparent       | -                                  |
+| `fade-out`        | Fade to transparent         | -                                  |
+| `fade-in-up`      | Fade in from below          | `--fade-distance` (default: 20px)  |
+| `fade-in-down`    | Fade in from above          | `--fade-distance`                  |
+| `fade-in-left`    | Fade in from right          | `--fade-distance`                  |
+| `fade-in-right`   | Fade in from left           | `--fade-distance`                  |
+| `fade-out-up`     | Fade out toward top         | `--fade-distance`                  |
+| `fade-out-down`   | Fade out toward bottom      | `--fade-distance`                  |
+| `fade-out-left`   | Fade out toward left        | `--fade-distance`                  |
+| `fade-out-right`  | Fade out toward right       | `--fade-distance`                  |
+| `scale-in`        | Scale up while fading in    | `--scale-from` (default: 0.9)      |
+| `scale-out`       | Scale down while fading out | `--scale-to` (default: 0.9)        |
+| `slide-in-up`     | Slide in from bottom        | `--slide-distance` (default: 100%) |
+| `slide-in-down`   | Slide in from top           | `--slide-distance`                 |
+| `slide-in-left`   | Slide in from right         | `--slide-distance`                 |
+| `slide-in-right`  | Slide in from left          | `--slide-distance`                 |
+| `slide-out-up`    | Slide out toward top        | `--slide-distance`                 |
+| `slide-out-down`  | Slide out toward bottom     | `--slide-distance`                 |
+| `slide-out-left`  | Slide out toward left       | `--slide-distance`                 |
+| `slide-out-right` | Slide out toward right      | `--slide-distance`                 |
+| `spin`            | Continuous rotation         | -                                  |
+| `ping`            | Radar ping effect           | `--ping-scale` (default: 2)        |
+| `pulse`           | Fade in/out loop            | `--pulse-opacity` (default: 0.5)   |
+| `bounce`          | Bouncing motion             | `--bounce-distance` (default: 25%) |
+| `shake`           | Horizontal shake            | `--shake-distance` (default: 10px) |
+| `wiggle`          | Rotational wiggle           | `--wiggle-angle` (default: 3deg)   |
+
+| Preset            | Expanded Shorthand                              |
+| ----------------- | ----------------------------------------------- |
+| `fade-in`         | `fade-in_300_ease-out_forwards`                 |
+| `fade-out`        | `fade-out_300_ease-out_forwards`                |
+| `fade-in-up`      | `fade-in-up_300_ease-out_forwards`              |
+| `fade-in-down`    | `fade-in-down_300_ease-out_forwards`            |
+| `fade-in-left`    | `fade-in-left_300_ease-out_forwards`            |
+| `fade-in-right`   | `fade-in-right_300_ease-out_forwards`           |
+| `fade-out-up`     | `fade-out-up_300_ease-out_forwards`             |
+| `fade-out-down`   | `fade-out-down_300_ease-out_forwards`           |
+| `fade-out-left`   | `fade-out-left_300_ease-out_forwards`           |
+| `fade-out-right`  | `fade-out-right_300_ease-out_forwards`          |
+| `scale-in`        | `scale-in_300_ease-out_forwards`                |
+| `scale-out`       | `scale-out_300_ease-out_forwards`               |
+| `slide-in-up`     | `slide-in-up_300_ease-out_forwards`             |
+| `slide-in-down`   | `slide-in-down_300_ease-out_forwards`           |
+| `slide-in-left`   | `slide-in-left_300_ease-out_forwards`           |
+| `slide-in-right`  | `slide-in-right_300_ease-out_forwards`          |
+| `slide-out-up`    | `slide-out-up_300_ease-out_forwards`            |
+| `slide-out-down`  | `slide-out-down_300_ease-out_forwards`          |
+| `slide-out-left`  | `slide-out-left_300_ease-out_forwards`          |
+| `slide-out-right` | `slide-out-right_300_ease-out_forwards`         |
+| `spin`            | `spin_1000_linear_infinite`                     |
+| `ping`            | `ping_1000_cubic-bezier(0,0,0.2,1)_infinite`    |
+| `pulse`           | `pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite` |
+| `bounce`          | `bounce_1000_infinite`                          |
+| `shake`           | `shake_300_ease-in-out`                         |
+| `wiggle`          | `wiggle_300_ease-in-out`                        |
 
 ### 11. Flex Layout Shortcuts
 
