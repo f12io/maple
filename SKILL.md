@@ -130,7 +130,7 @@ This fallback chain and color system allows you to create colors without definin
 
 ```html
 <div
-  class="--bgc-primary=oklch(0.98_0.02_20) --c-primary=oklch(0.2_0.05_20) @dark:--bgc-lightness-factor=0.2 @dark:--c-lightness-factor=100"
+  class="--bgc-primary=oklch(0.98_0.02_20) --c-primary=oklch(0.2_0.05_20) @dark:--bgc-l-scale=0.2 @dark:--c-l-scale=100"
 >
   <div class="bgc-primary c-primary"></div>
 </div>
@@ -1597,7 +1597,7 @@ Variables can be combined with selectors and media queries.
 
 ### 10. Working with Animations
 
-Maple provides animation utilities for all animation properties. For convenience, include `animations.css` which provides common keyframes with CSS variable support.
+Maple provides animation utilities for all animation properties. For convenience, include `keyframes.css` which provides common keyframes with CSS variable support.
 
 #### Setup
 
@@ -1605,7 +1605,7 @@ Maple provides animation utilities for all animation properties. For convenience
 <head>
   <link
     rel="stylesheet"
-    href="https://unpkg.com/@f12io/maple/dist/animations.css"
+    href="https://unpkg.com/@f12io/maple/dist/keyframes.css"
   />
   <script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
 </head>
@@ -1668,24 +1668,28 @@ Maple provides animation utilities for all animation properties. For convenience
 
 #### Customizing Animations
 
-All animations use a fallback chain for timing:
+Since animation shortcuts like `anim-fade-in` are automatically expanded into their full utility definitions, they utilize a hierarchical CSS variable fallback system. This allows you to globally customize specific animations.
 
+```css
+var(--anim-fade-in-duration, var(--animdur-300, var(--time-300, 300ms)))
+var(--anim-fade-in-easing, var(--animtf-ease-out, var(--ease-out, ease-out)))
 ```
---anim-fade-in-duration → --anim-duration → 300ms
---anim-fade-in-easing → --anim-easing → ease-out
-```
+
+You can customize animations using these fallback variables or by using standard utility overrides:
 
 ```html
-<!-- Override all animations globally -->
-<html class="--anim-duration=200ms --anim-easing=[cubic-bezier(0.16,1,0.3,1)]">
-  <!-- Override just one animation -->
-  <div class="--anim-fade-in-duration=500ms anim-fade-in">Slow fade</div>
+<!-- 1. Customize globally via Animation-Specific Variables -->
+<html class="--anim-fade-in-duration=500ms --anim-spin-duration=2s">
+  <!-- This fade-in will now take 500ms by default everywhere! -->
+  <div class="anim-fade-in">Slow fade</div>
 
-  <!-- Override spin speed -->
-  <div class="--anim-spin-duration=2s anim-spin">Slow spinner</div>
+  <!-- 2. Use Utility Overrides on Specific Elements -->
+  <div class="anim-fade-in animdur-200">Fast fade just for this element</div>
 
-  <!-- Customize keyframe behavior -->
+  <!-- 3. Customize Keyframe Behavior via Variables -->
+  <!-- Many @keyframes definitions expose internal variables to tweak their behavior -->
   <div class="--fade-distance=40px anim-fade-in-up">Slides from further</div>
+  <div class="--pulse-opacity=0.1 anim-pulse">Deeper pulse</div>
 </html>
 ```
 

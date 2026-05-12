@@ -812,10 +812,42 @@ function serializeAnimationValue(
   valueItem: string,
   index: number,
   items: Array<string>,
+  parentAnimName?: string,
 ): string | undefined {
   let mappedValueItem = valueItem;
   let varCat;
   let utilKey = parsed.utilKey;
+
+  if (!parentAnimName && items.length > 1) {
+    const nameItem = items.find((item) => {
+      const vItem =
+        ABBREVIATIONS_REVERSE[item] ||
+        ABBREVIATIONS_REVERSE[toCamelCase(item)] ||
+        item;
+      const mItem = ABBREVIATIONS[vItem]
+        ? toKebabCase(ABBREVIATIONS[vItem])
+        : vItem;
+
+      return (
+        !isKnownTimingFunction(mItem) &&
+        !isKnownAnimationDirection(mItem) &&
+        !isKnownAnimationFillMode(mItem) &&
+        !isKnownAnimationPlayState(mItem) &&
+        mItem.toLowerCase() !== 'infinite' &&
+        !isKnownNumberValue(vItem)
+      );
+    });
+
+    if (nameItem) {
+      const vItem =
+        ABBREVIATIONS_REVERSE[nameItem] ||
+        ABBREVIATIONS_REVERSE[toCamelCase(nameItem)] ||
+        nameItem;
+      parentAnimName = ABBREVIATIONS[vItem]
+        ? toKebabCase(ABBREVIATIONS[vItem])
+        : vItem;
+    }
+  }
 
   valueItem =
     ABBREVIATIONS_REVERSE[valueItem] ||
@@ -865,7 +897,13 @@ function serializeAnimationValue(
       if (defaultItems.length > 1) {
         return defaultItems
           .map((item, i) =>
-            serializeAnimationValue(parsed, item, i, defaultItems),
+            serializeAnimationValue(
+              parsed,
+              item,
+              i,
+              defaultItems,
+              mappedValueItem,
+            ),
           )
           .filter(Boolean)
           .join(' ');
@@ -879,7 +917,7 @@ function serializeAnimationValue(
     utilKey === ABBREVIATIONS_REVERSE.animationTimingFunction ||
     utilKey === ABBREVIATIONS_REVERSE.animationName
   ) {
-    return serializeValueAsVariable(
+    let result = serializeValueAsVariable(
       utilKey,
       escapeVariable(valueItem),
       mappedValueItem,
@@ -887,6 +925,15 @@ function serializeAnimationValue(
       undefined,
       varCat,
     );
+
+    if (
+      parentAnimName &&
+      utilKey === ABBREVIATIONS_REVERSE.animationTimingFunction
+    ) {
+      result = `var(--anim-${parentAnimName}-easing, ${result})`;
+    }
+
+    return result;
   }
 
   if (
@@ -898,13 +945,23 @@ function serializeAnimationValue(
     return removeBrackets(mappedValueItem);
   }
 
-  return serializeNumberValue({
+  let result = serializeNumberValue({
     ...parsed,
     utilKey,
     utilVal: mappedValueItem,
     validVarVal: escapeVariable(valueItem),
     varCat,
   });
+
+  if (parentAnimName) {
+    if (utilKey === ABBREVIATIONS_REVERSE.animationDuration) {
+      result = `var(--anim-${parentAnimName}-duration, ${result})`;
+    } else if (utilKey === ABBREVIATIONS_REVERSE.animationDelay) {
+      result = `var(--anim-${parentAnimName}-delay, ${result})`;
+    }
+  }
+
+  return result;
 }
 
 function serializeMultipleValues(

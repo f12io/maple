@@ -1,17 +1,7 @@
 /**
- * Maple Animations Library
- * Common keyframe animations with CSS variable support
- *
- * Include: <link rel="stylesheet" href="animations.css">
+ * Include: <link rel="stylesheet" href="keyframes.css">
  * Usage: <div class="anim-fade-in">Fades in</div>
  */
-
-/* ============================================
-   Animation Variables
-   ============================================ */
-
-
-
 /* ============================================
    Fade Animations
    ============================================ */

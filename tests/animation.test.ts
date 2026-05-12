@@ -4,35 +4,35 @@ import { convert } from './helpers/convert.helper';
 describe('Animation', () => {
   it('animation alias expansion', () => {
     expect(convert('anim-fade-in')).toBe(
-      `.anim-fade-in { animation: var(--animname-fade-in, var(--fade-in, fade-in)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease-out, var(--ease-out, ease-out)) forwards; }`,
+      `.anim-fade-in { animation: var(--animname-fade-in, var(--fade-in, fade-in)) var(--anim-fade-in-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-in-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards; }`,
     );
 
     expect(convert('anim-spin')).toBe(
-      `.anim-spin { animation: var(--animname-spin, var(--spin, spin)) var(--animdur-1000, var(--time-1000, 1000ms)) var(--animtf-linear, var(--linear, linear)) infinite; }`,
+      `.anim-spin { animation: var(--animname-spin, var(--spin, spin)) var(--anim-spin-duration, var(--animdur-1000, var(--time-1000, 1000ms))) var(--anim-spin-easing, var(--animtf-linear, var(--linear, linear))) infinite; }`,
     );
   });
 
   it('animation with name and duration', () => {
     expect(convert('anim-fade_300')).toBe(
-      `.anim-fade_300 { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)); }`,
+      `.anim-fade_300 { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))); }`,
     );
   });
 
   it('animation with name, duration and timing function', () => {
     expect(convert('anim-fade_300_ease')).toBe(
-      `.anim-fade_300_ease { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease, var(--ease, ease)); }`,
+      `.anim-fade_300_ease { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-easing, var(--animtf-ease, var(--ease, ease))); }`,
     );
   });
 
   it('animation with name, duration, timing function and delay', () => {
     expect(convert('anim-fade_300_ease_200')).toBe(
-      `.anim-fade_300_ease_200 { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease, var(--ease, ease)) var(--animdel-200, var(--time-200, 200ms)); }`,
+      `.anim-fade_300_ease_200 { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-easing, var(--animtf-ease, var(--ease, ease))) var(--anim-fade-delay, var(--animdel-200, var(--time-200, 200ms))); }`,
     );
   });
 
   it('animation with name, duration, timing function, delay and iteration count', () => {
     expect(convert('anim-fade_300_ease_200_infinite')).toBe(
-      `.anim-fade_300_ease_200_infinite { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease, var(--ease, ease)) var(--animdel-200, var(--time-200, 200ms)) infinite; }`,
+      `.anim-fade_300_ease_200_infinite { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-easing, var(--animtf-ease, var(--ease, ease))) var(--anim-fade-delay, var(--animdel-200, var(--time-200, 200ms))) infinite; }`,
     );
   });
 
@@ -40,31 +40,31 @@ describe('Animation', () => {
     expect(
       convert('anim-fade_300_ease_200_infinite_alternate_both_running'),
     ).toBe(
-      `.anim-fade_300_ease_200_infinite_alternate_both_running { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease, var(--ease, ease)) var(--animdel-200, var(--time-200, 200ms)) infinite alternate both running; }`,
+      `.anim-fade_300_ease_200_infinite_alternate_both_running { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-easing, var(--animtf-ease, var(--ease, ease))) var(--anim-fade-delay, var(--animdel-200, var(--time-200, 200ms))) infinite alternate both running; }`,
     );
   });
 
   it('animation with multiple animations', () => {
     expect(convert('anim-fade_300_ease,slide_200_linear')).toBe(
-      `.anim-fade_300_ease\\,slide_200_linear { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease, var(--ease, ease)), var(--animname-slide, var(--slide, slide)) var(--animdur-200, var(--time-200, 200ms)) var(--animtf-linear, var(--linear, linear)); }`,
+      `.anim-fade_300_ease\\,slide_200_linear { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-easing, var(--animtf-ease, var(--ease, ease))), var(--animname-slide, var(--slide, slide)) var(--anim-slide-duration, var(--animdur-200, var(--time-200, 200ms))) var(--anim-slide-easing, var(--animtf-linear, var(--linear, linear))); }`,
     );
   });
 
   it('animation with multiple animations and important', () => {
     expect(convert('!anim-fade_300_ease,slide_200_linear')).toBe(
-      `.\\!anim-fade_300_ease\\,slide_200_linear { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease, var(--ease, ease)), var(--animname-slide, var(--slide, slide)) var(--animdur-200, var(--time-200, 200ms)) var(--animtf-linear, var(--linear, linear)) !important; }`,
+      `.\\!anim-fade_300_ease\\,slide_200_linear { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-easing, var(--animtf-ease, var(--ease, ease))), var(--animname-slide, var(--slide, slide)) var(--anim-slide-duration, var(--animdur-200, var(--time-200, 200ms))) var(--anim-slide-easing, var(--animtf-linear, var(--linear, linear))) !important; }`,
     );
   });
 
   it('animation with number iteration count', () => {
     expect(convert('anim-fade_300_ease_0_3')).toBe(
-      `.anim-fade_300_ease_0_3 { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) var(--animtf-ease, var(--ease, ease)) 0ms 3; }`,
+      `.anim-fade_300_ease_0_3 { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-easing, var(--animtf-ease, var(--ease, ease))) var(--anim-fade-delay, 0ms) 3; }`,
     );
   });
 
   it('animation with custom timing function', () => {
     expect(convert('anim-fade_300_[cubic-bezier(0.4,0,0.2,1)]')).toBe(
-      `.anim-fade_300_\\[cubic-bezier\\(0\\.4\\,0\\,0\\.2\\,1\\)\\] { animation: var(--animname-fade, var(--fade, fade)) var(--animdur-300, var(--time-300, 300ms)) cubic-bezier(0.4,0,0.2,1); }`,
+      `.anim-fade_300_\\[cubic-bezier\\(0\\.4\\,0\\,0\\.2\\,1\\)\\] { animation: var(--animname-fade, var(--fade, fade)) var(--anim-fade-duration, var(--animdur-300, var(--time-300, 300ms))) cubic-bezier(0.4,0,0.2,1); }`,
     );
   });
 
