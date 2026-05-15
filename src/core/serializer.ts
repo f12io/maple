@@ -18,13 +18,10 @@ import {
 import {
   ABBREVIATIONS,
   ABBREVIATIONS_REVERSE,
-  ANIMATION_DEFAULTS,
   BACKDROP_FILTER_KEYS,
   CONTAINER_TYPES,
   CSS_VARIABLE_CATEGORY,
   FILTER_KEYS,
-  FLEX_H,
-  FLEX_V,
   FUNCTION_KEYS,
   PROP_UNIT_MAP,
   SELECTOR_REPLACEMENTS,
@@ -153,13 +150,6 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
     }),
     {},
   ),
-  // Flex layout shortcuts
-  fxrow: (p) => serializeFlexLayout(p, 'row', 'flex'),
-  fxcol: (p) => serializeFlexLayout(p, 'column', 'flex'),
-  ifxrow: (p) => serializeFlexLayout(p, 'row', 'inline-flex'),
-  ifxcol: (p) => serializeFlexLayout(p, 'column', 'inline-flex'),
-  fxrowself: (p) => serializeFlexSelf(p, 'row'),
-  fxcolself: (p) => serializeFlexSelf(p, 'column'),
 };
 
 export function applyModifier(parsed: ParsedClass): string | undefined {
@@ -884,32 +874,6 @@ function serializeAnimationValue(
       utilKey = ABBREVIATIONS_REVERSE.animationIterationCount;
     }
   } else {
-    if (
-      index === 0 &&
-      items.length === 1 &&
-      ANIMATION_DEFAULTS[mappedValueItem]
-    ) {
-      const defaultItems = split(
-        ANIMATION_DEFAULTS[mappedValueItem],
-        REF_CHAR_SPACE,
-      );
-
-      if (defaultItems.length > 1) {
-        return defaultItems
-          .map((item, i) =>
-            serializeAnimationValue(
-              parsed,
-              item,
-              i,
-              defaultItems,
-              mappedValueItem,
-            ),
-          )
-          .filter(Boolean)
-          .join(' ');
-      }
-    }
-
     utilKey = ABBREVIATIONS_REVERSE.animationName;
   }
 
@@ -1119,53 +1083,4 @@ function serializeBackgroundImageParts(
   }
 
   return `${functionName}(${serializedParams.join(', ')})${nonFunctionParams ? ` ${serializeValue(nonFunctionParams)}` : ''}`;
-}
-
-function serializeFlexLayout(
-  parsed: ParsedClass,
-  dir: 'row' | 'column',
-  display: 'flex' | 'inline-flex',
-): string | undefined {
-  const params = getFlexParams(parsed, dir);
-
-  if (!params) return;
-
-  return (
-    serializeProp('display', display, parsed.isImportant) +
-    serializeProp('flex-direction', dir, parsed.isImportant) +
-    serializeProp('justify-content', params[0], parsed.isImportant) +
-    serializeProp('align-items', params[1], parsed.isImportant)
-  );
-}
-
-function serializeFlexSelf(
-  parsed: ParsedClass,
-  dir: 'row' | 'column',
-): string | undefined {
-  const params = getFlexParams(parsed, dir);
-
-  if (!params) return;
-
-  return (
-    serializeProp('justify-self', params[0], parsed.isImportant) +
-    serializeProp('align-self', params[1], parsed.isImportant)
-  );
-}
-
-function getFlexParams(
-  parsed: ParsedClass,
-  dir: 'row' | 'column',
-): Array<string> | undefined {
-  const { utilVal } = parsed;
-
-  if (utilVal.length !== 2) return;
-
-  const v = FLEX_V[utilVal[0]];
-  const h = FLEX_H[utilVal[1]];
-
-  if (!v || !h) return;
-
-  // For column: vertical = justify-self, horizontal = align-self
-  // For row: vertical = align-self, horizontal = justify-self
-  return dir === 'column' ? [v, h] : [h, v];
 }

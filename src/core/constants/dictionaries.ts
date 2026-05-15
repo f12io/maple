@@ -13,47 +13,94 @@ Object.entries(PRECALCULATED_PROP_ABBREVIATIONS).forEach(([alias, prop]) => {
   ABBREVIATIONS_REVERSE[prop] = alias;
 });
 
-export const SHORTCUTS: Record<string, string> = {
+// Flex position value mappings (compact)
+export const FLEX_POSITION: Record<string, string> = {
+  s: 'flex-start',
+  c: 'center',
+  e: 'flex-end',
+  h: 'stretch',
+  w: 'space-between',
+};
+
+export const BUILTIN_ALIASES: Record<string, string> = {
   // position
-  abs: 'position: absolute',
-  fixed: 'position: fixed',
-  rel: 'position: relative',
-  sticky: 'position: sticky',
-  static: 'position: static',
+  abs: 'pos=absolute',
+  fixed: 'pos=fixed',
+  rel: 'pos=relative',
+  sticky: 'pos=sticky',
+  static: 'pos=static',
 
   // display
-  iblock: 'display: inline-block',
-  ifx: 'display: inline-flex',
-  fx: 'display: flex',
-  gr: 'display: grid',
-  block: 'display: block',
-  none: 'display: none',
-  table: 'display: table',
-  inline: 'display: inline',
+  iblock: 'd=inline-block',
+  ifx: 'd=inline-flex',
+  fx: 'd=flex',
+  gr: 'd=grid',
+  block: 'd=block',
+  none: 'd=none',
+  table: 'd=table',
+  inline: 'd=inline',
 
   // visibility
-  hidden: 'visibility: hidden',
-  visible: 'visibility: visible',
+  hidden: 'v=hidden',
+  visible: 'v=visible',
 
   // border
-  br: 'border-width: 1px; border-style: solid',
-  brt: 'border-top-width: 1px; border-top-style: solid',
-  brr: 'border-right-width: 1px; border-right-style: solid',
-  brb: 'border-bottom-width: 1px; border-bottom-style: solid',
-  brl: 'border-left-width: 1px; border-left-style: solid',
-  brx: 'border-inline-width: 1px; border-inline-style: solid',
-  brxs: 'border-inline-start-width: 1px; border-inline-start-style: solid',
-  brxe: 'border-inline-end-width: 1px; border-inline-end-style: solid',
-  bry: 'border-block-width: 1px; border-block-style: solid',
-  brys: 'border-block-start-width: 1px; border-block-start-style: solid',
-  brye: 'border-block-end-width: 1px; border-block-end-style: solid',
+  br: 'brw-px;brst=solid',
+  brt: 'brtw-px;brtst=solid',
+  brr: 'brrw-px;brrst=solid',
+  brb: 'brbw-px;brbst=solid',
+  brl: 'brlw-px;brlst=solid',
+  brx: 'borderInlineWidth-px;borderInlineStyle=solid',
+  brxs: 'borderInlineStartWidth-px;borderInlineStartStyle=solid',
+  brxe: 'borderInlineEndWidth-px;borderInlineEndStyle=solid',
+  bry: 'borderBlockWidth-px;borderBlockStyle=solid',
+  brys: 'borderBlockStartWidth-px;borderBlockStartStyle=solid',
+  brye: 'borderBlockEndWidth-px;borderBlockEndStyle=solid',
 
   // container
-  cnt: 'container-type: inline-size',
+  cnt: 'cnt=inline-size',
 
   // font smoothing
-  antialiased:
-    '-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;',
+  antialiased: 'webkitFontSmoothing=antialiased;mozOsxFontSmoothing=grayscale',
+
+  // animation
+  spin: 'anim-spin_1000_linear_infinite',
+  ping: 'anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite',
+  pulse: 'anim-pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite',
+  bounce: 'anim-bounce_1000_infinite',
+  shake: 'anim-shake_300_ease-in-out',
+  wiggle: 'anim-wiggle_300_ease-in-out',
+
+  ...[
+    'fade-in',
+    'fade-out',
+    'fade-in-up',
+    'fade-in-down',
+    'fade-in-left',
+    'fade-in-right',
+    'fade-out-up',
+    'fade-out-down',
+    'fade-out-left',
+    'fade-out-right',
+    'scale-in',
+    'scale-out',
+    'slide-in-up',
+    'slide-in-down',
+    'slide-in-left',
+    'slide-in-right',
+    'slide-out-up',
+    'slide-out-down',
+    'slide-out-left',
+    'slide-out-right',
+  ].reduce<Record<string, string>>(
+    (acc, key) => ({
+      ...acc,
+      [key]: `anim-${key}_300_ease-out_forwards`,
+    }),
+    {},
+  ),
+
+  ...createFlexAliases(),
 };
 
 export const SELECTOR_REPLACEMENTS: Record<string, string> = {
@@ -69,35 +116,6 @@ export const CONTAINER_TYPES = [
   'scroll-state',
   'normal',
 ];
-
-export const ANIMATION_DEFAULTS: Record<string, string> = {
-  'fade-in': 'fade-in_300_ease-out_forwards',
-  'fade-out': 'fade-out_300_ease-out_forwards',
-  'fade-in-up': 'fade-in-up_300_ease-out_forwards',
-  'fade-in-down': 'fade-in-down_300_ease-out_forwards',
-  'fade-in-left': 'fade-in-left_300_ease-out_forwards',
-  'fade-in-right': 'fade-in-right_300_ease-out_forwards',
-  'fade-out-up': 'fade-out-up_300_ease-out_forwards',
-  'fade-out-down': 'fade-out-down_300_ease-out_forwards',
-  'fade-out-left': 'fade-out-left_300_ease-out_forwards',
-  'fade-out-right': 'fade-out-right_300_ease-out_forwards',
-  'scale-in': 'scale-in_300_ease-out_forwards',
-  'scale-out': 'scale-out_300_ease-out_forwards',
-  'slide-in-up': 'slide-in-up_300_ease-out_forwards',
-  'slide-in-down': 'slide-in-down_300_ease-out_forwards',
-  'slide-in-left': 'slide-in-left_300_ease-out_forwards',
-  'slide-in-right': 'slide-in-right_300_ease-out_forwards',
-  'slide-out-up': 'slide-out-up_300_ease-out_forwards',
-  'slide-out-down': 'slide-out-down_300_ease-out_forwards',
-  'slide-out-left': 'slide-out-left_300_ease-out_forwards',
-  'slide-out-right': 'slide-out-right_300_ease-out_forwards',
-  spin: 'spin_1000_linear_infinite',
-  ping: 'ping_1000_cubic-bezier(0,0,0.2,1)_infinite',
-  pulse: 'pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite',
-  bounce: 'bounce_1000_infinite',
-  shake: 'shake_300_ease-in-out',
-  wiggle: 'wiggle_300_ease-in-out',
-};
 
 export const CSS_VARIABLE_CATEGORY: Record<string, string> = {
   [DEFAULT_SPACE_UNIT]: 'space',
@@ -241,22 +259,6 @@ export const VENDOR_PREFIXES: Record<string, Array<string> | undefined> = {
   'text-size-adjust': [webkit],
 };
 
-// Flex position value mappings (compact)
-export const FLEX_V: Record<string, string> = {
-  s: 'flex-start',
-  c: 'center',
-  e: 'flex-end',
-  h: 'stretch',
-  w: 'space-between',
-};
-export const FLEX_H: Record<string, string> = {
-  s: 'flex-start',
-  c: 'center',
-  e: 'flex-end',
-  h: 'stretch',
-  w: 'space-between',
-};
-
 // Properties that should be effectively 'demoted' in priority
 // (Logical properties that overlap with physical peers)
 export const DEMOTED_PROPERTIES = new Set([
@@ -285,3 +287,24 @@ export const PROMOTED_PROPERTIES = new Set([
   'border-style',
   'border-color',
 ]);
+
+function createFlexAliases(): Record<string, string> {
+  const aliases: Record<string, string> = {};
+
+  for (const vKey of Object.keys(FLEX_POSITION)) {
+    for (const hKey of Object.keys(FLEX_POSITION)) {
+      const key = vKey + hKey;
+      const v = FLEX_POSITION[vKey];
+      const h = FLEX_POSITION[hKey];
+
+      aliases[`fxrow-${key}`] = `d=flex;fxdir=row;jc=${h};ai=${v}`;
+      aliases[`fxcol-${key}`] = `d=flex;fxdir=column;jc=${v};ai=${h}`;
+      aliases[`ifxrow-${key}`] = `d=inline-flex;fxdir=row;jc=${h};ai=${v}`;
+      aliases[`ifxcol-${key}`] = `d=inline-flex;fxdir=column;jc=${v};ai=${h}`;
+      aliases[`fxrowself-${key}`] = `js=${h};as=${v}`;
+      aliases[`fxcolself-${key}`] = `js=${v};as=${h}`;
+    }
+  }
+
+  return aliases;
+}

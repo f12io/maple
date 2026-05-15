@@ -1,4 +1,5 @@
 import { buildRule } from '../../src/core/builder';
+import { expandAliasClass, isAliasDefinition } from '../../src/core/aliases';
 import { OPTIONS } from '../../src/core/constants/config';
 import { insert } from '../../src/core/stylesheet';
 
@@ -6,6 +7,17 @@ export function convert(
   srcClass: string,
   isRoot?: boolean,
 ): string | undefined {
+  if (isAliasDefinition(srcClass)) return;
+
+  const expanded = expandAliasClass(srcClass);
+
+  if (expanded) {
+    return expanded
+      .map((item) => processRule(buildRule(item, isRoot, srcClass)))
+      .filter(Boolean)
+      .join(' ');
+  }
+
   return processRule(buildRule(srcClass, isRoot));
 }
 

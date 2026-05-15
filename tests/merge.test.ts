@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { collectAliases } from '../src/core/aliases';
 import { processClassList } from '../src/core/generator';
 
 function testMerge(className: string, expected: string) {
@@ -153,6 +154,11 @@ describe('Merge', () => {
 
     it('visible vs hidden (both visibility)', () => {
       testMerge('visible hidden', 'hidden');
+    });
+
+    it('lets later utilities override individual alias members', () => {
+      testMerge('fxrow-cc jc=space-between', 'fxrow-cc jc=space-between');
+      testMerge('jc=space-between fxrow-cc', 'fxrow-cc');
     });
   });
 
@@ -330,6 +336,65 @@ describe('Merge', () => {
 
     it('mask (shorthand) vs mask-image (conflict)', () => {
       testMerge('maskImage-url mask-none', 'mask-none');
+    });
+  });
+
+  describe('Aliases', () => {
+    it('uses expanded utilities for merge conflicts', () => {
+      collectAliases(['--alias-space=p-4']);
+
+      testMerge('@space p-8', 'p-8');
+      testMerge('p-8 @space', '@space');
+
+      collectAliases([]);
+    });
+
+    it('keeps aliases when at least one expanded utility survives merging', () => {
+      collectAliases(['--alias-card=p-4;bgc-white']);
+
+      testMerge('@card p-8', '@card p-8');
+      testMerge('p-8 @card', '@card');
+
+      collectAliases([]);
+    });
+
+    it('does not insert overridden alias utilities after a cached later utility', () => {
+      collectAliases(['--alias-runtime-card=p-4;bgc-white']);
+
+      const cached = document.createElement('div');
+      cached.className = 'p-8';
+      document.body.append(cached);
+      processClassList(cached);
+
+      const el = document.createElement('div');
+      el.className = '@runtime-card p-8';
+      document.body.append(el);
+      processClassList(el);
+
+      expect(el.className).toBe('@runtime-card p-8');
+      expect(getComputedStyle(el).paddingTop).toBe('32px');
+
+      cached.remove();
+      el.remove();
+      collectAliases([]);
+    });
+
+    it('does not cache skipped alias members as generated rules', () => {
+      const overridden = document.createElement('div');
+      overridden.className = 'fxrow-cc jc=space-between';
+      document.body.append(overridden);
+      processClassList(overridden);
+
+      const plain = document.createElement('div');
+      plain.className = 'fxrow-cc';
+      document.body.append(plain);
+      processClassList(plain);
+
+      expect(getComputedStyle(overridden).justifyContent).toBe('space-between');
+      expect(getComputedStyle(plain).justifyContent).toBe('center');
+
+      overridden.remove();
+      plain.remove();
     });
   });
 });

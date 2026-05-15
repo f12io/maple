@@ -90,6 +90,7 @@ export interface ParsedClass {
 
 export interface RuleData {
   content: string;
+  isAlias?: boolean;
   overrideRule?: RuleData;
   parsedMediaQuery: ParsedMediaQuery | undefined;
   parsed: ParsedClass;
