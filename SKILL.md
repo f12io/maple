@@ -1,6 +1,6 @@
 ---
 name: Maple CSS Engine
-description: A variable-first, framework-agnostic runtime CSS engine for building responsive interfaces.
+description: A variable-first, stack-agnostic runtime CSS engine for building responsive interfaces.
 license: ROOT
 metadata:
   author: f12.io
@@ -12,7 +12,7 @@ metadata:
 This guide provides instructions on how to write CSS using the Maple engine. Maple is a runtime CSS engine that generates styles on-demand based on class names.
 
 - It relies heavily on CSS variables, fallback chains, and runtime composition.
-- It is a framework-agnostic engine, meaning it can be used with any frontend framework (React, Vue, Angular, Next.js, Remix, Nuxt etc.) or backend-driven applications (WordPress, PHP, Django, Rails etc.).
+- It is a stack-agnostic engine, meaning it can be used with any frontend framework (React, Vue, Angular, Next.js, Remix, Nuxt etc.) or backend-driven applications (WordPress, PHP, Django, Rails etc.).
 - It does not require any build step or configuration.
 
 ## Quick Start
@@ -136,7 +136,7 @@ This fallback chain and color system allows you to create colors without definin
 </div>
 ```
 
-You can generate an infinite range of tones from any base color by appending a numeric suffix `-{number}` to the color name. For example, `c-primary-200` will create a lighter tone of `c-primary`. Any number is valid like `c-primary-42` or `c-primary-999`. The calculation happen natively in the browser and is relative to the 500 as mid-tone:
+You can generate a wide range of tones from any base color by appending a numeric suffix `-{number}` to the color name. For example, `c-primary-200` will create a lighter tone of `c-primary`. Any number is valid like `c-primary-42` or `c-primary-999`. The calculation happen natively in the browser and is relative to the 500 as mid-tone:
 
 - **Tones < 500**: Move the color toward white (lighter).
 - **Tones > 500**: Move the color toward black (darker).
@@ -305,111 +305,146 @@ Following units are supported for `cover` shorthand:
 Any property that is not a color or number is considered as `custom`. They all follow the same resolution logic as follows:
 
 ```css
+/* Font Family */
 .ff-main {
   font-family: var(--ff-main, var(--main, main));
 }
 
-.brst-dashed {
-  border-style: var(--brst-dashed, var(--dashed, dashed));
-}
-
-.cols-main-layout {
-  grid-template-columns: var(
-    --cols-main-layout,
-    var(--space-main-layout, var(--main-layout, main-layout))
-  );
+/* Opacity */
+.o-half {
+  opacity: var(--o-half, var(--half, half));
 }
 ```
 
-#### 5. Shorthand Resolution
+#### 5. Alias Resolution
 
-Some properties can be used without defining values. Following shorthands are supported:
+Aliases expand to one or more Maple utility classes before normal parsing and merge conflict checks run.
 
-```css
-/* position */
-.abs {
-  position: absolute;
-}
-.fixed {
-  position: fixed;
-}
-.rel {
-  position: relative;
-}
-.sticky {
-  position: sticky;
-}
-.static {
-  position: static;
-}
+Maple includes built-in aliases for common utilities. Built-in aliases can be used directly, or with `@`:
 
-/* display */
-.iblock {
-  display: inline-block;
-}
-.ifx {
-  display: inline-flex;
-}
-.fx {
-  display: flex;
-}
-.gr {
-  display: grid;
-}
-.block {
-  display: block;
-}
-.none {
-  display: none;
-}
-.table {
-  display: table;
-}
-.inline {
-  display: inline;
-}
-
-/* visibility */
-.hidden {
-  visibility: hidden;
-}
-.visible {
-  visibility: visible;
-}
-
-/* border */
-.br {
-  border-width: 1px;
-  border-style: solid;
-}
-.brt {
-  border-top-width: 1px;
-  border-top-style: solid;
-}
-.brr {
-  border-right-width: 1px;
-  border-right-style: solid;
-}
-.brb {
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-}
-.brl {
-  border-left-width: 1px;
-  border-left-style: solid;
-}
-
-/* container */
-.cnt {
-  container-type: inline-size;
-}
-
-/* font smoothing */
-.antialiased {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+```html
+<div class="fx"></div>
+<div class="@fx"></div>
 ```
+
+Both examples expand to `d-flex`, while keeping the original class selector in the generated CSS.
+
+You can define custom aliases on the root `<html>` element using `--alias-{name}=...`. Custom aliases must be used with `@`.
+
+```html
+<html class="--alias-card=p-4;bgc-white;br-2">
+  <article class="@card"></article>
+</html>
+```
+
+Use `;` to separate multiple classes inside an alias.
+
+```html
+<html
+  class="--alias-loader=anim-fade-in_300_ease-out,spin_1000_linear_infinite;size-6"
+>
+  <div class="@loader"></div>
+</html>
+```
+
+Alias definitions are collected only from `<html>`. Alias definitions on other elements are ignored. If the same custom alias is defined more than once on `<html>`, the later definition wins.
+
+Aliases are not reactive. If you change an alias definition on `<html>` after elements using that alias have already been processed, Maple does not automatically revisit those existing alias usages. Treat aliases as root-level configuration for reusable class recipes. For live changes, use CSS variables instead.
+
+Alias definitions must be plain root classes. If you combine `--alias-*` with a media query or selector, Maple treats it like a normal CSS custom property utility:
+
+```html
+<!-- Invalid alias usage. They will resolve to "--alias-card" css variable. -->
+<div class="md:--alias-card=p-4"></div>
+<div class="&:hover:--alias-card=p-4"></div>
+```
+
+User-defined aliases do not hijack normal utility names. If you define `--alias-fx=d-grid`, then `@fx` uses your alias, while bare `fx` still uses Maple's built-in flex alias.
+
+Alias usage works with media queries and selectors:
+
+```html
+<html class="--alias-card=p-4;bgc-white">
+  <article class="md:@card"></article>
+  <article class="@md:@card"></article>
+  <article class="&:hover:@card"></article>
+</html>
+```
+
+The `@` before a media query belongs to Maple's media-query syntax. The `@` before an alias name belongs to alias usage. For example, `@md:@card` means "apply the `@card` alias at the viewport `md` breakpoint."
+
+Because aliases expand before merge checks, later classes override earlier alias members as expected:
+
+```html
+<html class="--alias-card=p-4;bgc-white">
+  <article class="@card p-8"></article>
+  <!-- before merge: p-4 bgc-white p-8 -->
+  <!-- after merge: @card p-8 -->
+</html>
+```
+
+Maple keeps the alias class when at least one expanded utility inside the alias still applies. In this example, `p-8` overrides the alias's `p-4`, but the alias is kept because its `bgc-white` utility still applies.
+
+Alias-generated selectors are intentionally low-specificity. This lets a direct utility on the same element override an individual alias member even if the alias rule is generated later. For example, `fxrow-cc jc=space-between` keeps both classes, but `jc=space-between` wins for `justify-content`.
+
+Built-in aliases include:
+
+| Alias             | Expands To                                                      |
+| ----------------- | --------------------------------------------------------------- |
+| `abs`             | `pos-absolute`                                                  |
+| `fixed`           | `pos-fixed`                                                     |
+| `rel`             | `pos-relative`                                                  |
+| `sticky`          | `pos-sticky`                                                    |
+| `static`          | `pos-static`                                                    |
+| `iblock`          | `d-inline-block`                                                |
+| `ifx`             | `d-inline-flex`                                                 |
+| `fx`              | `d-flex`                                                        |
+| `gr`              | `d-grid`                                                        |
+| `block`           | `d-block`                                                       |
+| `none`            | `d-none`                                                        |
+| `table`           | `d-table`                                                       |
+| `inline`          | `d-inline`                                                      |
+| `hidden`          | `v-hidden`                                                      |
+| `visible`         | `v-visible`                                                     |
+| `br`              | `brw-px;brst-solid`                                             |
+| `brt`             | `brtw-px;brtst-solid`                                           |
+| `brr`             | `brrw-px;brrst-solid`                                           |
+| `brb`             | `brbw-px;brbst-solid`                                           |
+| `brl`             | `brlw-px;brlst-solid`                                           |
+| `brx`             | `borderInlineWidth-px;borderInlineStyle-solid`                  |
+| `brxs`            | `borderInlineStartWidth-px;borderInlineStartStyle-solid`        |
+| `brxe`            | `borderInlineEndWidth-px;borderInlineEndStyle-solid`            |
+| `bry`             | `borderBlockWidth-px;borderBlockStyle-solid`                    |
+| `brys`            | `borderBlockStartWidth-px;borderBlockStartStyle-solid`          |
+| `brye`            | `borderBlockEndWidth-px;borderBlockEndStyle-solid`              |
+| `cnt`             | `cnt=inline-size`                                               |
+| `antialiased`     | `webkitFontSmoothing=antialiased;mozOsxFontSmoothing=grayscale` |
+| `fade-in`         | `fade-in_300_ease-out_forwards`                                 |
+| `fade-out`        | `fade-out_300_ease-out_forwards`                                |
+| `fade-in-up`      | `fade-in-up_300_ease-out_forwards`                              |
+| `fade-in-down`    | `fade-in-down_300_ease-out_forwards`                            |
+| `fade-in-left`    | `fade-in-left_300_ease-out_forwards`                            |
+| `fade-in-right`   | `fade-in-right_300_ease-out_forwards`                           |
+| `fade-out-up`     | `fade-out-up_300_ease-out_forwards`                             |
+| `fade-out-down`   | `fade-out-down_300_ease-out_forwards`                           |
+| `fade-out-left`   | `fade-out-left_300_ease-out_forwards`                           |
+| `fade-out-right`  | `fade-out-right_300_ease-out_forwards`                          |
+| `scale-in`        | `scale-in_300_ease-out_forwards`                                |
+| `scale-out`       | `scale-out_300_ease-out_forwards`                               |
+| `slide-in-up`     | `slide-in-up_300_ease-out_forwards`                             |
+| `slide-in-down`   | `slide-in-down_300_ease-out_forwards`                           |
+| `slide-in-left`   | `slide-in-left_300_ease-out_forwards`                           |
+| `slide-in-right`  | `slide-in-right_300_ease-out_forwards`                          |
+| `slide-out-up`    | `slide-out-up_300_ease-out_forwards`                            |
+| `slide-out-down`  | `slide-out-down_300_ease-out_forwards`                          |
+| `slide-out-left`  | `slide-out-left_300_ease-out_forwards`                          |
+| `slide-out-right` | `slide-out-right_300_ease-out_forwards`                         |
+| `spin`            | `spin_1000_linear_infinite`                                     |
+| `ping`            | `ping_1000_cubic-bezier(0,0,0.2,1)_infinite`                    |
+| `pulse`           | `pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite`                 |
+| `bounce`          | `bounce_1000_infinite`                                          |
+| `shake`           | `shake_300_ease-in-out`                                         |
+| `wiggle`          | `wiggle_300_ease-in-out`                                        |
 
 > [!TIP]
 > Adding `antialiased` to the `<body>` element is a good practice for sharper, more consistent font rendering across browsers.
@@ -479,7 +514,7 @@ The key difference:
 
 <div class="@supports=[backdrop-filter:blur(1px)]:bdblur-4">
   <!-- Brackets protect the colon in the @supports query -->
-  <!-- @supports (backdrop-filter:blur(1px)) { .selector { backdrop-filter: blur(8px); } } -->
+  <!-- @supports (backdrop-filter:blur(1px)) { .selector { backdrop-filter: blur(16px); } } -->
 </div>
 ```
 
@@ -557,7 +592,7 @@ slider.addEventListener('change', (e) => {
 
 **Format:** Any css selector is valid before utility classes. However Maple introduces 3 delimiters to allow the elements manage their own styles.
 
-- `^` for parent
+- `^` for parent-state
 - `&` for self
 - `/` for child
 
@@ -660,7 +695,7 @@ Maple is a container query first CSS engine. This means that by default, all med
 - `{operator}`: Optional. `=` for equality, `!=` for inequality.
 - `{value}`: Optional. The value for the query.
 
-#### 1. Container Query Breakpoints
+#### 1. Container Breakpoints
 
 Use predefined breakpoints directly.
 
@@ -712,7 +747,7 @@ In the application, you can define as many containers as you want, even with dif
 </body>
 ```
 
-#### 2. Media Query Breakpoints
+#### 2. Viewport Breakpoints
 
 The same predefined breakpoints used for container queries are also available for viewport media queries. To target the viewport you need to add `@` prefix to breakpoint.
 
@@ -911,11 +946,11 @@ You can use `@supports` to check for CSS feature support. These are viewport-onl
 
 ```html
 <div class="@supports:bdblur-4 bgc-white/30">
-  <!-- Apply backdrop blur only if browser supports it -->
+  <!-- Apply backdrop blur if browser supports it -->
 </div>
 
 <div class="@supports:rows=subgrid">
-  <!-- Use subgrid only if browser supports it -->
+  <!-- Use subgrid if browser supports it -->
 </div>
 ```
 
@@ -923,15 +958,15 @@ You can use `@supports` to check for CSS feature support. These are viewport-onl
 
 ```html
 <div class="@supports=[backdrop-filter:blur(1px)]:bdblur-4 bgc-black/50">
-  <!-- Apply backdrop blur with fallback to semi-transparent background -->
+  <!-- Apply backdrop blur with fallback if browser supports it -->
 </div>
 
 <div class="@supports=[container-type:inline-size]:cnt">
-  <!-- Enable container queries only if browser supports them -->
+  <!-- Enable container queries if browser supports them -->
 </div>
 
 <div class="@supports=[selector(:has(*))]:^.card:has(.error):bgc-red">
-  <!-- Use :has() selector only if browser supports it -->
+  <!-- Use :has() selector if browser supports it -->
 </div>
 ```
 
@@ -1329,13 +1364,13 @@ Apply filter effects to the area behind an element (glassmorphism).
   <!-- Frosted glass effect -->
 </div>
 
-<div class="bdblur-6 bdf-saturate-1.5">
+<div class="bdblur-6 bdsaturate-1.5">
   <!-- Blur and enhanced saturation -->
 </div>
 ```
 
 > [!TIP]
-> All filter functions (`blur`, `brightness`, `contrast`, `saturate`, `grayscale`, `sepia`, `invert`, `hue`) work with the `bdf-` prefix for backdrop filters.
+> All filter functions (`blur`, `brightness`, `contrast`, `saturate`, `grayscale`, `sepia`, `invert`, `hue`) work with the `bd` prefix for backdrop filters.
 
 ### 6. Gradients
 
@@ -1536,7 +1571,7 @@ Smart grid utilities for responsive layouts.
 ```
 
 > [!TIP]
-> Maple's slash syntax for columns is intuitive and smart: `cols-1/2/1` creates `1fr 2fr 1fr`, while standalone fractions like `cols-1/4` become `25%`. Mix them freely—`cols-1/2_fr_auto` combines a 50% column, a 1fr column, and an auto column in one class.
+> Maple's slash syntax is context-aware: standalone slashes create fractional columns (`cols-1/2` → `1fr 2fr`), while slashes separated by underscores resolve to percentages (`cols-1/2_1/4` → `50% 25%`).
 
 ### 9. CSS Variables
 
@@ -1616,17 +1651,17 @@ For convenience, include `keyframes.css` when you want to use Maple's built-in a
 #### Animation Utilities
 
 ```html
-<!-- Preset shorthand: expands to fade-in_300_ease-out_forwards -->
-<div class="anim-fade-in">Fades in over 300ms</div>
+<!-- Built-in alias: expands to anim-fade-in_300_ease-out_forwards -->
+<div class="fade-in">Fades in over 300ms</div>
 
-<!-- Preset shorthand: expands to spin_1000_linear_infinite -->
-<div class="anim-spin">⟳</div>
+<!-- Built-in alias: expands to anim-spin_1000_linear_infinite -->
+<div class="spin">⟳</div>
 
-<!-- Explicit shorthand: name, duration, timing function, delay, fill mode -->
+<!-- Custom animation with name, duration, timing function, delay, fill mode -->
 <div class="anim-fade-in-up_500_ease-out_200_both">Custom animation</div>
 
 <!-- Hover-triggered animation -->
-<div class="&:hover:anim-shake">Shakes on hover</div>
+<div class="&:hover:shake">Shakes on hover</div>
 ```
 
 #### Animation Shorthand Parsing
@@ -1683,22 +1718,30 @@ This means you can customize preset defaults with variables, or override individ
 ```html
 <!-- Customize animation-specific defaults -->
 <html class="--anim-fade-in-duration=500ms --anim-spin-duration=2s">
-  <div class="anim-fade-in">Slow fade</div>
+  <div class="fade-in">Slow fade</div>
 
   <!-- Override one property on a specific element -->
-  <div class="anim-fade-in animdur-200">Fast fade just for this element</div>
+  <div class="fade-in animdur-200">Fast fade just for this element</div>
 
   <!-- Customize keyframe behavior exposed by keyframes.css -->
-  <div class="--fade-distance=40px anim-fade-in-up">Slides from further</div>
-  <div class="--pulse-opacity=0.1 anim-pulse">Deeper pulse</div>
+  <div class="--fade-distance=40px fade-in-up">Slides from further</div>
+  <div class="--pulse-opacity=0.1 pulse">Deeper pulse</div>
+</html>
+```
+
+You can also define custom animation aliases on `<html>`:
+
+```html
+<html class="--alias-enter=anim-fade-in-up_500_ease-out_both">
+  <div class="@enter">Custom enter animation</div>
 </html>
 ```
 
 #### Supported Animations
 
-These built-in names are recognized by `anim-*` as presets when used by themselves, such as `anim-fade-in`. Each preset expands to a complete animation shorthand.
+These built-in animation aliases can be used directly, such as `anim-fade-in`, or with `@`, such as `@anim-fade-in`. Each alias expands to a complete animation shorthand.
 
-Maple does not provide a way to define custom preset expansions. Only the presets listed below expand automatically. For custom keyframes, include the animation properties you need directly in the class, such as duration, timing function, delay, iteration count, direction, fill mode, or play state.
+For custom keyframes, either define a custom alias on `<html>` or include the animation properties directly in the class, such as duration, timing function, delay, iteration count, direction, fill mode, or play state.
 
 | Animation         | Description                 | Variables                          |
 | ----------------- | --------------------------- | ---------------------------------- |
@@ -1729,7 +1772,7 @@ Maple does not provide a way to define custom preset expansions. Only the preset
 | `shake`           | Horizontal shake            | `--shake-distance` (default: 10px) |
 | `wiggle`          | Rotational wiggle           | `--wiggle-angle` (default: 3deg)   |
 
-| Preset            | Expanded Shorthand                              |
+| Alias             | Expands To.                                     |
 | ----------------- | ----------------------------------------------- |
 | `fade-in`         | `fade-in_300_ease-out_forwards`                 |
 | `fade-out`        | `fade-out_300_ease-out_forwards`                |
@@ -1764,24 +1807,22 @@ Maple provides compact flex layout shortcuts using 2-letter position codes.
 
 #### Position Codes
 
-| Letter | Vertical          | Horizontal        |
-| ------ | ----------------- | ----------------- |
-| `t`    | top (flex-start)  | -                 |
-| `c`    | center            | center            |
-| `b`    | bottom (flex-end) | -                 |
-| `s`    | stretch           | -                 |
-| `l`    | -                 | left (flex-start) |
-| `r`    | -                 | right (flex-end)  |
-| `w`    | space-between     | space-between     |
+| Letter | Value         |
+| ------ | ------------- |
+| `s`    | flex-start    |
+| `c`    | center        |
+| `e`    | flex-end      |
+| `h`    | stretch       |
+| `w`    | space-between |
 
 #### Container Shortcuts
 
 | Shortcut      | Description        | Example                      |
 | ------------- | ------------------ | ---------------------------- |
 | `fxrow-{vh}`  | flex row           | `fxrow-cc` (center-center)   |
-| `fxcol-{vh}`  | flex column        | `fxcol-ss` (top-left)        |
+| `fxcol-{vh}`  | flex column        | `fxcol-ss` (start-start)     |
 | `ifxrow-{vh}` | inline-flex row    | `ifxrow-cw` (center-between) |
-| `ifxcol-{vh}` | inline-flex column | `ifxcol-ee` (bottom-right)   |
+| `ifxcol-{vh}` | inline-flex column | `ifxcol-ee` (end-end)        |
 
 #### Self Shortcuts
 
@@ -1849,7 +1890,7 @@ Maple's power comes from combining utilities for complex effects.
   class="
   bgc-white/10
   bdblur-4
-  bdf-saturate-1.2
+  bdsaturate-1.2
   br brc-white/20
   rad-16
   p-6
@@ -2109,10 +2150,10 @@ This creates truly portable components that adapt to their context.
 
 ### 4. Bound Runtime Values
 
-Maple generates styles on-demand, but unbounded runtime values can cause CSSOM growth:
+Maple generates styles on-demand, but dynamic runtime values can cause CSSOM growth:
 
 ```html
-<!-- ⚠️ Risky: Unbounded user input -->
+<!-- ⚠️ Risky: Dynamic user input -->
 <div class="w=${userInput}px"></div>
 
 <!-- ✅ Safe: Constrained to design tokens -->
@@ -2123,7 +2164,7 @@ Maple generates styles on-demand, but unbounded runtime values can cause CSSOM g
 ```
 
 > [!TIP]
-> If you cannot avoid unbounded values (e.g., scroll position, mouse coordinates), use **Dynamic Classes** by prefixing them with `$$`. This prevents CSSOM pollution by writing styles to an ephemeral layer. See [Dynamic Values](#9-dynamic-values).
+> If you cannot avoid dynamic values (e.g., scroll position, mouse coordinates), use **Dynamic Classes** by prefixing them with `$$`. This prevents CSSOM pollution by writing styles to an ephemeral layer. See [Dynamic Values](#9-dynamic-values).
 
 ### 5. Use Selectors Responsibly
 
