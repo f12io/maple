@@ -2,19 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { collectAliases } from '../src/core/aliases';
 import { ALIAS_CLASS_CACHE, CLASS_CACHE } from '../src/core/constants/caches';
 import { processClassList } from '../src/core/generator';
+import { mediaRule, rule, rules } from './helpers/alias.helper';
 import { convert } from './helpers/convert.helper';
-
-function rule(selector: string, content: string) {
-  return `:where(${selector}) { ${content} }`;
-}
-
-function rules(selector: string, contents: Array<string>) {
-  return contents.map((content) => rule(selector, content)).join(' ');
-}
-
-function mediaRule(media: string, selector: string, content: string) {
-  return `${media} { ${rule(selector, content)} }`;
-}
 
 describe('User Defined Aliases', () => {
   it('collects user aliases from root definitions', () => {

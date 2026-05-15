@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { rule } from './helpers/alias.helper';
 import { convert } from './helpers/convert.helper';
-
-function rule(selector: string, content: string) {
-  return `:where(${selector}) { ${content} }`;
-}
 
 describe('Animation', () => {
   it('animation alias expansion', () => {

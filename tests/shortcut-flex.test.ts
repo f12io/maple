@@ -1,23 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { mediaRules, rules } from './helpers/alias.helper';
 import { convert } from './helpers/convert.helper';
-
-function rule(selector: string, content: string) {
-  return `:where(${selector}) { ${content} }`;
-}
-
-function rules(selector: string, contents: Array<string>) {
-  return contents.map((content) => rule(selector, content)).join(' ');
-}
-
-function mediaRule(media: string, selector: string, content: string) {
-  return `${media} { ${rule(selector, content)} }`;
-}
-
-function mediaRules(media: string, selector: string, contents: Array<string>) {
-  return contents
-    .map((content) => mediaRule(media, selector, content))
-    .join(' ');
-}
 
 describe('Flex Row Shortcuts', () => {
   it('fxrow-cc (center-center)', () => {
