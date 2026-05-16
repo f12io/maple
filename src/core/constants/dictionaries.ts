@@ -61,7 +61,8 @@ export const BUILTIN_ALIASES: Record<string, string> = {
   cnt: 'cnt=inline-size',
 
   // font smoothing
-  antialiased: 'webkitFontSmoothing=antialiased;mozOsxFontSmoothing=grayscale',
+  antialiased:
+    '-webkitFontSmoothing=antialiased;-mozOsxFontSmoothing=grayscale',
 
   // animation
   spin: 'anim-spin_1000_linear_infinite',
