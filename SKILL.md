@@ -320,20 +320,19 @@ Any property that is not a color or number is considered as `custom`. They all f
 
 Aliases expand to one or more Maple utility classes before normal parsing and merge conflict checks run.
 
-Maple includes built-in aliases for common utilities. Built-in aliases can be used directly, or with `@`:
+Maple includes built-in aliases for common utilities. They can be used directly, or with `@`:
 
 ```html
+<!--Both examples apply `display: flex` -->
 <div class="fx"></div>
 <div class="@fx"></div>
 ```
 
-Both examples expand to `d-flex`, while keeping the original class selector in the generated CSS.
-
 You can define custom aliases on the root `<html>` element using `--alias-{name}=...`. Custom aliases must be used with `@`.
 
 ```html
-<html class="--alias-card=p-4;bgc-white;br-2">
-  <article class="@card"></article>
+<html class="--alias-card=bgc-white;br;brc-silver;rad-2;p-4;@md:p-8">
+  <div class="@card"></div>
 </html>
 ```
 
@@ -341,13 +340,13 @@ Use `;` to separate multiple classes inside an alias.
 
 ```html
 <html
-  class="--alias-loader=anim-fade-in_300_ease-out,spin_1000_linear_infinite;size-6"
+  class="--alias-loader=square-6;anim-fade-in_300_ease-out,spin_1000_linear_infinite"
 >
   <div class="@loader"></div>
 </html>
 ```
 
-Alias definitions are collected only from `<html>`. Alias definitions on other elements are ignored. If the same custom alias is defined more than once on `<html>`, the later definition wins.
+Alias definitions are collected only from `<html>` and definitions on other elements are ignored. If the same custom alias is defined more than once on `<html>`, the later definition wins.
 
 Aliases are not reactive. If you change an alias definition on `<html>` after elements using that alias have already been processed, Maple does not automatically revisit those existing alias usages. Treat aliases as root-level configuration for reusable class recipes. For live changes, use CSS variables instead.
 
@@ -358,6 +357,19 @@ Alias definitions must be plain root classes. If you combine `--alias-*` with a 
 <div class="md:--alias-card=p-4"></div>
 <div class="&:hover:--alias-card=p-4"></div>
 ```
+
+However, the classes inside an alias definition may include their own media queries and selectors. When you use the alias with an additional media query or selector, Maple composes the usage context with each expanded alias member:
+
+```html
+<html class="--alias-card=@lg:p-4;&:hover:p-8">
+  <article class="@card"></article>
+  <article class="@md:@card"></article>
+  <article class="&:hover:@card"></article>
+  <article class="&:before:@card"></article>
+</html>
+```
+
+In this example, `@md:@card` applies the whole alias at the `md` viewport breakpoint while preserving the alias member's own `@lg` and `&:hover` contexts. `&:before:@card` also composes safely with the alias hover member; Maple emits the valid selector order `:hover:before`, not `:before:hover`.
 
 User-defined aliases do not hijack normal utility names. If you define `--alias-fx=d-grid`, then `@fx` uses your alias, while bare `fx` still uses Maple's built-in flex alias.
 
@@ -389,62 +401,39 @@ Alias-generated selectors are intentionally low-specificity. This lets a direct 
 
 Built-in aliases include:
 
-| Alias             | Expands To                                                      |
-| ----------------- | --------------------------------------------------------------- |
-| `abs`             | `pos-absolute`                                                  |
-| `fixed`           | `pos-fixed`                                                     |
-| `rel`             | `pos-relative`                                                  |
-| `sticky`          | `pos-sticky`                                                    |
-| `static`          | `pos-static`                                                    |
-| `iblock`          | `d-inline-block`                                                |
-| `ifx`             | `d-inline-flex`                                                 |
-| `fx`              | `d-flex`                                                        |
-| `gr`              | `d-grid`                                                        |
-| `block`           | `d-block`                                                       |
-| `none`            | `d-none`                                                        |
-| `table`           | `d-table`                                                       |
-| `inline`          | `d-inline`                                                      |
-| `hidden`          | `v-hidden`                                                      |
-| `visible`         | `v-visible`                                                     |
-| `br`              | `brw-px;brst-solid`                                             |
-| `brt`             | `brtw-px;brtst-solid`                                           |
-| `brr`             | `brrw-px;brrst-solid`                                           |
-| `brb`             | `brbw-px;brbst-solid`                                           |
-| `brl`             | `brlw-px;brlst-solid`                                           |
-| `brx`             | `borderInlineWidth-px;borderInlineStyle-solid`                  |
-| `brxs`            | `borderInlineStartWidth-px;borderInlineStartStyle-solid`        |
-| `brxe`            | `borderInlineEndWidth-px;borderInlineEndStyle-solid`            |
-| `bry`             | `borderBlockWidth-px;borderBlockStyle-solid`                    |
-| `brys`            | `borderBlockStartWidth-px;borderBlockStartStyle-solid`          |
-| `brye`            | `borderBlockEndWidth-px;borderBlockEndStyle-solid`              |
-| `cnt`             | `cnt=inline-size`                                               |
-| `antialiased`     | `webkitFontSmoothing=antialiased;mozOsxFontSmoothing=grayscale` |
-| `fade-in`         | `fade-in_300_ease-out_forwards`                                 |
-| `fade-out`        | `fade-out_300_ease-out_forwards`                                |
-| `fade-in-up`      | `fade-in-up_300_ease-out_forwards`                              |
-| `fade-in-down`    | `fade-in-down_300_ease-out_forwards`                            |
-| `fade-in-left`    | `fade-in-left_300_ease-out_forwards`                            |
-| `fade-in-right`   | `fade-in-right_300_ease-out_forwards`                           |
-| `fade-out-up`     | `fade-out-up_300_ease-out_forwards`                             |
-| `fade-out-down`   | `fade-out-down_300_ease-out_forwards`                           |
-| `fade-out-left`   | `fade-out-left_300_ease-out_forwards`                           |
-| `fade-out-right`  | `fade-out-right_300_ease-out_forwards`                          |
-| `scale-in`        | `scale-in_300_ease-out_forwards`                                |
-| `scale-out`       | `scale-out_300_ease-out_forwards`                               |
-| `slide-in-up`     | `slide-in-up_300_ease-out_forwards`                             |
-| `slide-in-down`   | `slide-in-down_300_ease-out_forwards`                           |
-| `slide-in-left`   | `slide-in-left_300_ease-out_forwards`                           |
-| `slide-in-right`  | `slide-in-right_300_ease-out_forwards`                          |
-| `slide-out-up`    | `slide-out-up_300_ease-out_forwards`                            |
-| `slide-out-down`  | `slide-out-down_300_ease-out_forwards`                          |
-| `slide-out-left`  | `slide-out-left_300_ease-out_forwards`                          |
-| `slide-out-right` | `slide-out-right_300_ease-out_forwards`                         |
-| `spin`            | `spin_1000_linear_infinite`                                     |
-| `ping`            | `ping_1000_cubic-bezier(0,0,0.2,1)_infinite`                    |
-| `pulse`           | `pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite`                 |
-| `bounce`          | `bounce_1000_infinite`                                          |
-| `shake`           | `shake_300_ease-in-out`                                         |
-| `wiggle`          | `wiggle_300_ease-in-out`                                        |
+| Alias         | Expands To                                                        |
+| ------------- | ----------------------------------------------------------------- |
+| `abs`         | `pos=absolute`                                                    |
+| `fixed`       | `pos=fixed`                                                       |
+| `rel`         | `pos=relative`                                                    |
+| `sticky`      | `pos=sticky`                                                      |
+| `static`      | `pos=static`                                                      |
+| `iblock`      | `d=inline-block`                                                  |
+| `ifx`         | `d=inline-flex`                                                   |
+| `fx`          | `d=flex`                                                          |
+| `gr`          | `d=grid`                                                          |
+| `block`       | `d=block`                                                         |
+| `none`        | `d=none`                                                          |
+| `table`       | `d=table`                                                         |
+| `inline`      | `d=inline`                                                        |
+| `hidden`      | `v=hidden`                                                        |
+| `visible`     | `v=visible`                                                       |
+| `br`          | `brw-px;brst=solid`                                               |
+| `brt`         | `brtw-px;brtst=solid`                                             |
+| `brr`         | `brrw-px;brrst=solid`                                             |
+| `brb`         | `brbw-px;brbst=solid`                                             |
+| `brl`         | `brlw-px;brlst=solid`                                             |
+| `brx`         | `borderInlineWidth-px;borderInlineStyle=solid`                    |
+| `brxs`        | `borderInlineStartWidth-px;borderInlineStartStyle=solid`          |
+| `brxe`        | `borderInlineEndWidth-px;borderInlineEndStyle=solid`              |
+| `bry`         | `borderBlockWidth-px;borderBlockStyle=solid`                      |
+| `brys`        | `borderBlockStartWidth-px;borderBlockStartStyle=solid`            |
+| `brye`        | `borderBlockEndWidth-px;borderBlockEndStyle=solid`                |
+| `cnt`         | `cnt=inline-size`                                                 |
+| `antialiased` | `-webkitFontSmoothing=antialiased;-mozOsxFontSmoothing=grayscale` |
+
+> [!NOTE]
+> Animation aliases (like `fade-in`) and flex layout aliases (like `fxrow-cc`) are documented in their respective sections: [Working with Animations](#10-working-with-animations) and [Flex Layout Shortcuts](#11-flex-layout-shortcuts).
 
 > [!TIP]
 > Adding `antialiased` to the `<body>` element is a good practice for sharper, more consistent font rendering across browsers.
@@ -1737,69 +1726,68 @@ You can also define custom animation aliases on `<html>`:
 </html>
 ```
 
-#### Supported Animations
+#### Creating Custom Keyframes
 
-These built-in animation aliases can be used directly, such as `anim-fade-in`, or with `@`, such as `@anim-fade-in`. Each alias expands to a complete animation shorthand.
+You can define custom keyframes in standard CSS (via a `<style>` block or external stylesheet) and then reference them by name in Maple's `anim-*` utilities.
 
-For custom keyframes, either define a custom alias on `<html>` or include the animation properties directly in the class, such as duration, timing function, delay, iteration count, direction, fill mode, or play state.
+```html
+<style>
+  @keyframes slide-intro {
+    from {
+      opacity: 0;
+      transform: translateY(var(--slide-y, 10px));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
 
-| Animation         | Description                 | Variables                          |
-| ----------------- | --------------------------- | ---------------------------------- |
-| `fade-in`         | Fade from transparent       | -                                  |
-| `fade-out`        | Fade to transparent         | -                                  |
-| `fade-in-up`      | Fade in from below          | `--fade-distance` (default: 20px)  |
-| `fade-in-down`    | Fade in from above          | `--fade-distance`                  |
-| `fade-in-left`    | Fade in from right          | `--fade-distance`                  |
-| `fade-in-right`   | Fade in from left           | `--fade-distance`                  |
-| `fade-out-up`     | Fade out toward top         | `--fade-distance`                  |
-| `fade-out-down`   | Fade out toward bottom      | `--fade-distance`                  |
-| `fade-out-left`   | Fade out toward left        | `--fade-distance`                  |
-| `fade-out-right`  | Fade out toward right       | `--fade-distance`                  |
-| `scale-in`        | Scale up while fading in    | `--scale-from` (default: 0.9)      |
-| `scale-out`       | Scale down while fading out | `--scale-to` (default: 0.9)        |
-| `slide-in-up`     | Slide in from bottom        | `--slide-distance` (default: 100%) |
-| `slide-in-down`   | Slide in from top           | `--slide-distance`                 |
-| `slide-in-left`   | Slide in from right         | `--slide-distance`                 |
-| `slide-in-right`  | Slide in from left          | `--slide-distance`                 |
-| `slide-out-up`    | Slide out toward top        | `--slide-distance`                 |
-| `slide-out-down`  | Slide out toward bottom     | `--slide-distance`                 |
-| `slide-out-left`  | Slide out toward left       | `--slide-distance`                 |
-| `slide-out-right` | Slide out toward right      | `--slide-distance`                 |
-| `spin`            | Continuous rotation         | -                                  |
-| `ping`            | Radar ping effect           | `--ping-scale` (default: 2)        |
-| `pulse`           | Fade in/out loop            | `--pulse-opacity` (default: 0.5)   |
-| `bounce`          | Bouncing motion             | `--bounce-distance` (default: 25%) |
-| `shake`           | Horizontal shake            | `--shake-distance` (default: 10px) |
-| `wiggle`          | Rotational wiggle           | `--wiggle-angle` (default: 3deg)   |
+<!-- Use directly in an element -->
+<div class="anim-slide-intro_500_ease-out">Hello World</div>
 
-| Alias             | Expands To.                                     |
-| ----------------- | ----------------------------------------------- |
-| `fade-in`         | `fade-in_300_ease-out_forwards`                 |
-| `fade-out`        | `fade-out_300_ease-out_forwards`                |
-| `fade-in-up`      | `fade-in-up_300_ease-out_forwards`              |
-| `fade-in-down`    | `fade-in-down_300_ease-out_forwards`            |
-| `fade-in-left`    | `fade-in-left_300_ease-out_forwards`            |
-| `fade-in-right`   | `fade-in-right_300_ease-out_forwards`           |
-| `fade-out-up`     | `fade-out-up_300_ease-out_forwards`             |
-| `fade-out-down`   | `fade-out-down_300_ease-out_forwards`           |
-| `fade-out-left`   | `fade-out-left_300_ease-out_forwards`           |
-| `fade-out-right`  | `fade-out-right_300_ease-out_forwards`          |
-| `scale-in`        | `scale-in_300_ease-out_forwards`                |
-| `scale-out`       | `scale-out_300_ease-out_forwards`               |
-| `slide-in-up`     | `slide-in-up_300_ease-out_forwards`             |
-| `slide-in-down`   | `slide-in-down_300_ease-out_forwards`           |
-| `slide-in-left`   | `slide-in-left_300_ease-out_forwards`           |
-| `slide-in-right`  | `slide-in-right_300_ease-out_forwards`          |
-| `slide-out-up`    | `slide-out-up_300_ease-out_forwards`            |
-| `slide-out-down`  | `slide-out-down_300_ease-out_forwards`          |
-| `slide-out-left`  | `slide-out-left_300_ease-out_forwards`          |
-| `slide-out-right` | `slide-out-right_300_ease-out_forwards`         |
-| `spin`            | `spin_1000_linear_infinite`                     |
-| `ping`            | `ping_1000_cubic-bezier(0,0,0.2,1)_infinite`    |
-| `pulse`           | `pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite` |
-| `bounce`          | `bounce_1000_infinite`                          |
-| `shake`           | `shake_300_ease-in-out`                         |
-| `wiggle`          | `wiggle_300_ease-in-out`                        |
+<!-- Or define an alias for cleaner markup -->
+<html class="--alias-intro=anim-slide-intro_500_ease-out">
+  <div class="@intro">Better World</div>
+</html>
+```
+
+> [!TIP]
+> Use CSS variables with fallbacks in your keyframes (e.g., `var(--name, default)`) to make them highly reusable. This allows you to tweak the animation behavior per-element without defining new keyframes.
+
+#### Built-in Animation Aliases
+
+The following table lists built-in animation aliases. These can be used directly (e.g., `fade-in`) or with an `@` prefix (e.g., `@fade-in`).
+
+| Animation         | Description                 | Variables                          | Expands To                                           |
+| ----------------- | --------------------------- | ---------------------------------- | ---------------------------------------------------- |
+| `fade-in`         | Fade from transparent       | -                                  | `anim-fade-in_300_ease-out_forwards`                 |
+| `fade-out`        | Fade to transparent         | -                                  | `anim-fade-out_300_ease-out_forwards`                |
+| `fade-in-up`      | Fade in from below          | `--fade-distance` (default: 20px)  | `anim-fade-in-up_300_ease-out_forwards`              |
+| `fade-in-down`    | Fade in from above          | `--fade-distance`                  | `anim-fade-in-down_300_ease-out_forwards`            |
+| `fade-in-left`    | Fade in from right          | `--fade-distance`                  | `anim-fade-in-left_300_ease-out_forwards`            |
+| `fade-in-right`   | Fade in from left           | `--fade-distance`                  | `anim-fade-in-right_300_ease-out_forwards`           |
+| `fade-out-up`     | Fade out toward top         | `--fade-distance`                  | `anim-fade-out-up_300_ease-out_forwards`             |
+| `fade-out-down`   | Fade out toward bottom      | `--fade-distance`                  | `anim-fade-out-down_300_ease-out_forwards`           |
+| `fade-out-left`   | Fade out toward left        | `--fade-distance`                  | `anim-fade-out-left_300_ease-out_forwards`           |
+| `fade-out-right`  | Fade out toward right       | `--fade-distance`                  | `anim-fade-out-right_300_ease-out_forwards`          |
+| `scale-in`        | Scale up while fading in    | `--scale-from` (default: 0.9)      | `anim-scale-in_300_ease-out_forwards`                |
+| `scale-out`       | Scale down while fading out | `--scale-to` (default: 0.9)        | `anim-scale-out_300_ease-out_forwards`               |
+| `slide-in-up`     | Slide in from bottom        | `--slide-distance` (default: 100%) | `anim-slide-in-up_300_ease-out_forwards`             |
+| `slide-in-down`   | Slide in from top           | `--slide-distance`                 | `anim-slide-in-down_300_ease-out_forwards`           |
+| `slide-in-left`   | Slide in from right         | `--slide-distance`                 | `anim-slide-in-left_300_ease-out_forwards`           |
+| `slide-in-right`  | Slide in from left          | `--slide-distance`                 | `anim-slide-in-right_300_ease-out_forwards`          |
+| `slide-out-up`    | Slide out toward top        | `--slide-distance`                 | `anim-slide-out-up_300_ease-out_forwards`            |
+| `slide-out-down`  | Slide out toward bottom     | `--slide-distance`                 | `anim-slide-out-down_300_ease-out_forwards`          |
+| `slide-out-left`  | Slide out toward left       | `--slide-distance`                 | `anim-slide-out-left_300_ease-out_forwards`          |
+| `slide-out-right` | Slide out toward right      | `--slide-distance`                 | `anim-slide-out-right_300_ease-out_forwards`         |
+| `spin`            | Continuous rotation         | -                                  | `anim-spin_1000_linear_infinite`                     |
+| `ping`            | Radar ping effect           | `--ping-scale` (default: 2)        | `anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite`    |
+| `pulse`           | Fade in/out loop            | `--pulse-opacity` (default: 0.5)   | `anim-pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite` |
+| `bounce`          | Bouncing motion             | `--bounce-distance` (default: 25%) | `anim-bounce_1000_infinite`                          |
+| `shake`           | Horizontal shake            | `--shake-distance` (default: 10px) | `anim-shake_300_ease-in-out`                         |
+| `wiggle`          | Rotational wiggle           | `--wiggle-angle` (default: 3deg)   | `anim-wiggle_300_ease-in-out`                        |
 
 ### 11. Flex Layout Shortcuts
 
