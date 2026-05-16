@@ -877,9 +877,16 @@ function serializeAnimationValue(
     utilKey = ABBREVIATIONS_REVERSE.animationName;
   }
 
+  const shouldUseNamedFallback =
+    parentAnimName && utilKey !== ABBREVIATIONS_REVERSE.animationName;
+
   if (
+    utilKey === ABBREVIATIONS_REVERSE.animationName ||
     utilKey === ABBREVIATIONS_REVERSE.animationTimingFunction ||
-    utilKey === ABBREVIATIONS_REVERSE.animationName
+    utilKey === ABBREVIATIONS_REVERSE.animationDirection ||
+    utilKey === ABBREVIATIONS_REVERSE.animationFillMode ||
+    utilKey === ABBREVIATIONS_REVERSE.animationPlayState ||
+    utilKey === ABBREVIATIONS_REVERSE.animationIterationCount
   ) {
     let result = serializeValueAsVariable(
       utilKey,
@@ -890,23 +897,15 @@ function serializeAnimationValue(
       varCat,
     );
 
-    if (
-      parentAnimName &&
-      utilKey === ABBREVIATIONS_REVERSE.animationTimingFunction
-    ) {
-      result = `var(--anim-${parentAnimName}-easing, ${result})`;
+    if (shouldUseNamedFallback) {
+      result = serializeAnimationNamedFallback(
+        utilKey,
+        parentAnimName,
+        result,
+      );
     }
 
     return result;
-  }
-
-  if (
-    utilKey === ABBREVIATIONS_REVERSE.animationDirection ||
-    utilKey === ABBREVIATIONS_REVERSE.animationFillMode ||
-    utilKey === ABBREVIATIONS_REVERSE.animationPlayState ||
-    utilKey === ABBREVIATIONS_REVERSE.animationIterationCount
-  ) {
-    return removeBrackets(mappedValueItem);
   }
 
   let result = serializeNumberValue({
@@ -917,15 +916,19 @@ function serializeAnimationValue(
     varCat,
   });
 
-  if (parentAnimName) {
-    if (utilKey === ABBREVIATIONS_REVERSE.animationDuration) {
-      result = `var(--anim-${parentAnimName}-duration, ${result})`;
-    } else if (utilKey === ABBREVIATIONS_REVERSE.animationDelay) {
-      result = `var(--anim-${parentAnimName}-delay, ${result})`;
-    }
+  if (shouldUseNamedFallback) {
+    result = serializeAnimationNamedFallback(utilKey, parentAnimName, result);
   }
 
   return result;
+}
+
+function serializeAnimationNamedFallback(
+  utilKey: string,
+  parentAnimName: string | undefined,
+  fallbackValue: string,
+): string {
+  return `var(--${utilKey}-${parentAnimName}, var(--${utilKey}, ${fallbackValue}))`;
 }
 
 function serializeMultipleValues(

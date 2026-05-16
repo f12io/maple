@@ -1695,18 +1695,23 @@ Numeric duration and delay values use Maple's default time unit, so `300` serial
 
 #### Customizing Animations
 
-When `anim-*` contains an animation name, Maple can wrap the shorthand duration, delay, and timing function with animation-specific CSS variable fallbacks.
+When `anim-*` contains an animation name, Maple can wrap shorthand sub-values with animation-specific CSS variable fallbacks.
 
 ```css
-var(--anim-fade-in-duration, var(--animdur-300, var(--time-300, 300ms)))
-var(--anim-fade-in-easing, var(--animtf-ease-out, var(--ease-out, ease-out)))
+var(--animdur-fade-in, var(--animdur, var(--animdur-300, var(--time-300, 300ms))))
+var(--animdel-fade-in, var(--animdel, var(--animdel-0, var(--time-0, 0ms))))
+var(--animtf-fade-in, var(--animtf, var(--animtf-ease-out, var(--ease-out, ease-out))))
+var(--animic-fade-in, var(--animic, var(--animic-infinite, var(--infinite, infinite))))
+var(--animdir-fade-in, var(--animdir, var(--animdir-alternate, var(--alternate, alternate))))
+var(--animfm-fade-in, var(--animfm, var(--animfm-forwards, var(--forwards, forwards))))
+var(--animps-fade-in, var(--animps, var(--animps-running, var(--running, running))))
 ```
 
 This means you can customize preset defaults with variables, or override individual properties with normal animation utilities:
 
 ```html
 <!-- Customize animation-specific defaults -->
-<html class="--anim-fade-in-duration=500ms --anim-spin-duration=2s">
+<html class="--animdur=200ms --animdur-fade-in=500ms --animdel-fade-in=100ms --animdur-spin=2s">
   <div class="fade-in">Slow fade</div>
 
   <!-- Override one property on a specific element -->
