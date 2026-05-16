@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { collectAliases } from '../src/core/aliases';
 import { ALIAS_CLASS_CACHE, CLASS_CACHE } from '../src/core/constants/caches';
 import { processClassList } from '../src/core/generator';
-import { mediaRule, rule, rules } from './helpers/alias.helper';
 import { convert } from './helpers/convert.helper';
 
 describe('User Defined Aliases', () => {
@@ -10,13 +9,7 @@ describe('User Defined Aliases', () => {
     collectAliases(['--alias-card=p-4;bgc-red']);
 
     expect(convert('@card')).toBe(
-      `${rule(
-        '.\\@card',
-        'padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25)))));',
-      )} ${rule(
-        '.\\@card',
-        'background-color: oklch(from var(--bgc-red, var(--color-red, var(--red, red))) calc(l * var(--bgc-red-l-scale, var(--red-l-scale, var(--bgc-l-scale, var(--l-scale, 1))))) calc(c * var(--bgc-red-c-scale, var(--red-c-scale, var(--bgc-c-scale, var(--c-scale, 1))))) calc(h + var(--bgc-red-h-rotate, var(--red-h-rotate, var(--bgc-h-rotate, var(--h-rotate, 0))))) / alpha);',
-      )}`,
+      `.\\@card { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } .\\@card { background-color: oklch(from var(--bgc-red, var(--color-red, var(--red, red))) calc(l * var(--bgc-red-l-scale, var(--red-l-scale, var(--bgc-l-scale, var(--l-scale, 1))))) calc(c * var(--bgc-red-c-scale, var(--red-c-scale, var(--bgc-c-scale, var(--c-scale, 1))))) calc(h + var(--bgc-red-h-rotate, var(--red-h-rotate, var(--bgc-h-rotate, var(--h-rotate, 0))))) / alpha); }`,
     );
 
     collectAliases([]);
@@ -26,10 +19,10 @@ describe('User Defined Aliases', () => {
     collectAliases(['--alias-fx=d-grid']);
 
     expect(convert('@fx')).toBe(
-      rule('.\\@fx', 'display: var(--d-grid, var(--grid, grid));'),
+      '.\\@fx { display: var(--d-grid, var(--grid, grid)); }',
     );
 
-    expect(convert('fx')).toBe(rule('.fx', 'display: flex;'));
+    expect(convert('fx')).toBe('.fx { display: flex; }');
 
     collectAliases([]);
   });
@@ -37,22 +30,22 @@ describe('User Defined Aliases', () => {
 
 describe('Built-in aliases', () => {
   it('flex', () => {
-    expect(convert('fx')).toBe(rule('.fx', 'display: flex;'));
+    expect(convert('fx')).toBe('.fx { display: flex; }');
   });
 
   it('expands built-in aliases with @', () => {
-    expect(convert('@fx')).toBe(rule('.\\@fx', 'display: flex;'));
+    expect(convert('@fx')).toBe('.\\@fx { display: flex; }');
   });
 
   it('md:flex', () => {
     expect(convert('md:fx')).toBe(
-      mediaRule('@container (min-width: 768px)', '.md\\:fx', 'display: flex;'),
+      '@container (min-width: 768px) { .md\\:fx { display: flex; } }',
     );
   });
 
   it('md:&hover:flex', () => {
     expect(convert('md:&:hover:fx')).toBe(
-      `@container (min-width: 768px) { :where(.md\\:\\&\\:hover\\:fx):hover { display: flex; } }`,
+      `@container (min-width: 768px) { .md\\:\\&\\:hover\\:fx:hover { display: flex; } }`,
     );
   });
 
@@ -67,19 +60,19 @@ describe('Built-in aliases', () => {
   });
 
   it('flex important', () => {
-    expect(convert('!fx')).toBe(rule('.\\!fx', 'display: flex !important;'));
+    expect(convert('!fx')).toBe('.\\!fx { display: flex !important; }');
   });
 
   it('grid', () => {
-    expect(convert('gr')).toBe(rule('.gr', 'display: grid;'));
+    expect(convert('gr')).toBe('.gr { display: grid; }');
   });
 
   it('block', () => {
-    expect(convert('block')).toBe(rule('.block', 'display: block;'));
+    expect(convert('block')).toBe('.block { display: block; }');
   });
 
   it('none', () => {
-    expect(convert('none')).toBe(rule('.none', 'display: none;'));
+    expect(convert('none')).toBe('.none { display: none; }');
   });
 
   it('d-none', () => {
@@ -91,137 +84,117 @@ describe('Built-in aliases', () => {
   });
 
   it('table', () => {
-    expect(convert('table')).toBe(rule('.table', 'display: table;'));
+    expect(convert('table')).toBe('.table { display: table; }');
   });
 
   it('inline', () => {
-    expect(convert('inline')).toBe(rule('.inline', 'display: inline;'));
+    expect(convert('inline')).toBe('.inline { display: inline; }');
   });
 
   it('inline-block', () => {
-    expect(convert('iblock')).toBe(rule('.iblock', 'display: inline-block;'));
+    expect(convert('iblock')).toBe('.iblock { display: inline-block; }');
   });
 
   it('inline-flex', () => {
-    expect(convert('ifx')).toBe(rule('.ifx', 'display: inline-flex;'));
+    expect(convert('ifx')).toBe('.ifx { display: inline-flex; }');
   });
 
   it('absolute', () => {
-    expect(convert('abs')).toBe(rule('.abs', 'position: absolute;'));
+    expect(convert('abs')).toBe('.abs { position: absolute; }');
   });
 
   it('absolute important', () => {
-    expect(convert('!abs')).toBe(
-      rule('.\\!abs', 'position: absolute !important;'),
-    );
+    expect(convert('!abs')).toBe('.\\!abs { position: absolute !important; }');
   });
 
   it('relative', () => {
-    expect(convert('rel')).toBe(rule('.rel', 'position: relative;'));
+    expect(convert('rel')).toBe('.rel { position: relative; }');
   });
 
   it('sticky', () => {
-    expect(convert('sticky')).toBe(rule('.sticky', 'position: sticky;'));
+    expect(convert('sticky')).toBe('.sticky { position: sticky; }');
   });
 
   it('static', () => {
-    expect(convert('static')).toBe(rule('.static', 'position: static;'));
+    expect(convert('static')).toBe('.static { position: static; }');
   });
 
   it('visible', () => {
-    expect(convert('visible')).toBe(rule('.visible', 'visibility: visible;'));
+    expect(convert('visible')).toBe('.visible { visibility: visible; }');
   });
 
   it('hidden', () => {
-    expect(convert('hidden')).toBe(rule('.hidden', 'visibility: hidden;'));
+    expect(convert('hidden')).toBe('.hidden { visibility: hidden; }');
   });
 
   it('border', () => {
     expect(convert('br')).toBe(
-      rules('.br', ['border-width: 1px;', 'border-style: solid;']),
+      '.br { border-width: 1px; } .br { border-style: solid; }',
     );
   });
 
   it('border top', () => {
     expect(convert('brt')).toBe(
-      rules('.brt', ['border-top-width: 1px;', 'border-top-style: solid;']),
+      '.brt { border-top-width: 1px; } .brt { border-top-style: solid; }',
     );
   });
 
   it('border right', () => {
     expect(convert('brr')).toBe(
-      rules('.brr', ['border-right-width: 1px;', 'border-right-style: solid;']),
+      '.brr { border-right-width: 1px; } .brr { border-right-style: solid; }',
     );
   });
 
   it('border bottom', () => {
     expect(convert('brb')).toBe(
-      rules('.brb', [
-        'border-bottom-width: 1px;',
-        'border-bottom-style: solid;',
-      ]),
+      '.brb { border-bottom-width: 1px; } .brb { border-bottom-style: solid; }',
     );
   });
 
   it('border left', () => {
     expect(convert('brl')).toBe(
-      rules('.brl', ['border-left-width: 1px;', 'border-left-style: solid;']),
+      '.brl { border-left-width: 1px; } .brl { border-left-style: solid; }',
     );
   });
 
   it('border inline', () => {
     expect(convert('brx')).toBe(
-      rules('.brx', [
-        'border-inline-width: 1px;',
-        'border-inline-style: solid;',
-      ]),
+      '.brx { border-inline-width: 1px; } .brx { border-inline-style: solid; }',
     );
   });
 
   it('border inline start', () => {
     expect(convert('brxs')).toBe(
-      rules('.brxs', [
-        'border-inline-start-width: 1px;',
-        'border-inline-start-style: solid;',
-      ]),
+      '.brxs { border-inline-start-width: 1px; } .brxs { border-inline-start-style: solid; }',
     );
   });
 
   it('border inline end', () => {
     expect(convert('brxe')).toBe(
-      rules('.brxe', [
-        'border-inline-end-width: 1px;',
-        'border-inline-end-style: solid;',
-      ]),
+      '.brxe { border-inline-end-width: 1px; } .brxe { border-inline-end-style: solid; }',
     );
   });
 
   it('border block', () => {
     expect(convert('bry')).toBe(
-      rules('.bry', ['border-block-width: 1px;', 'border-block-style: solid;']),
+      '.bry { border-block-width: 1px; } .bry { border-block-style: solid; }',
     );
   });
 
   it('border block start', () => {
     expect(convert('brys')).toBe(
-      rules('.brys', [
-        'border-block-start-width: 1px;',
-        'border-block-start-style: solid;',
-      ]),
+      '.brys { border-block-start-width: 1px; } .brys { border-block-start-style: solid; }',
     );
   });
 
   it('border block end', () => {
     expect(convert('brye')).toBe(
-      rules('.brye', [
-        'border-block-end-width: 1px;',
-        'border-block-end-style: solid;',
-      ]),
+      '.brye { border-block-end-width: 1px; } .brye { border-block-end-style: solid; }',
     );
   });
 
   it('container', () => {
-    expect(convert('cnt')).toBe(rule('.cnt', 'container-type: inline-size;'));
+    expect(convert('cnt')).toBe('.cnt { container-type: inline-size; }');
   });
 });
 
@@ -284,23 +257,15 @@ describe('Alias Behavior Tests', () => {
     collectAliases(['--alias-card=p-4']);
 
     expect(convert('md:@card')).toBe(
-      mediaRule(
-        '@container (min-width: 768px)',
-        '.md\\:\\@card',
-        'padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25)))));',
-      ),
+      '@container (min-width: 768px) { .md\\:\\@card { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
     );
 
     expect(convert('@md:@card')).toBe(
-      mediaRule(
-        '@media (min-width: 768px)',
-        '.\\@md\\:\\@card',
-        'padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25)))));',
-      ),
+      '@media (min-width: 768px) { .\\@md\\:\\@card { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
     );
 
     expect(convert('&:hover:@card')).toBe(
-      `:where(.\\&\\:hover\\:\\@card):hover { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }`,
+      `.\\&\\:hover\\:\\@card:hover { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }`,
     );
 
     collectAliases([]);

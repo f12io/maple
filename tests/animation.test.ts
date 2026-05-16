@@ -1,35 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { rule } from './helpers/alias.helper';
 import { convert } from './helpers/convert.helper';
 
 describe('Animation', () => {
   it('animation alias expansion', () => {
     expect(convert('fade-in')).toBe(
-      rule(
-        '.fade-in',
-        'animation: var(--animname-fade-in, var(--fade-in, fade-in)) var(--anim-fade-in-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-in-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards;',
-      ),
+      `.fade-in { animation: var(--animname-fade-in, var(--fade-in, fade-in)) var(--anim-fade-in-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-in-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards; }`,
     );
 
     expect(convert('spin')).toBe(
-      rule(
-        '.spin',
-        'animation: var(--animname-spin, var(--spin, spin)) var(--anim-spin-duration, var(--animdur-1000, var(--time-1000, 1000ms))) var(--anim-spin-easing, var(--animtf-linear, var(--linear, linear))) infinite;',
-      ),
+      `.spin { animation: var(--animname-spin, var(--spin, spin)) var(--anim-spin-duration, var(--animdur-1000, var(--time-1000, 1000ms))) var(--anim-spin-easing, var(--animtf-linear, var(--linear, linear))) infinite; }`,
     );
 
     expect(convert('fade-out-up')).toBe(
-      rule(
-        '.fade-out-up',
-        'animation: var(--animname-fade-out-up, var(--fade-out-up, fade-out-up)) var(--anim-fade-out-up-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-out-up-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards;',
-      ),
+      `.fade-out-up { animation: var(--animname-fade-out-up, var(--fade-out-up, fade-out-up)) var(--anim-fade-out-up-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-fade-out-up-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards; }`,
     );
 
     expect(convert('slide-out-down')).toBe(
-      rule(
-        '.slide-out-down',
-        'animation: var(--animname-slide-out-down, var(--slide-out-down, slide-out-down)) var(--anim-slide-out-down-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-slide-out-down-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards;',
-      ),
+      `.slide-out-down { animation: var(--animname-slide-out-down, var(--slide-out-down, slide-out-down)) var(--anim-slide-out-down-duration, var(--animdur-300, var(--time-300, 300ms))) var(--anim-slide-out-down-easing, var(--animtf-ease-out, var(--ease-out, ease-out))) forwards; }`,
     );
   });
 

@@ -37,9 +37,7 @@ export function buildRule(
 ): RuleData | undefined {
   const isAlias = selectorSrcClass !== srcClass;
   const parsed = parseClass(srcClass);
-  parsed.srcSel = isAlias
-    ? `:where(${parseClass(selectorSrcClass).srcSel})`
-    : parseClass(selectorSrcClass).srcSel;
+  parsed.srcSel = parseClass(selectorSrcClass).srcSel;
   const styleContent = buildProp(parsed);
 
   if (!styleContent) return;
@@ -88,11 +86,9 @@ function buildOverrideRule(
   const parsed = parseClass(
     srcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''),
   );
-  parsed.srcSel =
-    selectorSrcClass !== srcClass
-      ? `:where(${parseClass(selectorSrcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, '')).srcSel})`
-      : parseClass(selectorSrcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''))
-          .srcSel;
+  parsed.srcSel = parseClass(
+    selectorSrcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''),
+  ).srcSel;
   const parsedMediaQuery = parseMediaQuery(parsed);
   const rootSelector = parsedMediaQuery?.rootSelector
     ? parsedMediaQuery.rootSelector.replace(':root', '')
