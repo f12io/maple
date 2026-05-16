@@ -270,4 +270,58 @@ describe('Alias Behavior Tests', () => {
 
     collectAliases([]);
   });
+
+  it('define media queries and selectors in alias definition', () => {
+    collectAliases(['--alias-card=@lg:p-4;&:hover:p-8']);
+
+    expect(convert('@card')).toBe(
+      [
+        '@media (min-width: 1024px) { .\\@card { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
+        '.\\@card:hover { padding: var(--p-8, var(--space-8, calc(8rem * var(--p-spacer, var(--spacer, 0.25))))); }',
+      ].join(' '),
+    );
+
+    expect(convert('@md:@card')).toBe(
+      [
+        '@media (min-width: 768px) { @media (min-width: 1024px) { .\\@md\\:\\@card { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } } }',
+        '@media (min-width: 768px) { .\\@md\\:\\@card:hover { padding: var(--p-8, var(--space-8, calc(8rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
+      ].join(' '),
+    );
+
+    expect(convert('&:hover:@card')).toBe(
+      [
+        '@media (min-width: 1024px) { .\\&\\:hover\\:\\@card:hover { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
+        '.\\&\\:hover\\:\\@card:hover:hover { padding: var(--p-8, var(--space-8, calc(8rem * var(--p-spacer, var(--spacer, 0.25))))); }',
+      ].join(' '),
+    );
+
+    expect(convert('&:before:@card')).toBe(
+      [
+        '@media (min-width: 1024px) { .\\&\\:before\\:\\@card:before { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
+        '.\\&\\:before\\:\\@card:hover:before { padding: var(--p-8, var(--space-8, calc(8rem * var(--p-spacer, var(--spacer, 0.25))))); }',
+      ].join(' '),
+    );
+
+    collectAliases([]);
+  });
+
+  it('define multiple media queries', () => {
+    collectAliases(['--alias-card=@lg:p-4;sm:&:hover:p-8']);
+
+    expect(convert('@card')).toBe(
+      [
+        '@media (min-width: 1024px) { .\\@card { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
+        '@container (min-width: 640px) { .\\@card:hover { padding: var(--p-8, var(--space-8, calc(8rem * var(--p-spacer, var(--spacer, 0.25))))); } }',
+      ].join(' '),
+    );
+
+    expect(convert('@md:@card')).toBe(
+      [
+        '@media (min-width: 768px) { @media (min-width: 1024px) { .\\@md\\:\\@card { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); } } }',
+        '@media (min-width: 768px) { @container (min-width: 640px) { .\\@md\\:\\@card:hover { padding: var(--p-8, var(--space-8, calc(8rem * var(--p-spacer, var(--spacer, 0.25))))); } } }',
+      ].join(' '),
+    );
+
+    collectAliases([]);
+  });
 });
