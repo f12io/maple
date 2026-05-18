@@ -233,20 +233,20 @@
 @keyframes shake {
   0%,
   100% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   10%,
   30%,
   50%,
   70%,
   90% {
-    transform: translateX(calc(var(--shake-distance, 10px) * -1));
+    transform: translate3d(calc(var(--shake-distance, 10px) * -1), 0, 0);
   }
   20%,
   40%,
   60%,
   80% {
-    transform: translateX(var(--shake-distance, 10px));
+    transform: translate3d(var(--shake-distance, 10px), 0, 0);
   }
 }
 
@@ -256,9 +256,9 @@
     transform: rotate(0deg);
   }
   25% {
-    transform: rotate(var(--wiggle-angle, -3deg));
+    transform: rotate(var(--wiggle-angle, -6deg));
   }
   75% {
-    transform: rotate(var(--wiggle-angle, 3deg));
+    transform: rotate(var(--wiggle-angle, 6deg));
   }
 }
