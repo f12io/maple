@@ -69,8 +69,8 @@ export const BUILTIN_ALIASES: Record<string, string> = {
   ping: 'anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite',
   pulse: 'anim-pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite',
   bounce: 'anim-bounce_1000_infinite',
-  shake: 'anim-shake_600_ease-in-out',
-  wiggle: 'anim-wiggle_600_ease-in-out',
+  shake: 'anim-shake_800_ease-in-out',
+  wiggle: 'anim-wiggle_400_ease-in-out',
 
   'fade-in': 'anim-fade-in_600_ease-out_forwards',
   'fade-out': 'anim-fade-out_200_ease-in_forwards',

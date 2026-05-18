@@ -1790,8 +1790,8 @@ The following table lists built-in animation aliases. These can be used directly
 | `ping`           | Radar ping effect           | `--ping-scale` (default: 2)                                                  | `anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite`    |
 | `pulse`          | Fade in/out loop            | `--pulse-opacity` (default: 0.5)                                             | `anim-pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite` |
 | `bounce`         | Bouncing motion             | `--bounce-distance` (default: 25%)                                           | `anim-bounce_1000_infinite`                          |
-| `shake`          | Horizontal shake            | `--shake-distance` (default: 10px)                                           | `anim-shake_600_ease-in-out`                         |
-| `wiggle`         | Rotational wiggle           | `--wiggle-angle` (default: 6deg)                                             | `anim-wiggle_600_ease-in-out`                        |
+| `shake`          | Horizontal shake            | `--shake-distance` (default: 10px)                                           | `anim-shake_800_ease-in-out`                         |
+| `wiggle`         | Rotational wiggle           | `--wiggle-angle` (default: 6deg)                                             | `anim-wiggle_400_ease-in-out`                        |
 
 Built-in one-shot aliases use `forwards` so the element keeps the final keyframe after the animation finishes. Use `animfm-both` or an explicit `_both` shorthand only when delayed animations should also apply their first keyframe before they start.
 
