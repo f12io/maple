@@ -302,12 +302,12 @@
   opacity: var(--beam-opacity, 1);
   background: conic-gradient(
     from var(--beam-angle),
-    transparent 75%,
+    transparent var(--beam-tail-start, 75%),
     var(--beam-glow-color, color-mix(in oklch, currentColor 75%, transparent))
-      88%,
-    var(--beam-core-color, currentColor) 92%,
+      var(--beam-glow-start, 88%),
+    var(--beam-core-color, currentColor) var(--beam-core-start, 92%),
     var(--beam-glow-color, color-mix(in oklch, currentColor 75%, transparent))
-      96%,
+      var(--beam-glow-end, 96%),
     transparent 100%
   );
   mask:
