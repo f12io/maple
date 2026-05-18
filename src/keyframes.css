@@ -421,10 +421,25 @@
   100% {
     transform: rotate(0deg);
   }
+  12.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -1));
+  }
   25% {
-    transform: rotate(var(--wiggle-angle, -6deg));
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * 0.8));
+  }
+  37.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -0.65));
+  }
+  50% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * 0.5));
+  }
+  62.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -0.35));
   }
   75% {
-    transform: rotate(var(--wiggle-angle, 6deg));
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * 0.2));
+  }
+  87.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -0.1));
   }
 }
