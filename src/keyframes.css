@@ -295,7 +295,7 @@
 .border-beam::before {
   content: '';
   position: absolute;
-  inset: var(--beam-inset, 0);
+  inset: calc(var(--beam-offset, 1px) * -1);
   border-radius: var(--beam-radius, inherit);
   padding: var(--beam-width, 1px);
   pointer-events: none;
