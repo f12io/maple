@@ -27,7 +27,7 @@
 @keyframes fade-in-up {
   from {
     opacity: var(--fade-from-opacity, 0);
-    transform: translate3d(0, var(--fade-distance, 16px), 0)
+    transform: translate3d(0, var(--fade-distance, 48px), 0)
       scale(var(--fade-scale-from, 0.98));
   }
   to {
@@ -39,7 +39,7 @@
 @keyframes fade-in-down {
   from {
     opacity: var(--fade-from-opacity, 0);
-    transform: translate3d(0, calc(var(--fade-distance, 16px) * -1), 0)
+    transform: translate3d(0, calc(var(--fade-distance, 48px) * -1), 0)
       scale(var(--fade-scale-from, 0.98));
   }
   to {
@@ -51,7 +51,7 @@
 @keyframes fade-in-left {
   from {
     opacity: var(--fade-from-opacity, 0);
-    transform: translate3d(var(--fade-distance, 16px), 0, 0)
+    transform: translate3d(var(--fade-distance, 48px), 0, 0)
       scale(var(--fade-scale-from, 0.98));
   }
   to {
@@ -63,7 +63,7 @@
 @keyframes fade-in-right {
   from {
     opacity: var(--fade-from-opacity, 0);
-    transform: translate3d(calc(var(--fade-distance, 16px) * -1), 0, 0)
+    transform: translate3d(calc(var(--fade-distance, 48px) * -1), 0, 0)
       scale(var(--fade-scale-from, 0.98));
   }
   to {
@@ -79,7 +79,7 @@
   }
   to {
     opacity: var(--fade-to-opacity, 0);
-    transform: translate3d(0, calc(var(--fade-distance, 16px) * -1), 0)
+    transform: translate3d(0, calc(var(--fade-distance, 48px) * -1), 0)
       scale(var(--fade-scale-to, 0.98));
   }
 }
@@ -91,7 +91,7 @@
   }
   to {
     opacity: var(--fade-to-opacity, 0);
-    transform: translate3d(0, var(--fade-distance, 16px), 0)
+    transform: translate3d(0, var(--fade-distance, 48px), 0)
       scale(var(--fade-scale-to, 0.98));
   }
 }
@@ -103,7 +103,7 @@
   }
   to {
     opacity: var(--fade-to-opacity, 0);
-    transform: translate3d(calc(var(--fade-distance, 16px) * -1), 0, 0)
+    transform: translate3d(calc(var(--fade-distance, 48px) * -1), 0, 0)
       scale(var(--fade-scale-to, 0.98));
   }
 }
@@ -115,7 +115,7 @@
   }
   to {
     opacity: var(--fade-to-opacity, 0);
-    transform: translate3d(var(--fade-distance, 16px), 0, 0)
+    transform: translate3d(var(--fade-distance, 48px), 0, 0)
       scale(var(--fade-scale-to, 0.98));
   }
 }

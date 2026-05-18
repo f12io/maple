@@ -1720,8 +1720,8 @@ This means you can customize preset defaults with variables, or override individ
   <div class="fade-in animdur-200">Fast fade just for this element</div>
 
   <!-- Customize keyframe behavior exposed by keyframes.css -->
-  <div class="--fade-distance=40px fade-in-up">Fades from further</div>
-  <div class="--slide-distance=40px slide-up">Slides from further</div>
+  <div class="--fade-distance=96px fade-in-up">Fades from further</div>
+  <div class="--slide-distance=96px slide-up">Slides from further</div>
   <div class="--pulse-opacity=0.1 pulse">Deeper pulse</div>
 </html>
 ```
@@ -1772,7 +1772,7 @@ The following table lists built-in animation aliases. These can be used directly
 | ---------------- | --------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------- |
 | `fade-in`        | Fade from transparent       | `--fade-from-opacity`, `--fade-to-opacity`                                   | `anim-fade-in_600_ease-out_forwards`                 |
 | `fade-out`       | Fade to transparent         | `--fade-from-opacity`, `--fade-to-opacity`                                   | `anim-fade-out_200_ease-in_forwards`                 |
-| `fade-in-up`     | Fade in from below          | `--fade-distance` (default: 16px), `--fade-scale-from` (default: 0.98)       | `anim-fade-in-up_600_ease-out_forwards`              |
+| `fade-in-up`     | Fade in from below          | `--fade-distance` (default: 48px), `--fade-scale-from` (default: 0.98)       | `anim-fade-in-up_600_ease-out_forwards`              |
 | `fade-in-down`   | Fade in from above          | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-down_600_ease-out_forwards`            |
 | `fade-in-left`   | Fade in from right          | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-left_600_ease-out_forwards`            |
 | `fade-in-right`  | Fade in from left           | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-right_600_ease-out_forwards`           |
