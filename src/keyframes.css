@@ -8,107 +8,115 @@
 
 @keyframes fade-in {
   from {
-    opacity: 0;
+    opacity: var(--fade-from-opacity, 0);
   }
   to {
-    opacity: 1;
+    opacity: var(--fade-to-opacity, 1);
   }
 }
 
 @keyframes fade-out {
   from {
-    opacity: 1;
+    opacity: var(--fade-from-opacity, 1);
   }
   to {
-    opacity: 0;
+    opacity: var(--fade-to-opacity, 0);
   }
 }
 
 @keyframes fade-in-up {
   from {
-    opacity: 0;
-    transform: translateY(var(--fade-distance, 20px));
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(0, var(--fade-distance, 16px), 0)
+      scale(var(--fade-scale-from, 0.98));
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes fade-in-down {
   from {
-    opacity: 0;
-    transform: translateY(calc(var(--fade-distance, 20px) * -1));
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(0, calc(var(--fade-distance, 16px) * -1), 0)
+      scale(var(--fade-scale-from, 0.98));
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes fade-in-left {
   from {
-    opacity: 0;
-    transform: translateX(var(--fade-distance, 20px));
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(var(--fade-distance, 16px), 0, 0)
+      scale(var(--fade-scale-from, 0.98));
   }
   to {
-    opacity: 1;
-    transform: translateX(0);
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes fade-in-right {
   from {
-    opacity: 0;
-    transform: translateX(calc(var(--fade-distance, 20px) * -1));
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(calc(var(--fade-distance, 16px) * -1), 0, 0)
+      scale(var(--fade-scale-from, 0.98));
   }
   to {
-    opacity: 1;
-    transform: translateX(0);
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes fade-out-up {
   from {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    opacity: 0;
-    transform: translateY(calc(var(--fade-distance, 20px) * -1));
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(0, calc(var(--fade-distance, 16px) * -1), 0)
+      scale(var(--fade-scale-to, 0.98));
   }
 }
 
 @keyframes fade-out-down {
   from {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    opacity: 0;
-    transform: translateY(var(--fade-distance, 20px));
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(0, var(--fade-distance, 16px), 0)
+      scale(var(--fade-scale-to, 0.98));
   }
 }
 
 @keyframes fade-out-left {
   from {
-    opacity: 1;
-    transform: translateX(0);
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    opacity: 0;
-    transform: translateX(calc(var(--fade-distance, 20px) * -1));
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(calc(var(--fade-distance, 16px) * -1), 0, 0)
+      scale(var(--fade-scale-to, 0.98));
   }
 }
 
 @keyframes fade-out-right {
   from {
-    opacity: 1;
-    transform: translateX(0);
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    opacity: 0;
-    transform: translateX(var(--fade-distance, 20px));
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(var(--fade-distance, 16px), 0, 0)
+      scale(var(--fade-scale-to, 0.98));
   }
 }
 
@@ -118,23 +126,23 @@
 
 @keyframes scale-in {
   from {
-    opacity: 0;
-    transform: scale(var(--scale-from, 0.9));
+    opacity: var(--scale-from-opacity, 0);
+    transform: scale(var(--scale-from, 0.96));
   }
   to {
-    opacity: 1;
+    opacity: var(--scale-to-opacity, 1);
     transform: scale(1);
   }
 }
 
 @keyframes scale-out {
   from {
-    opacity: 1;
+    opacity: var(--scale-from-opacity, 1);
     transform: scale(1);
   }
   to {
-    opacity: 0;
-    transform: scale(var(--scale-to, 0.9));
+    opacity: var(--scale-to-opacity, 0);
+    transform: scale(var(--scale-to, 0.96));
   }
 }
 
@@ -142,75 +150,39 @@
    Slide Animations
    ============================================ */
 
-@keyframes slide-in-up {
+@keyframes slide-up {
   from {
-    transform: translateY(var(--slide-distance, 100%));
+    transform: translate3d(0, var(--slide-distance, 100%), 0);
   }
   to {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
-@keyframes slide-in-down {
+@keyframes slide-down {
   from {
-    transform: translateY(calc(var(--slide-distance, 100%) * -1));
+    transform: translate3d(0, calc(var(--slide-distance, 100%) * -1), 0);
   }
   to {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
-@keyframes slide-in-left {
+@keyframes slide-left {
   from {
-    transform: translateX(var(--slide-distance, 100%));
+    transform: translate3d(var(--slide-distance, 100%), 0, 0);
   }
   to {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
-@keyframes slide-in-right {
+@keyframes slide-right {
   from {
-    transform: translateX(calc(var(--slide-distance, 100%) * -1));
+    transform: translate3d(calc(var(--slide-distance, 100%) * -1), 0, 0);
   }
   to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-out-up {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(calc(var(--slide-distance, 100%) * -1));
-  }
-}
-
-@keyframes slide-out-down {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(var(--slide-distance, 100%));
-  }
-}
-
-@keyframes slide-out-left {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(var(--slide-distance, 100%) * -1));
-  }
-}
-
-@keyframes slide-out-right {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(var(--slide-distance, 100%));
+    transform: translate3d(0, 0, 0);
   }
 }
 
