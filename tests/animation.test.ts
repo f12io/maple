@@ -22,6 +22,18 @@ describe('Animation', () => {
     expect(convert('slide-out-up')).toBe(
       `.slide-out-up { animation: var(--animname-slide-out-up, var(--slide-out-up, slide-out-up)) var(--animdur-slide-out-up, var(--animdur, var(--animdur-200, var(--time-200, 200ms)))) var(--animtf-slide-out-up, var(--animtf, var(--animtf-ease-in, var(--ease-in, ease-in)))) var(--animfm-slide-out-up, var(--animfm, var(--animfm-forwards, var(--forwards, forwards)))); }`,
     );
+
+    expect(convert('shake-x')).toBe(
+      `.shake-x { animation: var(--animname-shake-x, var(--shake-x, shake-x)) var(--animdur-shake-x, var(--animdur, var(--animdur-800, var(--time-800, 800ms)))) var(--animtf-shake-x, var(--animtf, var(--animtf-ease-in-out, var(--ease-in-out, ease-in-out)))); }`,
+    );
+
+    expect(convert('beat')).toBe(
+      `.beat { animation: var(--animname-beat, var(--beat, beat)) var(--animdur-beat, var(--animdur, var(--animdur-700, var(--time-700, 700ms)))) var(--animtf-beat, var(--animtf, var(--animtf-ease-in-out, var(--ease-in-out, ease-in-out)))); }`,
+    );
+
+    expect(convert('border-beam')).toBe(
+      `.border-beam { animation: var(--animname-border-beam, var(--border-beam, border-beam)) var(--animdur-border-beam, var(--animdur, var(--animdur-2500, var(--time-2500, 2500ms)))) var(--animtf-border-beam, var(--animtf, var(--animtf-linear, var(--linear, linear)))) var(--animic-border-beam, var(--animic, var(--animic-infinite, var(--infinite, infinite)))); }`,
+    );
   });
 
   it('animation with name and duration', () => {

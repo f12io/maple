@@ -1794,7 +1794,13 @@ The following table lists built-in animation aliases. These can be used directly
 | `ping`            | Radar ping effect           | `--ping-scale` (default: 2)                                                  | `anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite`    |
 | `pulse`           | Fade in/out loop            | `--pulse-opacity` (default: 0.5)                                             | `anim-pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite` |
 | `bounce`          | Bouncing motion             | `--bounce-distance` (default: 25%)                                           | `anim-bounce_1000_infinite`                          |
-| `shake`           | Horizontal shake            | `--shake-distance` (default: 10px)                                           | `anim-shake_800_ease-in-out`                         |
+| `float`           | Gentle vertical float       | `--float-distance` (default: 8px)                                            | `anim-float_3000_ease-in-out_infinite`               |
+| `border-beam`     | Animated border beam        | `--beam-*` color, width, inset, radius, opacity variables                    | `anim-border-beam_2500_linear_infinite`              |
+| `shake`           | Horizontal shake            | `--shake-distance` (default: 10px)                                           | `anim-shake-x_800_ease-in-out`                       |
+| `shake-x`         | Horizontal shake            | `--shake-distance`                                                           | `anim-shake-x_800_ease-in-out`                       |
+| `shake-y`         | Vertical shake              | `--shake-distance`                                                           | `anim-shake-y_800_ease-in-out`                       |
+| `beat`            | Double pulse emphasis       | `--beat-scale` (default: 1.12)                                               | `anim-beat_700_ease-in-out`                          |
+| `bell`            | Notification bell sway      | `--bell-angle` (default: 10deg), `--bell-origin`                             | `anim-bell_900_ease-in-out`                          |
 | `wiggle`          | Rotational wiggle           | `--wiggle-angle` (default: 6deg)                                             | `anim-wiggle_400_ease-in-out`                        |
 
 Built-in one-shot aliases use `forwards` so the element keeps the final keyframe after the animation finishes. Use `animfm-both` or an explicit `_both` shorthand only when delayed animations should also apply their first keyframe before they start.

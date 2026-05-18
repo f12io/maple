@@ -262,27 +262,155 @@
   }
 }
 
-/* ============================================
-   Attention Seekers
-   ============================================ */
-
-@keyframes shake {
+@keyframes float {
   0%,
   100% {
     transform: translate3d(0, 0, 0);
   }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
+  50% {
+    transform: translate3d(0, calc(var(--float-distance, 8px) * -1), 0);
+  }
+}
+
+@property --beam-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@keyframes border-beam {
+  from {
+    --beam-angle: 0deg;
+  }
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+.border-beam {
+  position: relative;
+  isolation: isolate;
+}
+
+.border-beam::before {
+  content: '';
+  position: absolute;
+  inset: var(--beam-inset, 0);
+  border-radius: var(--beam-radius, inherit);
+  padding: var(--beam-width, 1px);
+  pointer-events: none;
+  opacity: var(--beam-opacity, 0.95);
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 75%,
+    var(--beam-mid, color-mix(in oklch, currentColor 55%, transparent)) 88%,
+    var(--beam-peak, currentColor) 92%,
+    var(--beam-mid, color-mix(in oklch, currentColor 55%, transparent)) 96%,
+    transparent 100%
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+}
+
+/* ============================================
+   Attention Seekers
+   ============================================ */
+
+@keyframes shake-x {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  15% {
     transform: translate3d(calc(var(--shake-distance, 10px) * -1), 0, 0);
   }
-  20%,
-  40%,
-  60%,
-  80% {
+  30% {
     transform: translate3d(var(--shake-distance, 10px), 0, 0);
+  }
+  45% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * -0.66), 0, 0);
+  }
+  60% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * 0.66), 0, 0);
+  }
+  75% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * -0.33), 0, 0);
+  }
+  90% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * 0.33), 0, 0);
+  }
+}
+
+@keyframes shake-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  15% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * -1), 0);
+  }
+  30% {
+    transform: translate3d(0, var(--shake-distance, 10px), 0);
+  }
+  45% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * -0.66), 0);
+  }
+  60% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * 0.66), 0);
+  }
+  75% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * -0.33), 0);
+  }
+  90% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * 0.33), 0);
+  }
+}
+
+@keyframes beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(var(--beat-scale, 1.12));
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(var(--beat-scale, 1.12));
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bell {
+  0%,
+  100% {
+    transform: rotate(0deg);
+    transform-origin: var(--bell-origin, top center);
+  }
+  15% {
+    transform: rotate(var(--bell-angle, 10deg));
+  }
+  30% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * -0.8));
+  }
+  45% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * 0.6));
+  }
+  60% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * -0.4));
+  }
+  75% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * 0.2));
   }
 }
 
