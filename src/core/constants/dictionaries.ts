@@ -84,10 +84,14 @@ export const BUILTIN_ALIASES: Record<string, string> = {
   'fade-out-right': 'anim-fade-out-right_200_ease-in_forwards',
   'scale-in': 'anim-scale-in_600_ease-out_forwards',
   'scale-out': 'anim-scale-out_200_ease-in_forwards',
-  'slide-up': 'anim-slide-up_600_ease-out_forwards',
-  'slide-down': 'anim-slide-down_600_ease-out_forwards',
-  'slide-left': 'anim-slide-left_600_ease-out_forwards',
-  'slide-right': 'anim-slide-right_600_ease-out_forwards',
+  'slide-in-up': 'anim-slide-in-up_600_ease-out_forwards',
+  'slide-in-down': 'anim-slide-in-down_600_ease-out_forwards',
+  'slide-in-left': 'anim-slide-in-left_600_ease-out_forwards',
+  'slide-in-right': 'anim-slide-in-right_600_ease-out_forwards',
+  'slide-out-up': 'anim-slide-out-up_200_ease-in_forwards',
+  'slide-out-down': 'anim-slide-out-down_200_ease-in_forwards',
+  'slide-out-left': 'anim-slide-out-left_200_ease-in_forwards',
+  'slide-out-right': 'anim-slide-out-right_200_ease-in_forwards',
 
   ...createFlexAliases(),
 };

@@ -1721,7 +1721,7 @@ This means you can customize preset defaults with variables, or override individ
 
   <!-- Customize keyframe behavior exposed by keyframes.css -->
   <div class="--fade-distance=96px fade-in-up">Fades from further</div>
-  <div class="--slide-distance=96px slide-up">Slides from further</div>
+  <div class="--slide-distance=96px slide-in-up">Slides from further</div>
   <div class="--pulse-opacity=0.1 pulse">Deeper pulse</div>
 </html>
 ```
@@ -1768,30 +1768,34 @@ You can define custom keyframes in standard CSS (via a `<style>` block or extern
 
 The following table lists built-in animation aliases. These can be used directly (e.g., `fade-in`) or with an `@` prefix (e.g., `@fade-in`).
 
-| Animation        | Description                 | Variables                                                                    | Expands To                                           |
-| ---------------- | --------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `fade-in`        | Fade from transparent       | `--fade-from-opacity`, `--fade-to-opacity`                                   | `anim-fade-in_600_ease-out_forwards`                 |
-| `fade-out`       | Fade to transparent         | `--fade-from-opacity`, `--fade-to-opacity`                                   | `anim-fade-out_200_ease-in_forwards`                 |
-| `fade-in-up`     | Fade in from below          | `--fade-distance` (default: 48px), `--fade-scale-from` (default: 0.98)       | `anim-fade-in-up_600_ease-out_forwards`              |
-| `fade-in-down`   | Fade in from above          | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-down_600_ease-out_forwards`            |
-| `fade-in-left`   | Fade in from right          | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-left_600_ease-out_forwards`            |
-| `fade-in-right`  | Fade in from left           | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-right_600_ease-out_forwards`           |
-| `fade-out-up`    | Fade out toward top         | `--fade-distance`, `--fade-scale-to` (default: 0.98)                         | `anim-fade-out-up_200_ease-in_forwards`              |
-| `fade-out-down`  | Fade out toward bottom      | `--fade-distance`, `--fade-scale-to`                                         | `anim-fade-out-down_200_ease-in_forwards`            |
-| `fade-out-left`  | Fade out toward left        | `--fade-distance`, `--fade-scale-to`                                         | `anim-fade-out-left_200_ease-in_forwards`            |
-| `fade-out-right` | Fade out toward right       | `--fade-distance`, `--fade-scale-to`                                         | `anim-fade-out-right_200_ease-in_forwards`           |
-| `scale-in`       | Scale up while fading in    | `--scale-from` (default: 0.96), `--scale-from-opacity`, `--scale-to-opacity` | `anim-scale-in_600_ease-out_forwards`                |
-| `scale-out`      | Scale down while fading out | `--scale-to` (default: 0.96), `--scale-from-opacity`, `--scale-to-opacity`   | `anim-scale-out_200_ease-in_forwards`                |
-| `slide-up`       | Slide in from below         | `--slide-distance` (default: 100%)                                           | `anim-slide-up_600_ease-out_forwards`                |
-| `slide-down`     | Slide in from above         | `--slide-distance`                                                           | `anim-slide-down_600_ease-out_forwards`              |
-| `slide-left`     | Slide in from right         | `--slide-distance`                                                           | `anim-slide-left_600_ease-out_forwards`              |
-| `slide-right`    | Slide in from left          | `--slide-distance`                                                           | `anim-slide-right_600_ease-out_forwards`             |
-| `spin`           | Continuous rotation         | -                                                                            | `anim-spin_1000_linear_infinite`                     |
-| `ping`           | Radar ping effect           | `--ping-scale` (default: 2)                                                  | `anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite`    |
-| `pulse`          | Fade in/out loop            | `--pulse-opacity` (default: 0.5)                                             | `anim-pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite` |
-| `bounce`         | Bouncing motion             | `--bounce-distance` (default: 25%)                                           | `anim-bounce_1000_infinite`                          |
-| `shake`          | Horizontal shake            | `--shake-distance` (default: 10px)                                           | `anim-shake_800_ease-in-out`                         |
-| `wiggle`         | Rotational wiggle           | `--wiggle-angle` (default: 6deg)                                             | `anim-wiggle_400_ease-in-out`                        |
+| Animation         | Description                 | Variables                                                                    | Expands To                                           |
+| ----------------- | --------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `fade-in`         | Fade from transparent       | `--fade-from-opacity`, `--fade-to-opacity`                                   | `anim-fade-in_600_ease-out_forwards`                 |
+| `fade-out`        | Fade to transparent         | `--fade-from-opacity`, `--fade-to-opacity`                                   | `anim-fade-out_200_ease-in_forwards`                 |
+| `fade-in-up`      | Fade in from below          | `--fade-distance` (default: 48px), `--fade-scale-from` (default: 0.98)       | `anim-fade-in-up_600_ease-out_forwards`              |
+| `fade-in-down`    | Fade in from above          | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-down_600_ease-out_forwards`            |
+| `fade-in-left`    | Fade in from right          | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-left_600_ease-out_forwards`            |
+| `fade-in-right`   | Fade in from left           | `--fade-distance`, `--fade-scale-from`                                       | `anim-fade-in-right_600_ease-out_forwards`           |
+| `fade-out-up`     | Fade out toward top         | `--fade-distance`, `--fade-scale-to` (default: 0.98)                         | `anim-fade-out-up_200_ease-in_forwards`              |
+| `fade-out-down`   | Fade out toward bottom      | `--fade-distance`, `--fade-scale-to`                                         | `anim-fade-out-down_200_ease-in_forwards`            |
+| `fade-out-left`   | Fade out toward left        | `--fade-distance`, `--fade-scale-to`                                         | `anim-fade-out-left_200_ease-in_forwards`            |
+| `fade-out-right`  | Fade out toward right       | `--fade-distance`, `--fade-scale-to`                                         | `anim-fade-out-right_200_ease-in_forwards`           |
+| `scale-in`        | Scale up while fading in    | `--scale-from` (default: 0.96), `--scale-from-opacity`, `--scale-to-opacity` | `anim-scale-in_600_ease-out_forwards`                |
+| `scale-out`       | Scale down while fading out | `--scale-to` (default: 0.96), `--scale-from-opacity`, `--scale-to-opacity`   | `anim-scale-out_200_ease-in_forwards`                |
+| `slide-in-up`     | Slide in from below         | `--slide-distance`                                                           | `anim-slide-in-up_600_ease-out_forwards`             |
+| `slide-in-down`   | Slide in from above         | `--slide-distance`                                                           | `anim-slide-in-down_600_ease-out_forwards`           |
+| `slide-in-left`   | Slide in from right         | `--slide-distance`                                                           | `anim-slide-in-left_600_ease-out_forwards`           |
+| `slide-in-right`  | Slide in from left          | `--slide-distance`                                                           | `anim-slide-in-right_600_ease-out_forwards`          |
+| `slide-out-up`    | Slide out toward top        | `--slide-distance`                                                           | `anim-slide-out-up_200_ease-in_forwards`             |
+| `slide-out-down`  | Slide out toward bottom     | `--slide-distance`                                                           | `anim-slide-out-down_200_ease-in_forwards`           |
+| `slide-out-left`  | Slide out toward left       | `--slide-distance`                                                           | `anim-slide-out-left_200_ease-in_forwards`           |
+| `slide-out-right` | Slide out toward right      | `--slide-distance`                                                           | `anim-slide-out-right_200_ease-in_forwards`          |
+| `spin`            | Continuous rotation         | -                                                                            | `anim-spin_1000_linear_infinite`                     |
+| `ping`            | Radar ping effect           | `--ping-scale` (default: 2)                                                  | `anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite`    |
+| `pulse`           | Fade in/out loop            | `--pulse-opacity` (default: 0.5)                                             | `anim-pulse_2000_cubic-bezier(0.4,0,0.6,1)_infinite` |
+| `bounce`          | Bouncing motion             | `--bounce-distance` (default: 25%)                                           | `anim-bounce_1000_infinite`                          |
+| `shake`           | Horizontal shake            | `--shake-distance` (default: 10px)                                           | `anim-shake_800_ease-in-out`                         |
+| `wiggle`          | Rotational wiggle           | `--wiggle-angle` (default: 6deg)                                             | `anim-wiggle_400_ease-in-out`                        |
 
 Built-in one-shot aliases use `forwards` so the element keeps the final keyframe after the animation finishes. Use `animfm-both` or an explicit `_both` shorthand only when delayed animations should also apply their first keyframe before they start.
 

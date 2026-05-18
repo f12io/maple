@@ -150,7 +150,7 @@
    Slide Animations
    ============================================ */
 
-@keyframes slide-up {
+@keyframes slide-in-up {
   from {
     transform: translate3d(0, var(--slide-distance, 100%), 0);
   }
@@ -159,7 +159,7 @@
   }
 }
 
-@keyframes slide-down {
+@keyframes slide-in-down {
   from {
     transform: translate3d(0, calc(var(--slide-distance, 100%) * -1), 0);
   }
@@ -168,7 +168,7 @@
   }
 }
 
-@keyframes slide-left {
+@keyframes slide-in-left {
   from {
     transform: translate3d(var(--slide-distance, 100%), 0, 0);
   }
@@ -177,12 +177,48 @@
   }
 }
 
-@keyframes slide-right {
+@keyframes slide-in-right {
   from {
     transform: translate3d(calc(var(--slide-distance, 100%) * -1), 0, 0);
   }
   to {
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slide-out-up {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--slide-distance, 100%) * -1), 0);
+  }
+}
+
+@keyframes slide-out-down {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, var(--slide-distance, 100%), 0);
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(var(--slide-distance, 100%) * -1), 0, 0);
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--slide-distance, 100%), 0, 0);
   }
 }
 
