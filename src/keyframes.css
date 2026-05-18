@@ -296,17 +296,17 @@
   content: '';
   position: absolute;
   inset: var(--beam-inset, 0);
-  border-radius: calc(var(--beam-radius, inherit) + var(--beam-width, 1px));
+  border-radius: var(--beam-radius, inherit);
   padding: var(--beam-width, 1px);
   pointer-events: none;
   opacity: var(--beam-opacity, 1);
   background: conic-gradient(
     from var(--beam-angle),
     transparent 75%,
-    var(--beam-glow-color, color-mix(in oklch, currentColor 55%, transparent))
+    var(--beam-glow-color, color-mix(in oklch, currentColor 75%, transparent))
       88%,
     var(--beam-core-color, currentColor) 92%,
-    var(--beam-glow-color, color-mix(in oklch, currentColor 55%, transparent))
+    var(--beam-glow-color, color-mix(in oklch, currentColor 75%, transparent))
       96%,
     transparent 100%
   );
