@@ -431,6 +431,7 @@ Built-in aliases include:
 | `brye`        | `borderBlockEndWidth-px;borderBlockEndStyle=solid`                |
 | `cnt`         | `cnt=inline-size`                                                 |
 | `antialiased` | `-webkitFontSmoothing=antialiased;-mozOsxFontSmoothing=grayscale` |
+| `truncate`    | `of=hidden;tof=ellipsis;ws=nowrap`                                |
 
 > [!NOTE]
 > Animation aliases (like `fade-in`) and flex layout aliases (like `fxrow-cc`) are documented in their respective sections: [Working with Animations](#10-working-with-animations) and [Flex Layout Shortcuts](#11-flex-layout-shortcuts).

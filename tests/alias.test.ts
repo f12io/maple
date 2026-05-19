@@ -196,6 +196,12 @@ describe('Built-in aliases', () => {
   it('container', () => {
     expect(convert('cnt')).toBe('.cnt { container-type: inline-size; }');
   });
+
+  it('truncate', () => {
+    expect(convert('truncate')).toBe(
+      '.truncate { overflow: hidden; } .truncate { text-overflow: ellipsis; } .truncate { white-space: nowrap; }',
+    );
+  });
 });
 
 describe('Alias Behavior Tests', () => {

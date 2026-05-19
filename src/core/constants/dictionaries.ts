@@ -64,6 +64,9 @@ export const BUILTIN_ALIASES: Record<string, string> = {
   antialiased:
     '-webkitFontSmoothing=antialiased;-mozOsxFontSmoothing=grayscale',
 
+  // typography
+  truncate: 'of=hidden;tof=ellipsis;ws=nowrap',
+
   // animation
   spin: 'anim-spin_1000_linear_infinite',
   ping: 'anim-ping_1000_cubic-bezier(0,0,0.2,1)_infinite',
