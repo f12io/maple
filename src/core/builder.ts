@@ -258,6 +258,7 @@ function buildConflictKey(
   {
     utilKey,
     propKeyKebab,
+    isImportant,
     parentSel = '',
     selfSel = '',
     childSel = '',
@@ -272,5 +273,5 @@ function buildConflictKey(
     propKey = propKeyKebab;
   }
 
-  return `${propKey}:${childSel}${selfSel}${parentSel}${parsedMediaQuery?.prefix ?? ''}${parsedMediaQuery?.bucketQuery ?? ''}`;
+  return `${propKey}:${isImportant ? '!' : ''}${childSel}${selfSel}${parentSel}${parsedMediaQuery?.prefix ?? ''}${parsedMediaQuery?.bucketQuery ?? ''}`;
 }

@@ -224,12 +224,15 @@ describe('Merge', () => {
 
   describe('Important Modifier', () => {
     it('resolves conflicts with important modifier (later wins)', () => {
-      testMerge('p-3! p-4!', 'p-4!');
+      testMerge('!p-3 !p-4', '!p-4');
     });
 
-    it('resolves normal vs important (later wins)', () => {
-      testMerge('p-3! p-4', 'p-4');
-      testMerge('p-3 p-4!', 'p-4!');
+    it('keeps later normal utility after important utility', () => {
+      testMerge('!p-3 p-4', '!p-3 p-4');
+    });
+
+    it('lets important utility remove earlier normal utility', () => {
+      testMerge('p-3 !p-4', '!p-4');
     });
   });
 
@@ -240,6 +243,22 @@ describe('Merge', () => {
 
     it('allows reverse refinements (px-5 p-3)', () => {
       testMerge('px-5 p-3', 'p-3');
+    });
+
+    it('allows normal refinement after important shorthand', () => {
+      testMerge('!p-3 px-5', '!p-3 px-5');
+    });
+
+    it('lets important shorthand remove earlier normal refinement', () => {
+      testMerge('px-5 !p-3', '!p-3');
+    });
+
+    it('allows important refinement after important shorthand', () => {
+      testMerge('!p-3 !px-5', '!p-3 !px-5');
+    });
+
+    it('lets important shorthand remove earlier important refinement', () => {
+      testMerge('!px-5 !p-3', '!p-3');
     });
   });
 

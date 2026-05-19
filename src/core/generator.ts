@@ -97,6 +97,10 @@ export function processClassList(element: Element): void {
         const colonIndex = conflictKey.indexOf(':');
         const propKey = conflictKey.slice(0, colonIndex);
         const propParents = conflictKey.slice(colonIndex);
+        const isImportant = propParents.startsWith(':!');
+        const normalPropParents = isImportant
+          ? ':' + propParents.slice(2)
+          : propParents;
 
         // Skip hierarchy check for specific properties that share a prefix but are not covered by the shorthand
         if (!isMergeException(propKey)) {
@@ -104,7 +108,10 @@ export function processClassList(element: Element): void {
 
           while (dashIdx > 0) {
             const parentKey = propKey.slice(0, dashIdx);
-            if (seenConflict.has(parentKey + propParents)) {
+            if (
+              seenConflict.has(parentKey + propParents) ||
+              (isImportant && seenConflict.has(parentKey + normalPropParents))
+            ) {
               coveredByShorthand = true;
               break;
             }
@@ -115,6 +122,15 @@ export function processClassList(element: Element): void {
         if (coveredByShorthand) continue;
 
         seenConflict.add(conflictKey);
+
+        /**
+         * Important utilities override earlier normal utilities with the same
+         * property/context, but normal utilities after an important one are
+         * preserved because they are still part of the authored class order.
+         */
+        if (isImportant) {
+          seenConflict.add(propKey + normalPropParents);
+        }
       }
 
       if (rule) {
