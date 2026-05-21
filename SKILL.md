@@ -332,71 +332,73 @@ Maple includes built-in aliases for common utilities. They can be used directly,
 You can define custom aliases on the root `<html>` element using `--alias-{name}=...`. Custom aliases must be used with `@`.
 
 ```html
-<html class="--alias-card=bgc-white;br;brc-silver;rad-2;p-4;@md:p-8">
-  <div class="@card"></div>
+<html class="--alias-truncate=of=hidden;tof=ellipsis;ws=nowrap">
+  <span class="@truncate w-40"> Long text that should truncate </span>
 </html>
 ```
 
 Use `;` to separate multiple classes inside an alias.
 
 ```html
-<html
-  class="--alias-loader=square-6;anim-fade-in_300_ease-out_forwards,spin_1000_linear_infinite"
->
-  <div class="@loader"></div>
+<html class="--alias-focus-ring=olw-2px;olst=solid;olc=currentColor;oloff-2">
+  <button class="@focus-ring">Focusable control</button>
 </html>
 ```
 
 Alias definitions are collected only from `<html>` and definitions on other elements are ignored. If the same custom alias is defined more than once on `<html>`, the later definition wins.
 
-Aliases are not reactive. If you change an alias definition on `<html>` after elements using that alias have already been processed, Maple does not automatically revisit those existing alias usages. Treat aliases as root-level configuration for reusable class recipes. For live changes, use CSS variables instead.
+Aliases are not reactive. If you change an alias definition on `<html>` after elements using that alias have already been processed, Maple does not automatically revisit those existing alias usages. Treat aliases as root-level configuration for reusable utility shortcuts. For live changes, use CSS variables instead.
+
+> [!TIP]
+> Aliases work best when they follow utility-first logic: multiple declarations doing one clear job, like `antialiased` or `truncate`. Avoid using aliases as component-sized CSS classes for buttons, cards, or panels; extract those patterns into components or templates instead.
 
 Alias definitions must be plain root classes. If you combine `--alias-*` with a media query or selector, Maple treats it like a normal CSS custom property utility:
 
 ```html
-<!-- Invalid alias usage. They will resolve to "--alias-card" css variable. -->
-<div class="md:--alias-card=p-4"></div>
-<div class="&:hover:--alias-card=p-4"></div>
+<!-- Invalid alias usage. They will resolve to "--alias-focus-ring" css variable. -->
+<div class="md:--alias-focus-ring=olw-2px"></div>
+<div class="&:hover:--alias-focus-ring=olw-2px"></div>
 ```
 
 However, the classes inside an alias definition may include their own media queries and selectors. When you use the alias with an additional media query or selector, Maple composes the usage context with each expanded alias member:
 
 ```html
-<html class="--alias-card=@lg:p-4;&:hover:p-8">
-  <article class="@card"></article>
-  <article class="@md:@card"></article>
-  <article class="&:hover:@card"></article>
-  <article class="&:before:@card"></article>
+<html
+  class="--alias-focus-ring=@supports=[outline:1px_solid_currentColor]:&:focus-visible:olw-2px;&:focus-visible:olst=solid;&:focus-visible:olc=currentColor"
+>
+  <button class="@focus-ring"></button>
+  <button class="@md:@focus-ring"></button>
+  <button class="&:not(:disabled):@focus-ring"></button>
 </html>
 ```
 
-In this example, `@md:@card` applies the whole alias at the `md` viewport breakpoint while preserving the alias member's own `@lg` and `&:hover` contexts. `&:before:@card` also composes safely with the alias hover member; Maple emits the valid selector order `:hover:before`, not `:before:hover`.
+In this example, `@md:@focus-ring` applies the whole alias at the `md` viewport breakpoint while preserving the alias member's own `@supports` and `&:focus-visible` contexts. `&:not(:disabled):@focus-ring` also composes safely with the alias focus selector.
 
 User-defined aliases do not hijack normal utility names. If you define `--alias-fx=d-grid`, then `@fx` uses your alias, while bare `fx` still uses Maple's built-in flex alias.
 
 Alias usage works with media queries and selectors:
 
 ```html
-<html class="--alias-card=p-4;bgc-white">
-  <article class="md:@card"></article>
-  <article class="@md:@card"></article>
-  <article class="&:hover:@card"></article>
+<html class="--alias-focus-ring=olw-2px;olst=solid;olc=currentColor">
+  <button class="md:@focus-ring"></button>
+  <button class="@md:@focus-ring"></button>
+  <button class="&:focus-visible:@focus-ring"></button>
 </html>
 ```
 
-The `@` before a media query belongs to Maple's media-query syntax. The `@` before an alias name belongs to alias usage. For example, `@md:@card` means "apply the `@card` alias at the viewport `md` breakpoint."
+The `@` before a media query belongs to Maple's media-query syntax. The `@` before an alias name belongs to alias usage. For example, `@md:@focus-ring` means "apply the `@focus-ring` alias at the viewport `md` breakpoint."
 
 Because aliases expand before merge checks, later classes override earlier alias members as expected:
 
 ```html
-<html class="--alias-card=p-4;bgc-white">
-  <article class="@card p-8"></article>
-  <!-- before merge: p-4 bgc-white p-8 -->
-  <!-- after merge: @card p-8 -->
+<html class="--alias-focus-ring=olw-2px;olst=solid;olc=currentColor">
+  <button class="@focus-ring olw-4px"></button>
+  <!-- before merge: olw-2px olst=solid olc=currentColor olw-4px -->
+  <!-- after merge: @focus-ring olw-4px -->
 </html>
 ```
 
-Maple keeps the alias class when at least one expanded utility inside the alias still applies. In this example, `p-8` overrides the alias's `p-4`, but the alias is kept because its `bgc-white` utility still applies.
+Maple keeps the alias class when at least one expanded utility inside the alias still applies. In this example, `olw-4px` overrides the alias's `olw-2px`, but the alias is kept because its outline style and color utilities still apply.
 
 Alias-generated selectors are intentionally low-specificity. This lets a direct utility on the same element override an individual alias member even if the alias rule is generated later. For example, `fxrow-cc jc=space-between` keeps both classes, but `jc=space-between` wins for `justify-content`.
 
@@ -1999,7 +2001,7 @@ Maple's merge model is property-aware rather than string-only:
 - Arbitrary values, custom values, and CSS variables still follow class order: `h-[10px] h-[20px]` becomes `h-[20px]`, and `--tone-factor=1 --tone-factor=2` becomes `--tone-factor=2`.
 - Important utilities conflict with other important utilities, and they suppress earlier normal utilities for the same property: `!p-3 !p-4` becomes `!p-4`, `p-3 !p-4` becomes `!p-4`, and `!p-3 p-4` stays `!p-3 p-4`.
 - Composable CSS features are merged by component, not by the final serialized property. For example, transform and filter utilities such as `tl-4 rot-45` or `blur-4 brightness-100` can coexist, while `tl-4 tl-8` resolves to `tl-8`.
-- Aliases expand before merge checks. If `@card` expands to `p-4;bgc-white`, then `@card p-8` keeps `@card p-8` because the alias still contributes `bgc-white`, but its `p-4` member is overridden by `p-8`.
+- Aliases expand before merge checks. If `@focus-ring` expands to `olw-2px;olst=solid;olc=currentColor`, then `@focus-ring olw-4px` keeps `@focus-ring olw-4px` because the alias still contributes outline style and color, but its `olw-2px` member is overridden by `olw-4px`.
 
 Maple also handles CSS shorthand relationships carefully. A later broad shorthand can remove earlier covered utilities, but Maple avoids false positives for properties that share a prefix without actually overriding each other. For example, `br-px rad-px`, `fx-1 fxdir=row`, `of=hidden ofwr=anywhere`, and `cols-1 col-2` are kept because those pairs target distinct CSS behavior.
 
@@ -2149,7 +2151,7 @@ This gives you the best of both worlds: global performance with `refs`, plus loc
 
 These practices align with Maple's philosophy and modern frontend development principles.
 
-### 1. Prefer Semantic Tokens Over Arbitrary Values
+### Prefer Semantic Tokens Over Arbitrary Values
 
 Maple's variable-first architecture shines when you use semantic tokens that can be overridden contextually.
 
@@ -2169,23 +2171,26 @@ Define your tokens once and let Maple's fallback chain do the work:
 ></html>
 ```
 
-### 2. Compose Utilities, Don't Repeat
+### Compose Locally, Extract Components
 
-Combine utilities to build complex effects.
+Compose utilities directly when a pattern is local to one element. When the same class combination appears repeatedly, move it into a component, template, or helper so the behavior has one owner.
+
+### Use Aliases for Utility-Like Jobs
+
+Reserve aliases for utility-first shortcuts: multiple declarations that perform one clear styling job. They are a good fit for behaviors like text truncation, font smoothing, or focus rings, not for component-sized button or card recipes.
 
 ```html
-<!-- ✅ Good: Reuse via component or template -->
-<button
-  class="bgc-primary c-white px-6 py-3 rad-8 ts-150 &:hover:bgc-primary-600"
->
-  Submit
-</button>
+<!-- ✅ Good: Alias for one utility-like job -->
+<html class="--alias-truncate=of=hidden;tof=ellipsis;ws=nowrap">
+  <body>
+    <span class="@truncate w-40">Long text that should truncate</span>
+  </body>
+</html>
+
+<!-- ⚠️ Avoid: Component-sized aliases like @button or @card -->
 ```
 
-> [!TIP]
-> Avoid duplicating the same combination across elements. If that's the case, it may be a sign that you need to create a new component.
-
-### 3. Use Scoped Variables for Component Theming
+### Use Scoped Variables for Component Theming
 
 Instead of creating component variants via props or separate classes, scope variables locally:
 
@@ -2202,7 +2207,7 @@ Instead of creating component variants via props or separate classes, scope vari
 
 This creates truly portable components that adapt to their context.
 
-### 4. Bound Runtime Values
+### Bound Runtime Values
 
 Maple generates styles on-demand, but dynamic runtime values can cause CSSOM growth:
 
@@ -2210,8 +2215,8 @@ Maple generates styles on-demand, but dynamic runtime values can cause CSSOM gro
 <!-- ⚠️ Risky: Dynamic user input -->
 <div class="w=${userInput}px"></div>
 
-<!-- ✅ Safe: Constrained to design tokens -->
-<div class="w-${['sm', 'md', 'lg'][sizeIndex] ?? 'md'}"></div>
+<!-- ✅ Safe: Constrained to known numeric scale values -->
+<div class="w-${[32, 48, 64][sizeIndex] ?? 48}"></div>
 
 <!-- ✅ Safe: Ephemeral CSS layer with $$ prefix -->
 <div class="$$tl-x=\${scrollPos}px"></div>
@@ -2220,7 +2225,7 @@ Maple generates styles on-demand, but dynamic runtime values can cause CSSOM gro
 > [!TIP]
 > If you cannot avoid dynamic values (e.g., scroll position, mouse coordinates), use **Dynamic Classes** by prefixing them with `$$`. This prevents CSSOM pollution by writing styles to an ephemeral layer. See [Dynamic Values](#9-dynamic-values).
 
-### 5. Use Selectors Responsibly
+### Use Selectors Responsibly
 
 Maple's selector power (`^`, `&`, `/`) enables component encapsulation, but overuse creates complexity:
 
@@ -2237,22 +2242,24 @@ If a selector chain becomes hard to read, consider restructuring your component 
 > [!IMPORTANT]
 > Parent (`^`) and self (`&`) selectors are great for isolated components. However, the child selector (`/`) should only be used when you have no control over the children (e.g., CMS output, markdown). Otherwise, it goes against the utility-first philosophy.
 
-### 6. Prefer Container Queries
+### Prefer Container Queries
 
 Maple is **container query first**—breakpoints without `@` target the nearest container, not the viewport. Use `@` prefix for viewport media queries.
 
 ```html
-<!-- Container query (targets nearest container) -->
-<div class="sm:cols-2"><!-- 2 cols when container >= sm --></div>
+<!-- Container query (targets nearest .cnt ancestor) -->
+<section class="cnt">
+  <div class="sm:cols-2"><!-- 2 cols when container >= sm --></div>
+</section>
 
 <!-- Viewport query (requires @ prefix) -->
 <div class="@md:cols-3"><!-- 3 cols when viewport >= md --></div>
 ```
 
 > [!IMPORTANT]
-> Do not forget to add `cnt` class to the nearest container you want to target. If none of the parents have `cnt` class, the query will not work.
+> Add `cnt` to the nearest parent container you want to query. Do not put it on `html` or `body`; wrap your application or component area instead.
 
-### 7. Prefer Native CSS Features Over JavaScript
+### Prefer Native CSS Features Over JavaScript
 
 Use scroll-state queries for sticky element behavior instead of JavaScript scroll listeners:
 
@@ -2264,7 +2271,7 @@ Use scroll-state queries for sticky element behavior instead of JavaScript scrol
 <nav class="^.scrolled:bshadow-lg"><!-- Requires JS to add .scrolled --></nav>
 ```
 
-### 8. Leverage Color Manipulation
+### Leverage Color Manipulation
 
 Use Maple's OKLCH color system instead of defining multiple color variants:
 
@@ -2279,6 +2286,8 @@ Use Maple's OKLCH color system instead of defining multiple color variants:
 ```
 
 The `-600`, `-700` suffixes adjust lightness automatically in OKLCH space.
+
+Keep tone and alpha values on a small, consistent scale such as steps of 5 or 10.
 
 For advanced color manipulation, use these CSS variables:
 
@@ -2325,7 +2334,19 @@ There are also two global curve controls for tone generation:
 > [!TIP]
 > In dark mode, you can set `--l-shift: -0.7` to invert the tone scale — tones below 500 become darker while tones above 500 become lighter. This is useful for maintaining visual hierarchy when switching color schemes.
 
-### 9. Use `!important` Sparingly
+### Use Reference Mode Deliberately
+
+The `refs` option can reduce generated CSS and speed up large pages by caching fallback chains in global reference variables. Use it for broad design-system pages, but avoid it for component libraries that depend heavily on local variable overrides.
+
+```html
+<!-- refs caches repeated fallback chains globally -->
+<script src="maple.js?refs"></script>
+
+<!-- Use $ when a local override must bypass the reference cache -->
+<div class="$p-4 --p-4=2rem"></div>
+```
+
+### Use `!important` Sparingly
 
 The `!` prefix is powerful but should be reserved for true overrides:
 
@@ -2337,7 +2358,7 @@ The `!` prefix is powerful but should be reserved for true overrides:
 <div class="!p-4 !bgc-white !c-black"></div>
 ```
 
-### 10. Building Component Libraries with Maple
+### Building Component Libraries with Maple
 
 #### Self Selector for Component Variants
 
