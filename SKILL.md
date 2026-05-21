@@ -549,7 +549,7 @@ Maple supports `!important` via two syntaxes:
 
 #### 9. Dynamic Values
 
-For values that change frequently (like scroll position, mouse coordinates, or sliders), generating unique classes for every value can pollute the CSSOM and cause performance issues. Maple solves this with **Dynamic Classes**.
+For values that change frequently (like scroll position, mouse coordinates, or sliders), generating unique persistent classes for every value can grow the CSSOM and hurt performance. Maple provides **Dynamic Classes** for these cases.
 
 Prefix any class with `$$` to mark it as dynamic. Dynamic classes:
 
@@ -557,7 +557,7 @@ Prefix any class with `$$` to mark it as dynamic. Dynamic classes:
 - Do not pollute the main stylesheet.
 - Are automatically cleared and replaced on the next update cycle.
 
-This is perfect for integrating JS-driven values with Maple's utility system without generating infinite garbage rules.
+This is useful for integrating JS-driven values with Maple's utility system without adding a permanent rule for every intermediate value.
 
 ```javascript
 /* Example: using a slider to update CSS variables dynamically */
@@ -2207,9 +2207,9 @@ Instead of creating component variants via props or separate classes, scope vari
 
 This creates truly portable components that adapt to their context.
 
-### Bound Runtime Values
+### Bounded Runtime Values
 
-Maple generates styles on-demand, but dynamic runtime values can cause CSSOM growth:
+Maple generates styles on-demand, but persistent classes generated from unbounded runtime values remain in the CSSOM for the life of the page:
 
 ```html
 <!-- ⚠️ Risky: Dynamic user input -->
@@ -2223,7 +2223,7 @@ Maple generates styles on-demand, but dynamic runtime values can cause CSSOM gro
 ```
 
 > [!TIP]
-> If you cannot avoid dynamic values (e.g., scroll position, mouse coordinates), use **Dynamic Classes** by prefixing them with `$$`. This prevents CSSOM pollution by writing styles to an ephemeral layer. See [Dynamic Values](#9-dynamic-values).
+> If you cannot avoid frequently changing values (e.g., scroll position, mouse coordinates), use **Dynamic Classes** by prefixing them with `$$`. This keeps intermediate values out of the main stylesheet by writing them to an ephemeral layer. See [Dynamic Values](#9-dynamic-values).
 
 ### Use Selectors Responsibly
 
@@ -2288,6 +2288,8 @@ Use Maple's OKLCH color system instead of defining multiple color variants:
 The `-600`, `-700` suffixes adjust lightness automatically in OKLCH space.
 
 Keep tone and alpha values on a small, consistent scale such as steps of 5 or 10.
+
+Because Maple color utilities rely on CSS relative color syntax with OKLCH, support depends on the browser. As of May 2026, global support for relative color syntax is about 89%, while plain OKLab and OKLCH color support is broader. Browsers that do not support relative color syntax ignore the generated color declaration, so provide authored fallbacks if you need to support them.
 
 For advanced color manipulation, use these CSS variables:
 
