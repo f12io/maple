@@ -2155,7 +2155,7 @@ Maple's variable-first architecture shines when you use semantic tokens that can
 
 ```html
 <!-- ✅ Good: Semantic tokens, themeable -->
-<div class="bgc-primary c-on-primary p-4 rad-lg"></div>
+<div class="bgc-primary-200 c-primary-700 p-4 rad-lg"></div>
 
 <!-- ⚠️ Avoid: Arbitrary values, not themeable -->
 <div class="bgc=#3b82f6 c=white p=16px rad=8px"></div>
@@ -2192,11 +2192,11 @@ Instead of creating component variants via props or separate classes, scope vari
 ```html
 <!-- ✅ Good: Scoped theming via variables -->
 <div class="--accent=teal">
-  <button class="bgc-accent c-white">Teal Button</button>
+  <button class="bgc-accent-500 c-white">Teal Button</button>
 </div>
 
 <div class="--accent=purple">
-  <button class="bgc-accent c-white">Purple Button</button>
+  <button class="bgc-accent-500 c-white">Purple Button</button>
 </div>
 ```
 
@@ -2213,8 +2213,8 @@ Maple generates styles on-demand, but dynamic runtime values can cause CSSOM gro
 <!-- ✅ Safe: Constrained to design tokens -->
 <div class="w-${['sm', 'md', 'lg'][sizeIndex] ?? 'md'}"></div>
 
-<!-- ✅ Safe: Limited set of known values -->
-<div class="p-${[2, 4, 6, 8][spacingLevel] ?? 4}"></div>
+<!-- ✅ Safe: Ephemeral CSS layer with $$ prefix -->
+<div class="$$tl-x=\${scrollPos}px"></div>
 ```
 
 > [!TIP]
@@ -2271,7 +2271,7 @@ Use Maple's OKLCH color system instead of defining multiple color variants:
 ```html
 <!-- ✅ Good: Derive variants from base color -->
 <button
-  class="bgc-primary &:hover:bgc-primary-600 &:active:bgc-primary-700"
+  class="bgc-primary-500 &:hover:bgc-primary-600 &:active:bgc-primary-700"
 ></button>
 
 <!-- ⚠️ Avoid: Defining separate colors for each state -->
@@ -2437,7 +2437,7 @@ Multiple classes combine naturally: `<Button className="outline lg" />` applies 
 > [!TIP]
 > Define your design tokens as CSS variables (`--bgc-primary`, `--c-primary`, `--brc-primary`, etc.) and reference them in utilities. The same component works across different themes without any code changes.
 
-## Property Abbreviations Reference
+## Abbreviations Reference
 
 Maple uses abbreviations for CSS properties. If a property is not listed, use its camelCase version (e.g., `scrollBehavior`).
 
