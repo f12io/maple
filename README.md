@@ -39,7 +39,7 @@ Add Maple to your project by including the script below and start styling.
   </head>
   <body>
     <!-- Start styling -->
-    <div class="bgc-blue c-white p-4">Hello World</div>
+    <div class="bgc-blue-400 c-white p-4">Hello World</div>
   </body>
 </html>
 ```
@@ -499,13 +499,12 @@ An element styled with Maple is a self-contained unit of styling logic that beha
 
 ## Limitations & Trade-offs
 
-Maple deliberately shifts styling concerns from build time to runtime. This unlocks new capabilities, but also introduces constraints that are important to understand before adopting it.
+Maple's architecture offers unique benefits but also introduces constraints you should understand before adoption.
 
-- **JavaScript is required for styling.** Maple does not generate or ship static CSS. If JavaScript is disabled, the page will render without styles.
-- **Not all CSS belongs in utilities.** While Maple supports advanced selectors, certain patterns—such as complex keyframes-are often better expressed in traditional CSS. Please keep in mind that Maple is optimized for utility-first and token-driven design systems.
-- **Arbitrary runtime values must be bounded.** Styles generated from arbitrary runtime values can lead to excessive CSSOM growth. As with static stylesheets, once a style rule is inserted into the CSSOM, it remains in memory until page unload. When arbitrary runtime values are not used, Maple’s total CSSOM memory usage converges to that of an equivalent static CSS implementation. The difference is that Maple starts with an empty CSSOM and builds it incrementally as needed.
-- **Runtime cost scales with the number of unique utility classes.** Maple’s runtime overhead scales with the number of unique utility classes that actually appear in the DOM. For most applications this cost is negligible—and often lower than shipping large static stylesheets—but performance characteristics should be evaluated for your specific use case. See [Performance](#performance) and the [examples](#examples) for guidance.
-- **Relative OKLCH Colors** Maple uses OKLCH relative colors to support dynamic color adjustment. As of writing, the browser support is 89.65%. Please check [Can I use](https://caniuse.com/mdn-css_types_color_oklch_relative_syntax) for the latest information.
+- **JavaScript is Required.** Maple runs entirely in the browser and does not generate static CSS. If JavaScript is disabled, the page will render without styles. This is the fundamental trade-off for achieving a no-build pipeline and constant transfer size.
+- **Runtime Cost Scaling.** Maple's generation work scales with the number of **unique** utility classes that appear in the DOM. More unique utilities mean more runtime generation work.
+- **Not all CSS fits in Utilities.** While Maple supports advanced selectors and interpolation, certain patterns — such as keyframes, font-face declarations, global resets — are often better expressed in traditional CSS.
+- **Relative OKLCH Colors.** Maple color utilities use CSS relative color syntax with OKLCH so colors can be adjusted from their base values in the browser. As of May 2026, [global support for relative color syntax](https://caniuse.com/css-relative-colors) is about 89%, with broader support for plain [OKLab and OKLCH colors](https://caniuse.com/wf-oklab). Browsers that do not support relative color syntax ignore those generated color declarations.
 
 ## Contributing
 
