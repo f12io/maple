@@ -121,6 +121,14 @@ describe('Child', () => {
   });
 });
 
+describe('Parent and Self Selector', () => {
+  it('parent and self selector', () => {
+    expect(convert('^&[info]/span:c=red')).toBe(
+      ':root .\\^\\&\\[info\\]\\/span\\:c\\=red[info] span, [info] .\\^\\&\\[info\\]\\/span\\:c\\=red span { color: red; }',
+    );
+  });
+});
+
 describe('Parser Stress Tests', () => {
   it('colon in utility value with brackets (invalid css is expected)', () => {
     expect(convert('content-[Time=12:00]')).toBe(

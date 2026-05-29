@@ -157,6 +157,7 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
   let parentSel: string | undefined;
   let selfSel: string | undefined;
   let childSel: string | undefined;
+  let isMultiSelector = false;
 
   if (!contextRaw) {
     return;
@@ -200,6 +201,17 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
         code === 0;
 
       if (isAnchor) {
+        let isDoubleAnchor = false;
+
+        if (
+          code === CHAR_CARET &&
+          i + 1 < len &&
+          contextRaw.charCodeAt(i + 1) === CHAR_AMPERSAND
+        ) {
+          isDoubleAnchor = true;
+          isMultiSelector = true;
+        }
+
         // --- FLUSH SEGMENT ---
         if (lastAnchorType === 0) {
           // Parse Media Query (0 to i)
@@ -233,8 +245,14 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
         }
 
         // Update State
-        lastAnchorType = code;
-        lastAnchorIndex = i;
+        if (isDoubleAnchor) {
+          lastAnchorType = CHAR_AMPERSAND;
+          i++;
+          lastAnchorIndex = i;
+        } else {
+          lastAnchorType = code;
+          lastAnchorIndex = i;
+        }
       }
     }
   }
@@ -244,6 +262,7 @@ export function parseSelectors(contextRaw: string): ParsedSelector | undefined {
     parentSel,
     selfSel,
     childSel,
+    isMultiSelector,
   };
 
   setCacheItem(SELECTOR_CACHE, contextRaw, parsedSelector);

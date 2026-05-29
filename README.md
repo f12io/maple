@@ -24,7 +24,7 @@ Maple is a runtime CSS engine that generates atomic styles from class names **on
 
 Instead of shipping a stylesheet upfront, Maple ships a small runtime (~10kb gzipped) that observes the DOM and constructs CSS incrementally as your application renders. If a class is never used, its style is never generated.
 
-This shifts styling cost from upfront network transfer to demand-driven runtime generation, eliminating build steps, configuration, and unused CSS — while keeping styles deterministic and encapsulated.
+This shifts styling cost from upfront network transfer to demand-driven runtime generation, eliminating build steps, configuration, and unused CSS — while keeping styles encapsulated.
 
 ## Quick Start
 
@@ -424,7 +424,7 @@ The same markup produces different results — without conditional classes, dupl
 Components can tune color behavior locally:
 
 ```html
-<div class="@dark:--bgc-lightness-factor=0.2 @dark:--c-lightness-factor=100">
+<div class="@dark:--bgc-l-scale=0.2 @dark:--c-l-scale=100">
   <div class="bgc-primary c-primary"></div>
 </div>
 ```

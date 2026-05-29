@@ -24,6 +24,7 @@ let sheet: Sheet = null;
 let refNumbersLayer: Group;
 let refColorsLayer: Group;
 let refCustomLayer: Group;
+let aliasesLayer: Group;
 let utilsLayer: Group;
 let dynamicLayer: Group;
 
@@ -119,7 +120,7 @@ export function insertRefVar(
   }
 }
 
-function insertRule({ content, parsedMediaQuery, parsed }: RuleData) {
+function insertRule({ content, isAlias, parsedMediaQuery, parsed }: RuleData) {
   if (!sheet) return;
 
   if (parsed.isDynamic) {
@@ -144,7 +145,11 @@ function insertRule({ content, parsedMediaQuery, parsed }: RuleData) {
     }
   }
 
-  const layer = getOrInsertLayer(typeIndex, priorityIndex);
+  const layer = getOrInsertLayer(
+    isAlias ? aliasesLayer : utilsLayer,
+    typeIndex,
+    priorityIndex,
+  );
 
   if (!layer) return;
 
@@ -165,23 +170,35 @@ function insertRule({ content, parsedMediaQuery, parsed }: RuleData) {
 }
 
 function getLayerKey(layer: Layer) {
-  return `${(layer?.parentRule as Layer)?.name ?? ''}${layer?.name}`;
+  const names: Array<string> = [];
+  let current = layer;
+
+  while (current) {
+    names.unshift(current.name);
+    current = current.parentRule as Layer;
+  }
+
+  return names.join('/');
 }
 
-function getOrInsertLayer(typeIndex: number, priorityIndex: number) {
-  let typeLayer = utilsLayer?.cssRules[typeIndex] as Layer;
+function getOrInsertLayer(
+  rootLayer: Group,
+  typeIndex: number,
+  priorityIndex: number,
+) {
+  let typeLayer = rootLayer?.cssRules[typeIndex] as Layer;
 
   if (!typeLayer) {
     for (
-      let index = utilsLayer?.cssRules.length ?? 0;
+      let index = rootLayer?.cssRules.length ?? 0;
       index <= typeIndex;
       index++
     ) {
-      utilsLayer?.insertRule(`@layer t${index} {}`, index);
+      rootLayer?.insertRule(`@layer t${index} {}`, index);
     }
   }
 
-  typeLayer = utilsLayer?.cssRules[typeIndex] as Layer;
+  typeLayer = rootLayer?.cssRules[typeIndex] as Layer;
 
   let priorityLayer = typeLayer?.cssRules[priorityIndex] as Layer;
 
@@ -312,8 +329,9 @@ function initStyleSheet() {
   if (!sheet) return;
 
   sheet.insertRule('@layer refs {}', 0);
-  sheet.insertRule('@layer utils {}', 1);
-  sheet.insertRule('@layer dynamic {}', 2);
+  sheet.insertRule('@layer aliases {}', 1);
+  sheet.insertRule('@layer utils {}', 2);
+  sheet.insertRule('@layer dynamic {}', 3);
 
   if (OPTIONS.refs) {
     const refsLayer = sheet.cssRules[0] as CSSGroupingRule;
@@ -326,6 +344,7 @@ function initStyleSheet() {
     refCustomLayer = refsLayer.cssRules[2] as CSSGroupingRule;
   }
 
-  utilsLayer = sheet.cssRules[1] as CSSGroupingRule;
-  dynamicLayer = sheet.cssRules[2] as CSSGroupingRule;
+  aliasesLayer = sheet.cssRules[1] as CSSGroupingRule;
+  utilsLayer = sheet.cssRules[2] as CSSGroupingRule;
+  dynamicLayer = sheet.cssRules[3] as CSSGroupingRule;
 }

@@ -61,6 +61,7 @@ export interface ParsedSelector {
   parentSel?: string;
   selfSel?: string;
   childSel?: string;
+  isMultiSelector?: boolean;
 }
 
 export interface ParsedClass {
@@ -74,6 +75,7 @@ export interface ParsedClass {
   parentSel?: string;
   selfSel?: string;
   childSel?: string;
+  isMultiSelector?: boolean;
   utilKey: string;
   utilVal: string;
   utilOp: '-' | '=';
@@ -88,6 +90,7 @@ export interface ParsedClass {
 
 export interface RuleData {
   content: string;
+  isAlias?: boolean;
   overrideRule?: RuleData;
   parsedMediaQuery: ParsedMediaQuery | undefined;
   parsed: ParsedClass;

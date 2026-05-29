@@ -7,7 +7,6 @@ import { OPTIONS } from './constants/config';
 import {
   BACKDROP_FILTER_KEYS,
   FILTER_KEYS,
-  SHORTCUTS,
   TRANSFORM_KEYS,
 } from './constants/dictionaries';
 import { REGEX_OVERRIDABLE_MEDIA_QUERY } from './constants/regex';
@@ -31,43 +30,54 @@ const COMPOSABLE_KEYS = new Set([
   ...Object.keys(TRANSFORM_KEYS),
 ]);
 
-export function buildRule(srcClass: string): RuleData | undefined {
+export function buildRule(
+  srcClass: string,
+  isRoot = false,
+  selectorSrcClass = srcClass,
+): RuleData | undefined {
+  const isAlias = selectorSrcClass !== srcClass;
   const parsed = parseClass(srcClass);
+  parsed.srcSel = parseClass(selectorSrcClass).srcSel;
   const styleContent = buildProp(parsed);
 
   if (!styleContent) return;
 
-  const selector = buildSelector(parsed);
+  const selectors = buildSelector(parsed);
 
-  if (!selector) return;
+  if (!selectors.length) return;
 
   const parsedMediaQuery = parseMediaQuery(parsed);
   const content = buildRuleContent(
     parsedMediaQuery?.prefix,
     parsedMediaQuery?.rootSelector,
-    selector,
+    selectors,
     styleContent,
     parsedMediaQuery?.suffix,
+    isRoot,
   );
   const overrideRule = buildOverrideRule(
     srcClass,
-    selector,
+    selectorSrcClass,
+    selectors,
     styleContent,
     parsedMediaQuery?.overrideRootSelector,
+    isRoot,
   );
 
   parsed.conflictKey = OPTIONS.nomerge
     ? '1'
     : buildConflictKey(styleContent, parsed, parsedMediaQuery);
 
-  return { content, overrideRule, parsedMediaQuery, parsed };
+  return { content, isAlias, overrideRule, parsedMediaQuery, parsed };
 }
 
 function buildOverrideRule(
   srcClass: string,
-  selector: string,
+  selectorSrcClass: string,
+  selectors: Array<string>,
   styleContent: string,
   overrideRootSelector: string | undefined,
+  isRoot: boolean,
 ): RuleData | undefined {
   if (!overrideRootSelector) {
     return;
@@ -76,6 +86,9 @@ function buildOverrideRule(
   const parsed = parseClass(
     srcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''),
   );
+  parsed.srcSel = parseClass(
+    selectorSrcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''),
+  ).srcSel;
   const parsedMediaQuery = parseMediaQuery(parsed);
   const rootSelector = parsedMediaQuery?.rootSelector
     ? parsedMediaQuery.rootSelector.replace(':root', '')
@@ -86,26 +99,52 @@ function buildOverrideRule(
   const content = buildRuleContent(
     parsedMediaQuery?.prefix,
     overrideRootSelector,
-    selector,
+    selectors,
     styleContent,
     parsedMediaQuery?.suffix,
+    isRoot,
   );
 
-  return { content, parsed, parsedMediaQuery };
+  return {
+    content,
+    isAlias: selectorSrcClass !== srcClass,
+    parsed,
+    parsedMediaQuery,
+  };
 }
 
 function buildRuleContent(
   prefix: string | undefined,
   rootSelector: string | undefined,
-  selector: string,
+  selectors: Array<string>,
   styleContent: string,
   suffix: string | undefined,
+  isRoot: boolean,
 ) {
   if (rootSelector) {
-    selector = `${rootSelector}${selector}, ${rootSelector} ${selector}`;
+    if (isRoot) {
+      /**
+       * Strip the utility class from selectors if we
+       * generate styles for the html element.
+       *
+       * This approach provides style leaking if only we are on
+       * the root element and there is internal class selectors, like
+       * .dark and .light
+       */
+      selectors = [rootSelector];
+    } else {
+      selectors = selectors.map((selector) => {
+        /**
+         * rootSelector already includes :root, so we need to remove it
+         * to prevent duplicate :root selectors
+         */
+        selector = selector.replace(':root ', '');
+        return `${rootSelector}${selector}, ${rootSelector} ${selector}`;
+      });
+    }
   }
 
-  const style = `${selector} { ${styleContent} }`;
+  const style = `${selectors.join(', ')} { ${styleContent} }`;
 
   if (prefix && suffix) {
     return `${prefix}${style} ${suffix}`.trim();
@@ -124,9 +163,6 @@ function buildProp(parsed: ParsedClass) {
   const { utilVal, isImportant } = parsed;
 
   if (!utilVal) {
-    if (SHORTCUTS[utilKey]) {
-      return `${SHORTCUTS[utilKey]}${isImportant ? ' !important' : ''};`;
-    }
     return;
   }
 
@@ -186,8 +222,35 @@ function buildSelector({
   parentSel = '',
   selfSel = '',
   childSel = '',
-}: ParsedClass) {
-  return `${serializeSelector(parentSel)} ${srcSel}${serializeSelector(selfSel)} ${serializeSelector(childSel)}`.trim();
+  isMultiSelector,
+}: ParsedClass): Array<string> {
+  const serializedParent = serializeSelector(parentSel);
+  const serializedSelf = serializeSelector(selfSel);
+  const serializedChild = serializeSelector(childSel);
+  const res = [];
+
+  if (isMultiSelector) {
+    const self = `:root ${srcSel}${serializedSelf} ${serializedChild}`.trim();
+
+    if (self) {
+      res.push(self);
+    }
+
+    const parent = `${serializedSelf} ${srcSel} ${serializedChild}`.trim();
+
+    if (parent) {
+      res.push(parent);
+    }
+  } else {
+    const selector =
+      `${serializedParent} ${srcSel}${serializedSelf} ${serializedChild}`.trim();
+
+    if (selector) {
+      res.push(selector);
+    }
+  }
+
+  return res;
 }
 
 function buildConflictKey(
@@ -195,6 +258,7 @@ function buildConflictKey(
   {
     utilKey,
     propKeyKebab,
+    isImportant,
     parentSel = '',
     selfSel = '',
     childSel = '',
@@ -205,13 +269,9 @@ function buildConflictKey(
 
   if (COMPOSABLE_KEYS.has(utilKey)) {
     propKey = utilKey;
-  } else if (SHORTCUTS[utilKey]) {
-    const colonIndex = styleContent.indexOf(':');
-    propKey =
-      colonIndex > -1 ? styleContent.slice(0, colonIndex) : styleContent;
   } else {
     propKey = propKeyKebab;
   }
 
-  return `${propKey}:${childSel}${selfSel}${parentSel}${parsedMediaQuery?.prefix ?? ''}${parsedMediaQuery?.bucketQuery ?? ''}`;
+  return `${propKey}:${isImportant ? '!' : ''}${childSel}${selfSel}${parentSel}${parsedMediaQuery?.prefix ?? ''}${parsedMediaQuery?.bucketQuery ?? ''}`;
 }

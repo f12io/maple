@@ -12,6 +12,7 @@ export const OPTIONS: {
   batching: 0,
   nohybrid: 0,
   breakpoints: {
+    xs: '480px',
     sm: '640px',
     md: '768px',
     lg: '1024px',
@@ -23,7 +24,8 @@ export const OPTIONS: {
 export const CACHE_MAX_SIZE = 2000;
 export const CACHE_EVICTION_BATCH = Math.floor(CACHE_MAX_SIZE * 0.25);
 
-export const COLOR_MID_TONE = 500;
+export const COLOR_MIN_TONE = 50;
+export const COLOR_MAX_TONE = 950;
 
 export const PROP_TYPE_OTHER = 0;
 export const PROP_TYPE_SPACE = 1;

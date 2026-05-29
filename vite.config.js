@@ -2,8 +2,8 @@ import { playwright } from '@vitest/browser-playwright';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
-import { prepareAnimations } from './build/plugins/prepare-animations';
 import { prepareExamples } from './build/plugins/prepare-examples';
+import { prepareKeyframes } from './build/plugins/prepare-keyframes';
 import { precalculatePropAbbreviations } from './build/plugins/prop-abbr-precalculator';
 import { precalculatePropTypes } from './build/plugins/prop-type-precalculator';
 
@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
       plugins.push(precalculatePropTypes());
     } else {
       plugins.push(prepareExamples());
-      plugins.push(prepareAnimations());
+      plugins.push(prepareKeyframes());
     }
   }
 
