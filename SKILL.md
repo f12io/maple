@@ -20,7 +20,7 @@ This guide provides instructions on how to write CSS using the Maple engine. Map
 To style an application with Maple, all you need is to include the script below in the document head:
 
 ```html
-<script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script>
 ```
 
 > [!IMPORTANT]
@@ -761,7 +761,7 @@ Maple script accepts breakpoint configuration via query string.
 ```html
 <html>
   <head>
-    <script src="https://unpkg.com/@f12io/maple/dist/maple.js?md=680px&4xl=1920px"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js?md=680px&4xl=1920px"></script>
   </head>
 
   <body>
@@ -1635,9 +1635,9 @@ For convenience, include `keyframes.css` when you want to use Maple's built-in a
 <head>
   <link
     rel="stylesheet"
-    href="https://unpkg.com/@f12io/maple/dist/keyframes.css"
+    href="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/keyframes.css"
   />
-  <script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script>
 </head>
 ```
 
@@ -2016,7 +2016,7 @@ Maple accepts configuration via script query string parameters.
 ### Script Query String
 
 ```html
-<script src="https://unpkg.com/@f12io/maple/dist/maple.js?refs&nomerge&md=680px&4xl=1920px"></script>
+<script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js?refs&nomerge&md=680px&4xl=1920px"></script>
 ```
 
 | Parameter              | Description                                  |

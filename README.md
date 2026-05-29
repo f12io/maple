@@ -35,7 +35,7 @@ Add Maple to your project by including the script below and start styling.
 <html lang="en">
   <head>
     <!-- Include Maple in the head -->
-    <script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script>
   </head>
   <body>
     <!-- Start styling -->
@@ -153,7 +153,7 @@ bg-blue → Browser
 To style an application with Maple, all you need is to include the script below in the document head:
 
 ```html
-<script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script>
 ```
 
 ---
