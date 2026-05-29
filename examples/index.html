@@ -1,7 +1,7 @@
 <!doctype html>
 <html
   lang="en"
-  class="--bg=white --text=black @dark:--bg=black @dark:--text=white"
+  class="--bg=white --text=black @dark:--bg=black @dark:--text=white /*:boxSizing=border-box"
 >
   <head>
     <meta charset="utf-8" />
@@ -10,21 +10,31 @@
     <script src="maple.js"></script>
   </head>
 
-  <body class="bgc-bg c-text m-0 p-8 ff=[system-ui,_-apple-system,_sans-serif]">
-    <div class="mx-auto mxw-768px fxcol gap-24px">
+  <body
+    class="bgc-bg c-text m-0 p-8 lh=1.5 ff=[system-ui,_-apple-system,_sans-serif]"
+  >
+    <div class="mx-auto mxw-180 fxcol-sh g-8">
       <header class="fxcol gap-8px">
         <h1>Maple Examples</h1>
         <p class="c-text/70">
-          This folder contains example usages and tests of the Maple CSS
-          runtime. You can navigate the examples below.
+          This <strong>examples</strong> folder contains example usages and
+          tests of the Maple CSS runtime. You can navigate the examples below.
         </p>
+        <div
+          class="p-4 mt-2 rad-2 bgc-deepskyblue/10 br brc-deepskyblue/15 c-text/80 fs-3.5"
+        >
+          <strong>Tip:</strong> The example pages will automatically update when
+          you change the core code. You can create temporary test files in the
+          <code>ignored/</code> directory (e.g. <code>ignored/test.html</code>)
+          to test your code on the fly without committing them.
+        </div>
       </header>
 
-      <main class="fxcol-ss gap-2">
+      <main class="fxcol-ss">
         <h2>Available Pages</h2>
         <a
           href="palette.html"
-          class="fxcol-sh w-% p-4 rad-2 g-2 bgc-text/5 &:hover:bgc-text/8 tdeco=none c-text br brc-text/10 ts-300_all"
+          class="fxcol-sh w-% p-4 rad-2 mb-2 g-1 tdeco=none c-text bgc-text/5 &:hover:bgc-text/8 br brc-text/10 ts-300_all"
         >
           <span class="fs-4 fw=600">Native CSS Color Palette</span>
           <span class="fs-3 c-text/60"
