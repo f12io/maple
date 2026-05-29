@@ -3,15 +3,84 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'v[0-9]*'
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 jobs:
+  validate-release-tag:
+    name: Validate Release Tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate tag, branch, and package versions
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${GITHUB_REF_NAME}"
+
+          if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid release tag: $tag"
+            exit 1
+          fi
+
+          git fetch origin main --tags --force
+
+          tag_commit="$(git rev-list -n 1 "$tag")"
+          main_head="$(git rev-parse origin/main)"
+
+          if [ "$tag_commit" != "$main_head" ]; then
+            echo "Tag $tag must point to the current origin/main HEAD"
+            echo "Tag commit:  $tag_commit"
+            echo "Main HEAD:   $main_head"
+            exit 1
+          fi
+
+          latest_tag="$(
+            git tag --merged origin/main --list 'v[0-9]*' --sort=-v:refname |
+            grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' |
+            head -n 1
+          )"
+
+          if [ "$tag" != "$latest_tag" ]; then
+            echo "Tag $tag is not the latest main tag. Latest is $latest_tag"
+            exit 1
+          fi
+
+          tag_version="${tag#v}"
+          package_version="$(node -p "require('./package.json').version")"
+          lock_version="$(node -p "require('./package-lock.json').version")"
+          lock_root_version="$(node -p "require('./package-lock.json').packages[''].version")"
+
+          if [ "$tag_version" != "$package_version" ]; then
+            echo "Tag version $tag_version does not match package.json version $package_version"
+            exit 1
+          fi
+
+          if [ "$package_version" != "$lock_version" ]; then
+            echo "package.json version $package_version does not match package-lock.json version $lock_version"
+            exit 1
+          fi
+
+          if [ "$package_version" != "$lock_root_version" ]; then
+            echo "package.json version $package_version does not match package-lock root package version $lock_root_version"
+            exit 1
+          fi
+
+          echo "version=$package_version" >> "$GITHUB_OUTPUT"
+
   build-and-test:
     name: Build & Test
+    needs: validate-release-tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -34,9 +103,22 @@ jobs:
         run: npm run build
 
       - name: Verify Artifacts
+        shell: bash
         run: |
-          ls -lh dist/maple.js
-          ls -lh dist/module/index.js
+          set -euo pipefail
+
+          artifacts=(
+            dist/maple.js
+            dist/module/index.js
+            dist/module/index.cjs
+            dist/module/types/index.d.ts
+            dist/module/types/index.d.cts
+          )
+
+          for artifact in "${artifacts[@]}"; do
+            test -s "$artifact"
+            ls -lh "$artifact"
+          done
 
       - name: Upload Distribution Artifacts
         uses: actions/upload-artifact@v4
@@ -44,10 +126,39 @@ jobs:
           name: dist
           path: dist/
 
-  publish-npm:
-    name: Publish to NPM
+  create-github-release:
+    name: Create Draft GitHub Release
     needs: build-and-test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Create Draft Release & Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            dist/maple.js
+            dist/module/index.js
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+
+  publish-npm:
+    name: Publish to NPM
+    needs: create-github-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -64,32 +175,44 @@ jobs:
           name: dist
           path: dist
 
+      - name: Verify Package Contents
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          npm pack --dry-run
+
+          node --input-type=module <<'NODE'
+          import { existsSync, statSync } from 'node:fs';
+
+          const requiredFiles = [
+            'dist/maple.js',
+            'dist/module/index.js',
+            'dist/module/index.cjs',
+            'dist/module/types/index.d.ts',
+            'dist/module/types/index.d.cts',
+          ];
+
+          for (const file of requiredFiles) {
+            if (!existsSync(file) || statSync(file).size === 0) {
+              throw new Error(`Missing or empty package file: ${file}`);
+            }
+          }
+          NODE
+
       - name: Publish Package
         run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  release-github:
-    name: GitHub Release
-    needs: build-and-test
+  publish-github-release:
+    name: Publish GitHub Release
+    needs: publish-npm
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-
-      - name: Create Release & Upload Assets
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            dist/maple.js
-            dist/module/index.js
-          generate_release_notes: true
-          fail_on_unmatched_files: true
+      - name: Publish Draft Release
+        run: gh release edit "$GITHUB_REF_NAME" --draft=false --latest
+        env:
+          GH_TOKEN: ${{ github.token }}

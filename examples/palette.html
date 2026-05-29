@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Native CSS Color Palette</title>
     <script src="maple.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script> -->
   </head>
   <body class="bgc-bg c-text m-0 p-8 ff=[system-ui,_-apple-system,_sans-serif]">
     <div class="fxcol-sh gap-12px" id="grid" style="visibility: hidden"></div>
@@ -198,7 +199,7 @@
 
         const row = document.createElement('div');
         row.className =
-          'color-row @gr cols=[160px_repeat(11,_1fr)] gap-12px ai=center';
+          'color-row @gr cols=[160px_repeat(11,_1fr)] g-3 ai=center';
         row.dataset.colorName = color;
 
         let html = `

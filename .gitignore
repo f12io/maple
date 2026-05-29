@@ -4,7 +4,7 @@
 /dist
 /examples/maple.js
 /examples/keyframes.css
-/examples/benchmarks/*
+/examples/ignored/*.html
 /tmp
 /out-tsc
 # Only exists if Bazel was run

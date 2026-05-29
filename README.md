@@ -2,7 +2,7 @@
 
   <h1>Maple</h1>
   <p>
-    A variable-first, framework-agnostic runtime CSS engine.<br>
+    A variable-first, stack-agnostic runtime CSS engine.<br>
     Atomic. Tiny (~12kb gzipped). Fast. Delightfully intuitive.
   </p>
 
@@ -20,7 +20,7 @@
 
 ## TL;DR
 
-Maple is a runtime CSS engine that generates atomic styles from class names **only when they appear in the DOM**.
+Maple is a runtime CSS engine that generates atomic styles from utility classes **only when they appear in the DOM**.
 
 Instead of shipping a stylesheet upfront, Maple ships a small runtime (~12kb gzipped) that observes the DOM and constructs CSS incrementally as your application renders. If a class is never used, its style is never generated.
 
@@ -35,7 +35,7 @@ Add Maple to your project by including the script below and start styling.
 <html lang="en">
   <head>
     <!-- Include Maple in the head -->
-    <script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script>
   </head>
   <body>
     <!-- Start styling -->
@@ -97,7 +97,7 @@ Maple is here to challenge this hard line. Instead of optimizing CSS files, Mapl
 
 **Developer Experience:**
 
-- No Build Pipeline
+- No Build Step
 - No Configuration Files
 - No Special SSR Treatment
 - Universal Portability
@@ -125,7 +125,7 @@ This moves work from upfront network transfer to incremental runtime generation,
 
 ---
 
-### No Build Pipeline
+### No Build Step
 
 This is where things get interesting. To put a blue rectangle on the screen today, `bg-blue` must travel through a sophisticated, multi-step build toolchain:
 
@@ -153,7 +153,7 @@ bg-blue → Browser
 To style an application with Maple, all you need is to include the script below in the document head:
 
 ```html
-<script src="https://unpkg.com/@f12io/maple/dist/maple.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script>
 ```
 
 ---
@@ -213,7 +213,8 @@ This guarantee, combined with the uniform specificity (0-1-0) of atomic utilitie
 - Simplified specificity: Complex precedence and tie-breaker resolution is avoided.
 - Zero dead code: The CSSOM grows linearly and never contains unused rules.
 
-This shifts CSS from a front-loaded, blocking asset into an incremental, demand-driven part of rendering, where cost scales only with the number of unique utility classes that actually appear on the page.
+This shifts CSS from a front-loaded, render-blocking asset into an incremental, demand-driven process. The performance cost now scales linearly, and only
+with the unique utility classes that actually appear on the page.
 
 ---
 
@@ -286,7 +287,7 @@ In a headless CMS, editors can supply utility strings as data, for example: `fs-
 Layouts, typography, and visual variants can be adjusted instantly—without touching code or triggering a deployment.
 
 > [!IMPORTANT]
-> The power of Maple comes with the responsibility of using it wisely. While Maple enables flexible and dynamic designs, class names with unbounded or highly variable runtime values can cause unnecessary CSSOM growth if not carefully constrained.
+> The power of Maple comes with the responsibility of using it wisely. While Maple enables flexible and dynamic designs, class names with dynamic or highly variable runtime values can cause unnecessary CSSOM growth if not carefully constrained.
 
 ---
 
@@ -476,7 +477,7 @@ So, elements define their own contextual behavior. This is true component encaps
 Maple supports self selectors via `&`, allowing components to express complex state logic directly:
 
 ```html
-<div class="^.dark&:hover:c-white">Interactive Component</div>
+<div class="&:hover:c-white">Interactive Component</div>
 ```
 
 #### 3. Child Selector (/)
@@ -505,6 +506,10 @@ Maple deliberately shifts styling concerns from build time to runtime. This unlo
 - **Arbitrary runtime values must be bounded.** Styles generated from arbitrary runtime values can lead to excessive CSSOM growth. As with static stylesheets, once a style rule is inserted into the CSSOM, it remains in memory until page unload. When arbitrary runtime values are not used, Maple’s total CSSOM memory usage converges to that of an equivalent static CSS implementation. The difference is that Maple starts with an empty CSSOM and builds it incrementally as needed.
 - **Runtime cost scales with the number of unique utility classes.** Maple’s runtime overhead scales with the number of unique utility classes that actually appear in the DOM. For most applications this cost is negligible—and often lower than shipping large static stylesheets—but performance characteristics should be evaluated for your specific use case. See [Performance](#performance) and the [examples](#examples) for guidance.
 - **Relative OKLCH Colors** Maple uses OKLCH relative colors to support dynamic color adjustment. As of writing, the browser support is 89.65%. Please check [Can I use](https://caniuse.com/mdn-css_types_color_oklch_relative_syntax) for the latest information.
+
+## Contributing
+
+If you're interested in contributing to Maple, please read our [contributing docs](https://github.com/f12io/maple/blob/main/.github/CONTRIBUTING.md) **before submitting a pull request**.
 
 ## License
 

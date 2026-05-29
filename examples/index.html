@@ -1,295 +1,49 @@
 <!doctype html>
 <html
-  class="--black=oklch(0.01_0_0/1) --color-primary=oklch(0.77_0.22_0/1) @dark:--bgc-lightness-factor=0.2 @dark:--c-lightness-factor=100 @dark:--bgc-blue-chroma-factor=0.2 @dark:--bgc-blue-lightness-factor=0.35"
+  lang="en"
+  class="--bg=white --text=black @dark:--bg=black @dark:--text=white /*:boxSizing=border-box"
 >
   <head>
     <meta charset="utf-8" />
-    <title>Runtime Example</title>
-    <script src="../maple.js?refs&sm=480px&md=640px&yy=500px"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maple Examples</title>
+    <script src="maple.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js"></script> -->
   </head>
 
-  <body class="m-0 @dark:bg-black c-black">
-    <div class="cnt=inline-size grid @md:cols-1/2">
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-red $mnw=720px:p-6.5 --p-6.5=200px"
-      >
+  <body
+    class="bgc-bg c-text m-0 p-8 lh=1.5 ff=[system-ui,_-apple-system,_sans-serif]"
+  >
+    <div class="mx-auto mxw-180 fxcol-sh g-8">
+      <header class="fxcol g-2">
+        <h1>Maple Examples</h1>
+        <p class="c-text/70">
+          The <strong>examples</strong> folder contains example usages and tests
+          of the Maple CSS runtime. You can navigate the examples below.
+        </p>
         <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
+          class="p-4 mt-2 rad-2 bgc-deepskyblue/10 br brc-deepskyblue/15 c-text/80 fs-3.5"
         >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
+          <strong>Tip:</strong> The example pages will automatically update when
+          you change the core code. You can create temporary test files in the
+          <code>ignored/</code> directory (e.g. <code>ignored/test.html</code>)
+          to test your code on the fly without committing them.
         </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-blue-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
+      </header>
+
+      <main class="fxcol-ss">
+        <h2>Available Pages</h2>
+        <a
+          href="palette.html"
+          class="fxcol-sh w-% p-4 rad-2 mb-2 g-1 tdeco=none c-text bgc-text/5 &:hover:bgc-text/8 br brc-text/10 ts-300_all"
         >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
+          <span class="fs-4 fw=600">Native CSS Color Palette</span>
+          <span class="fs-3 c-text/60"
+            >Explore the dynamic native color generation using OKLCH and Maple
+            utilities.</span
           >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-green-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-purple-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-pink-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-blue-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-green-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-purple-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-blue-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-green-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-purple-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-blue-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-green-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-purple-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-blue-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-green-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-purple-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-blue-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-green-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
-      <div
-        class="app-none app=none cnt=inline-size p-1 @sm:p-2 md:p-3 lg:p-4 xl:p-5 bg-purple-100 mnw=720px:p-3.5"
-      >
-        <div
-          class="child @container size-20 d-flex bg-yellow m=auto @md:p-6 md:/.child2[data-type='&test:123']:before:content='Time=12:00'"
-        >
-          <div
-            class="child2 size-10 m=auto sm:bg-primary @min=3rem:p-8"
-            data-type="&test:123"
-          >
-            Test
-          </div>
-        </div>
-      </div>
+        </a>
+      </main>
     </div>
   </body>
 </html>
