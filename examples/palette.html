@@ -1,0 +1,303 @@
+<!doctype html>
+<html
+  lang="en"
+  class="--bg=white --text=black @dark:--bg=black @dark:--text=white @dark:--l-shift=-0.7"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Native CSS Color Palette</title>
+    <script src="maple.js"></script>
+  </head>
+  <body class="bgc-bg c-text m-0 p-8 ff=[system-ui,_-apple-system,_sans-serif]">
+    <div class="fxcol-sh gap-12px" id="grid" style="visibility: hidden"></div>
+
+    <script type="module">
+      import {
+        createCoco,
+        namedColors,
+      } from 'https://cdn.jsdelivr.net/npm/@f12io/coco@2.1.4/+esm';
+
+      const coco = createCoco({ namedColors });
+      const cssColors = Object.keys(namedColors);
+      const tones = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+
+      // Vertical Sort: Fully Hand-Curated List
+      const curatedOrder = [
+        'floralwhite',
+        'oldlace',
+        'linen',
+        'antiquewhite',
+        'blanchedalmond',
+        'moccasin',
+        'navajowhite',
+        'wheat',
+        'burlywood',
+        'tan',
+        'sandybrown',
+        'peru',
+        'chocolate',
+        'sienna',
+        'saddlebrown',
+        'maroon',
+        'darkred',
+        'brown',
+        'firebrick',
+        'crimson',
+        'indianred',
+        'red',
+        'orangered',
+        'tomato',
+        'darkorange',
+        'orange',
+        'darksalmon',
+        'lightcoral',
+        'salmon',
+        'coral',
+        'lightsalmon',
+        'peachpuff',
+        'bisque',
+        'papayawhip',
+        'ivory',
+        'lightyellow',
+        'lightgoldenrodyellow',
+        'lemonchiffon',
+        'cornsilk',
+        'beige',
+        'palegoldenrod',
+        'khaki',
+        'gold',
+        'yellow',
+        'goldenrod',
+        'darkkhaki',
+        'darkgoldenrod',
+        'olive',
+        'olivedrab',
+        'darkolivegreen',
+        'darkgreen',
+        'green',
+        'forestgreen',
+        'limegreen',
+        'yellowgreen',
+        'lime',
+        'lawngreen',
+        'chartreuse',
+        'greenyellow',
+        'springgreen',
+        'mediumspringgreen',
+        'lightgreen',
+        'palegreen',
+        'darkseagreen',
+        'mediumseagreen',
+        'seagreen',
+
+        /* 'mediumaquamarine',
+          'aquamarine', */
+
+        'darkslategrey',
+        'darkslategray',
+        'teal',
+        'darkcyan',
+
+        'slategray',
+        'slategrey',
+        'lightslategrey',
+        'lightslategray',
+        'cadetblue',
+
+        'lightseagreen',
+        'darkturquoise',
+
+        'paleturquoise',
+
+        'powderblue',
+        'lightblue',
+        'lightsteelblue',
+        'skyblue',
+        'lightskyblue',
+        'deepskyblue',
+
+        'cornflowerblue',
+        'dodgerblue',
+        'royalblue',
+
+        'blue',
+        'mediumblue',
+        'darkblue',
+        'navy',
+        'midnightblue',
+        'darkslateblue',
+        'slateblue',
+        'mediumslateblue',
+        'blueviolet',
+        'darkviolet',
+        'darkorchid',
+        'mediumpurple',
+        'mediumorchid',
+        'orchid',
+        'violet',
+        'plum',
+
+        'darkmagenta',
+        'purple',
+
+        'mediumvioletred',
+        'deeppink',
+        'hotpink',
+        'palevioletred',
+        'rosybrown',
+        'lightpink',
+        'pink',
+        'mistyrose',
+        'seashell',
+        'honeydew',
+        'mintcream',
+
+        'ghostwhite',
+        'aliceblue',
+        'azure',
+
+        'snow',
+        'white',
+        'whitesmoke',
+        'gainsboro',
+        'lightgrey',
+        'lightgray',
+
+        'silver',
+        'darkgray',
+        'darkgrey',
+        'gray',
+        'grey',
+        'dimgray',
+        'dimgrey',
+        'black',
+
+        'lightcyan',
+        'aqua',
+        'cyan',
+
+        'aquamarine',
+        'mediumaquamarine',
+        'steelblue',
+        'rebeccapurple',
+        'indigo',
+        'fuchsia',
+        'magenta',
+        'thistle',
+        'lavender',
+        'lavenderblush',
+      ];
+
+      // 1. Initial DOM Generation
+      const grid = document.getElementById('grid');
+      cssColors.forEach((color) => {
+        if (color === 'burntsienna') {
+          return;
+        }
+
+        const row = document.createElement('div');
+        row.className =
+          'color-row @gr cols=[160px_repeat(11,_1fr)] gap-12px ai=center';
+        row.dataset.colorName = color;
+
+        let html = `
+    <div class="fs-3 fw=600 pe-4 fxrow-ce g-3">
+      ${color}
+      <div class="native-dot square-3 rad-% br brc-${color}-600/50 bgc-${color}"></div>
+    </div>
+  `;
+
+        tones.forEach((tone) => {
+          const baseClass = `bgc-${color}-${tone}`;
+          const hoverClass = `&:hover:bgc-${color}-${tone + 40}`;
+
+          html += `<div class="swatch h-12 rad-2 fxrow-cc fs-3 textIndent=-9999px br brc-text/15 ${baseClass} ${hoverClass}" title="${baseClass}">${tone}</div>`;
+        });
+
+        row.innerHTML = html;
+        grid.appendChild(row);
+      });
+
+      // Color Data Extraction via Coco (OKLCH)
+      function getOklchData(cssColor) {
+        try {
+          // Convert standard rgb() from getComputedStyle to OKLCH string
+          const oklchStr = coco(cssColor, 'oklch');
+
+          // Extract the L, C, and H values from "oklch(L C H)"
+          const match = oklchStr.match(/oklch\(([^)]+)\)/);
+          if (!match) return { l: 0, c: 0, h: 0 };
+
+          const parts = match[1].trim().split(/\s+/);
+          const l = parseFloat(parts[0]);
+          const c = parseFloat(parts[1]);
+          // Handle cases where Hue might be 'none' or NaN for pure grays
+          const h = isNaN(parseFloat(parts[2])) ? 0 : parseFloat(parts[2]);
+
+          return { l, c, h };
+        } catch (e) {
+          return { l: 0, c: 0, h: 0 };
+        }
+      }
+
+      setTimeout(() => {
+        const rows = Array.from(document.querySelectorAll('.color-row'));
+
+        rows.forEach((row) => {
+          const nativeDot = row.querySelector('.native-dot');
+          const baseData = getOklchData(
+            getComputedStyle(nativeDot).backgroundColor,
+          );
+
+          row.dataset.baseHue = baseData.h;
+          row.dataset.baseChroma = baseData.c;
+          row.dataset.baseLightness = baseData.l;
+
+          const swatches = Array.from(row.querySelectorAll('.swatch'));
+          let closestSwatch = null;
+          let minDiff = Infinity;
+
+          swatches.forEach((swatch) => {
+            const computedBg = getComputedStyle(swatch).backgroundColor;
+            const swatchData = getOklchData(computedBg);
+
+            // Apply contrast using OKLCH Lightness (~0.65 threshold)
+            swatch.style.color = swatchData.l > 0.65 ? '#000000' : '#ffffff';
+
+            // Find the closest swatch to the real color's lightness
+            const diff = Math.abs(swatchData.l - baseData.l);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closestSwatch = swatch;
+            }
+          });
+
+          if (closestSwatch) {
+            closestSwatch.classList.add(
+              'oloff=2px',
+              'olst=solid',
+              'olw=1px',
+              'olc-text',
+            );
+          }
+        });
+
+        rows.sort((a, b) => {
+          const indexA = curatedOrder.indexOf(a.dataset.colorName);
+          const indexB = curatedOrder.indexOf(b.dataset.colorName);
+
+          if (indexA === -1 && indexB === -1) return 0;
+          if (indexA === -1) return 1;
+          if (indexB === -1) return -1;
+
+          return indexA - indexB;
+        });
+
+        rows.forEach((row) => grid.appendChild(row));
+
+        grid.style.visibility = null;
+      }, 0);
+    </script>
+  </body>
+</html>
