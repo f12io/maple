@@ -702,27 +702,16 @@ function serializePropsInValue(parsed: ParsedClass): string | undefined {
       ? toKebabCase(ABBREVIATIONS[propName])
       : propName;
 
-    if (isKnownProperty(mappedPropKeyKebab)) {
-      propNames.push(
-        serializeValueAsVariable(
-          parsed.utilKey,
-          escapeVariable(propName),
-          mappedPropKeyKebab,
-          parsed.isNoRef,
-          undefined,
-          CSS_VARIABLE_CATEGORY.prop,
-        ),
-      );
-    } else {
-      propNames.push(
-        serializeValueAsVariable(
-          parsed.utilKey,
-          escapeVariable(propName),
-          mappedPropKeyKebab,
-          parsed.isNoRef,
-        ),
-      );
-    }
+    propNames.push(
+      serializeValueAsVariable(
+        parsed.utilKey,
+        escapeVariable(propName),
+        mappedPropKeyKebab,
+        parsed.isNoRef,
+        undefined,
+        CSS_VARIABLE_CATEGORY.prop,
+      ),
+    );
   }
 
   return serializeProp(
@@ -898,11 +887,7 @@ function serializeAnimationValue(
     );
 
     if (shouldUseNamedFallback) {
-      result = serializeAnimationNamedFallback(
-        utilKey,
-        parentAnimName,
-        result,
-      );
+      result = serializeAnimationNamedFallback(utilKey, parentAnimName, result);
     }
 
     return result;

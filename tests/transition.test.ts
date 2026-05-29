@@ -148,7 +148,7 @@ describe('Transition', () => {
 
   it('will-change with variables', () => {
     expect(convert('wc-colors,shadow')).toBe(
-      `.wc-colors\\,shadow { will-change: var(--wc-colors, var(--colors, colors)), var(--wc-shadow, var(--shadow, shadow)); }`,
+      `.wc-colors\\,shadow { will-change: var(--wc-colors, var(--prop-colors, var(--colors, colors))), var(--wc-shadow, var(--prop-shadow, var(--shadow, shadow))); }`,
     );
   });
 
@@ -172,7 +172,7 @@ describe('Transition', () => {
 
   it('transition-property with variables', () => {
     expect(convert('tsprop-colors,shadow')).toBe(
-      `.tsprop-colors\\,shadow { transition-property: var(--tsprop-colors, var(--colors, colors)), var(--tsprop-shadow, var(--shadow, shadow)); }`,
+      `.tsprop-colors\\,shadow { transition-property: var(--tsprop-colors, var(--prop-colors, var(--colors, colors))), var(--tsprop-shadow, var(--prop-shadow, var(--shadow, shadow))); }`,
     );
   });
 
