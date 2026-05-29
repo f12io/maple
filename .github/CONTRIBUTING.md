@@ -32,6 +32,20 @@ npm run dev
 - Run lint, tests, and build before opening a pull request. When ready open a PR to `main`.
 - Do not commit generated release artifacts unless the change specifically requires it.
 
+## Branch Naming
+
+Use short, descriptive branch names with a type prefix:
+
+```text
+feat/runtime-observer
+fix/color-alpha
+test/media-query-parser
+docs/release-cycle
+chore/github-actions
+```
+
+Prefer lowercase words separated with hyphens. Match the prefix to the main intent of the change.
+
 Recommended pre-PR check:
 
 ```sh
