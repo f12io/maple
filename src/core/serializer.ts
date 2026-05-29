@@ -8,7 +8,8 @@ import {
   REF_CHAR_VALUE_PARTS,
 } from './constants/chars';
 import {
-  COLOR_MID_TONE,
+  COLOR_MAX_TONE,
+  COLOR_MIN_TONE,
   OPTIONS,
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
@@ -21,8 +22,6 @@ import {
   CONTAINER_TYPES,
   CSS_VARIABLE_CATEGORY,
   FILTER_KEYS,
-  FLEX_H,
-  FLEX_V,
   FUNCTION_KEYS,
   PROP_UNIT_MAP,
   SELECTOR_REPLACEMENTS,
@@ -36,13 +35,22 @@ import {
   REGEX_NON_FUNCTION_PARAM_SPLITTER,
   REGEX_SELECTOR_REPLACEMENTS,
 } from './constants/regex';
-import { COVER_UNITS, DEFAULT_SPACE_UNIT, ONE_UNITS } from './constants/units';
+import {
+  COVER_UNITS,
+  DEFAULT_SPACE_UNIT,
+  DEFAULT_TIME_UNIT,
+  ONE_UNITS,
+} from './constants/units';
 import {
   isGradientDirection,
   isKnownAngleValue,
+  isKnownAnimationDirection,
+  isKnownAnimationFillMode,
+  isKnownAnimationPlayState,
   isKnownColorValue,
   isKnownNumberValue,
   isKnownProperty,
+  isKnownTimingFunction,
   isReservedKeyword,
 } from './helpers/property.helper';
 import {
@@ -83,6 +91,7 @@ export const TYPE_MODIFIERS: Modifiers = {
 
 export const VALUE_MODIFIERS: ValueModifiers = {
   ts: serializeTransitionValue,
+  anim: serializeAnimationValue,
   bshadow: serializeMultipleValues,
   tshadow: serializeMultipleValues,
   br: serializeMultipleValues,
@@ -141,13 +150,6 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
     }),
     {},
   ),
-  // Flex layout shortcuts
-  fxrow: (p) => serializeFlexLayout(p, 'row', 'flex'),
-  fxcol: (p) => serializeFlexLayout(p, 'column', 'flex'),
-  ifxrow: (p) => serializeFlexLayout(p, 'row', 'inline-flex'),
-  ifxcol: (p) => serializeFlexLayout(p, 'column', 'inline-flex'),
-  fxrowself: (p) => serializeFlexSelf(p, 'row'),
-  fxcolself: (p) => serializeFlexSelf(p, 'column'),
 };
 
 export function applyModifier(parsed: ParsedClass): string | undefined {
@@ -306,11 +308,13 @@ function serializeNumberValue({
   if (isNoRefMode || !VARIABLE_CACHE.has(refKey)) {
     const numberValue = Number(utilVal);
 
-    if (numberValue === 0) return '0';
-
     const transformFnName = TRANSFORM_KEYS[utilKey];
     const unit =
       PROP_UNIT_MAP[transformFnName || propKeyCamel] ?? DEFAULT_SPACE_UNIT;
+
+    if (numberValue === 0) {
+      return unit === DEFAULT_TIME_UNIT ? `0${unit}` : '0';
+    }
 
     let fallbackValue = utilVal;
 
@@ -415,9 +419,21 @@ function serializeColorValue(parsed: ParsedClass): string {
     }
 
     const name = tokenParts[1];
-    const tone = Number(tokenParts[2]) || COLOR_MID_TONE;
+    const hasToneShift = !!tokenParts[2];
+    const maxTone = COLOR_MAX_TONE;
+    const minTone = COLOR_MIN_TONE;
+    const midTone = (minTone + maxTone) / 2;
+    const tone = Number(tokenParts[2]) || midTone;
     const opacity = tokenParts[3] ? Number(tokenParts[3]) : null;
-    const amount = (COLOR_MID_TONE - tone) / COLOR_MID_TONE;
+
+    /**
+     * Lightness CSS Targeting
+     * Scale mapping: Tone 50 = 1.0 Lightness, Tone 950 = 0.0 Lightness.
+     */
+    const mappedTone =
+      Math.round(((tone - minTone) / (maxTone - minTone)) * 10000) / 10000;
+    const mappedMidpoint =
+      Math.round(((midTone - minTone) / (maxTone - minTone)) * 10000) / 10000;
 
     const nameVar = serializeValueAsVariable(
       utilKey,
@@ -427,30 +443,35 @@ function serializeColorValue(parsed: ParsedClass): string {
       name,
       CSS_VARIABLE_CATEGORY.color,
     );
-    const [lightnessFactor, chromaFactor, hueRotate, toneFactor] = [
-      ['lightness-factor', 1],
-      ['chroma-factor', 1],
-      ['hue-rotate', 0],
-      ['tone-factor', 1],
+    const [lightnessScale, lightnessShift, chromaScale, hueRotate] = [
+      ['l-scale', 1],
+      ['l-shift', 1],
+      ['c-scale', 1],
+      ['h-rotate', 0],
     ].map(
       ([key, defaultValue]) =>
         `var(--${utilKey}-${name}-${key}, var(--${name}-${key}, var(--${utilKey}-${key}, var(--${key}, ${defaultValue}))))`,
     );
 
-    /**
-     * If amount is positive (>0), we interpolate towards 1 (white).
-     * If amount is negative (<0), we interpolate towards 0 (black).
-     */
-    const adjAmount = `(${amount} * ${toneFactor})`;
-    const lCalc = amount > 0 ? `(1 - l) * ${adjAmount}` : `l * ${adjAmount}`;
+    const lightnessEdgeShift = `var(--l-edge-shift, 0.5)`;
+    const chromaCurve = `var(--c-curve, 0.5)`;
 
-    const l =
-      amount === 0
-        ? `calc(l * ${lightnessFactor})`
-        : `calc((l + ${lCalc}) * ${lightnessFactor})`;
-    const c = `calc(c * ${chromaFactor})`;
+    let l = `calc(l * ${lightnessScale})`;
+    let c = `calc(c * ${chromaScale})`;
     const h = `calc(h + ${hueRotate})`;
-    const alpha = opacity && opacity < 100 ? `${opacity}%` : 'alpha';
+    const alpha = opacity !== null && opacity < 100 ? `${opacity}%` : 'alpha';
+
+    if (hasToneShift) {
+      const midDistanceSq = `pow(abs(${mappedTone} - ${mappedMidpoint}) * 2, 2)`;
+      const edgeDampener = `calc(${lightnessEdgeShift} + ((1 - ${lightnessEdgeShift}) * ${midDistanceSq}))`;
+      const shiftMagnitude = `((${lightnessShift} * (${mappedMidpoint} - ${mappedTone})) + (abs(${lightnessShift}) * (0.5 - l)))`;
+      const lShift = `(${shiftMagnitude} * ${edgeDampener})`;
+      const cCurve = `calc(1 - (${midDistanceSq} * ${chromaCurve}))`;
+
+      l = `calc((l + ${lShift}) * ${lightnessScale})`;
+      c = `calc(c * ${cCurve} * ${chromaScale})`;
+    }
+
     const val = `oklch(from ${nameVar} ${l} ${c} ${h} / ${alpha})`;
 
     if (isNoRefMode) {
@@ -729,7 +750,9 @@ function serializeTransitionValue(
     ? toKebabCase(ABBREVIATIONS[valueItem])
     : valueItem;
 
-  if (isKnownProperty(mappedValueItem)) {
+  if (isKnownTimingFunction(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.transitionTimingFunction;
+  } else if (isKnownProperty(mappedValueItem)) {
     varCat = CSS_VARIABLE_CATEGORY.prop;
     utilKey = ABBREVIATIONS_REVERSE.transitionProperty;
   } else if (isKnownNumberValue(valueItem)) {
@@ -747,7 +770,22 @@ function serializeTransitionValue(
       utilKey = ABBREVIATIONS_REVERSE.transitionDelay;
     }
   } else if (items.length > 1) {
-    utilKey = ABBREVIATIONS_REVERSE.transitionTimingFunction;
+    utilKey = ABBREVIATIONS_REVERSE.transitionProperty;
+    varCat = CSS_VARIABLE_CATEGORY.prop;
+  }
+
+  if (
+    utilKey === ABBREVIATIONS_REVERSE.transitionTimingFunction ||
+    utilKey === ABBREVIATIONS_REVERSE.transitionProperty
+  ) {
+    return serializeValueAsVariable(
+      utilKey,
+      escapeVariable(valueItem),
+      mappedValueItem,
+      parsed.isNoRef,
+      undefined,
+      varCat,
+    );
   }
 
   return serializeNumberValue({
@@ -757,6 +795,140 @@ function serializeTransitionValue(
     validVarVal: escapeVariable(valueItem),
     varCat,
   });
+}
+
+function serializeAnimationValue(
+  parsed: ParsedClass,
+  valueItem: string,
+  index: number,
+  items: Array<string>,
+  parentAnimName?: string,
+): string | undefined {
+  let mappedValueItem = valueItem;
+  let varCat;
+  let utilKey = parsed.utilKey;
+
+  if (!parentAnimName && items.length > 1) {
+    const nameItem = items.find((item) => {
+      const vItem =
+        ABBREVIATIONS_REVERSE[item] ||
+        ABBREVIATIONS_REVERSE[toCamelCase(item)] ||
+        item;
+      const mItem = ABBREVIATIONS[vItem]
+        ? toKebabCase(ABBREVIATIONS[vItem])
+        : vItem;
+
+      return (
+        !isKnownTimingFunction(mItem) &&
+        !isKnownAnimationDirection(mItem) &&
+        !isKnownAnimationFillMode(mItem) &&
+        !isKnownAnimationPlayState(mItem) &&
+        mItem.toLowerCase() !== 'infinite' &&
+        !isKnownNumberValue(vItem)
+      );
+    });
+
+    if (nameItem) {
+      const vItem =
+        ABBREVIATIONS_REVERSE[nameItem] ||
+        ABBREVIATIONS_REVERSE[toCamelCase(nameItem)] ||
+        nameItem;
+      parentAnimName = ABBREVIATIONS[vItem]
+        ? toKebabCase(ABBREVIATIONS[vItem])
+        : vItem;
+    }
+  }
+
+  valueItem =
+    ABBREVIATIONS_REVERSE[valueItem] ||
+    ABBREVIATIONS_REVERSE[toCamelCase(valueItem)] ||
+    valueItem;
+  mappedValueItem = ABBREVIATIONS[valueItem]
+    ? toKebabCase(ABBREVIATIONS[valueItem])
+    : valueItem;
+
+  if (isKnownTimingFunction(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationTimingFunction;
+  } else if (isKnownAnimationDirection(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationDirection;
+  } else if (isKnownAnimationFillMode(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationFillMode;
+  } else if (isKnownAnimationPlayState(mappedValueItem)) {
+    utilKey = ABBREVIATIONS_REVERSE.animationPlayState;
+  } else if (mappedValueItem.toLowerCase() === 'infinite') {
+    utilKey = ABBREVIATIONS_REVERSE.animationIterationCount;
+  } else if (isKnownNumberValue(valueItem)) {
+    let numberCount = 0;
+
+    for (let i = 0; i <= index; i++) {
+      if (isKnownNumberValue(items[i])) {
+        numberCount++;
+      }
+    }
+
+    if (numberCount === 1) {
+      utilKey = ABBREVIATIONS_REVERSE.animationDuration;
+    } else if (numberCount === 2) {
+      utilKey = ABBREVIATIONS_REVERSE.animationDelay;
+    } else {
+      utilKey = ABBREVIATIONS_REVERSE.animationIterationCount;
+    }
+  } else {
+    utilKey = ABBREVIATIONS_REVERSE.animationName;
+  }
+
+  const shouldUseNamedFallback =
+    parentAnimName && utilKey !== ABBREVIATIONS_REVERSE.animationName;
+
+  if (
+    utilKey === ABBREVIATIONS_REVERSE.animationName ||
+    utilKey === ABBREVIATIONS_REVERSE.animationTimingFunction ||
+    utilKey === ABBREVIATIONS_REVERSE.animationDirection ||
+    utilKey === ABBREVIATIONS_REVERSE.animationFillMode ||
+    utilKey === ABBREVIATIONS_REVERSE.animationPlayState ||
+    utilKey === ABBREVIATIONS_REVERSE.animationIterationCount
+  ) {
+    let result = serializeValueAsVariable(
+      utilKey,
+      escapeVariable(valueItem),
+      mappedValueItem,
+      parsed.isNoRef,
+      undefined,
+      varCat,
+    );
+
+    if (shouldUseNamedFallback) {
+      result = serializeAnimationNamedFallback(
+        utilKey,
+        parentAnimName,
+        result,
+      );
+    }
+
+    return result;
+  }
+
+  let result = serializeNumberValue({
+    ...parsed,
+    utilKey,
+    utilVal: mappedValueItem,
+    validVarVal: escapeVariable(valueItem),
+    varCat,
+  });
+
+  if (shouldUseNamedFallback) {
+    result = serializeAnimationNamedFallback(utilKey, parentAnimName, result);
+  }
+
+  return result;
+}
+
+function serializeAnimationNamedFallback(
+  utilKey: string,
+  parentAnimName: string | undefined,
+  fallbackValue: string,
+): string {
+  return `var(--${utilKey}-${parentAnimName}, var(--${utilKey}, ${fallbackValue}))`;
 }
 
 function serializeMultipleValues(
@@ -914,53 +1086,4 @@ function serializeBackgroundImageParts(
   }
 
   return `${functionName}(${serializedParams.join(', ')})${nonFunctionParams ? ` ${serializeValue(nonFunctionParams)}` : ''}`;
-}
-
-function serializeFlexLayout(
-  parsed: ParsedClass,
-  dir: 'row' | 'column',
-  display: 'flex' | 'inline-flex',
-): string | undefined {
-  const params = getFlexParams(parsed, dir);
-
-  if (!params) return;
-
-  return (
-    serializeProp('display', display, parsed.isImportant) +
-    serializeProp('flex-direction', dir, parsed.isImportant) +
-    serializeProp('justify-content', params[0], parsed.isImportant) +
-    serializeProp('align-items', params[1], parsed.isImportant)
-  );
-}
-
-function serializeFlexSelf(
-  parsed: ParsedClass,
-  dir: 'row' | 'column',
-): string | undefined {
-  const params = getFlexParams(parsed, dir);
-
-  if (!params) return;
-
-  return (
-    serializeProp('justify-self', params[0], parsed.isImportant) +
-    serializeProp('align-self', params[1], parsed.isImportant)
-  );
-}
-
-function getFlexParams(
-  parsed: ParsedClass,
-  dir: 'row' | 'column',
-): Array<string> | undefined {
-  const { utilVal } = parsed;
-
-  if (utilVal.length !== 2) return;
-
-  const v = FLEX_V[utilVal[0]];
-  const h = FLEX_H[utilVal[1]];
-
-  if (!v || !h) return;
-
-  // For column: vertical = justify-self, horizontal = align-self
-  // For row: vertical = align-self, horizontal = justify-self
-  return dir === 'column' ? [v, h] : [h, v];
 }

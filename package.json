@@ -1,16 +1,16 @@
 {
   "name": "@f12io/maple",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": false,
   "type": "module",
   "main": "./dist/module/index.cjs",
   "module": "./dist/module/index.js",
-  "types": "./dist/module/types/src/index.d.ts",
+  "types": "./dist/module/types/index.d.ts",
   "exports": {
     ".": {
       "types": {
-        "import": "./dist/module/types/src/index.d.ts",
-        "require": "./dist/module/types/src/index.d.cts"
+        "import": "./dist/module/types/index.d.ts",
+        "require": "./dist/module/types/index.d.cts"
       },
       "import": "./dist/module/index.js",
       "require": "./dist/module/index.cjs"

@@ -1,0 +1,445 @@
+/**
+ * Include: <link rel="stylesheet" href="keyframes.css">
+ * Usage: <div class="anim-fade-in">Fades in</div>
+ */
+/* ============================================
+   Fade Animations
+   ============================================ */
+
+@keyframes fade-in {
+  from {
+    opacity: var(--fade-from-opacity, 0);
+  }
+  to {
+    opacity: var(--fade-to-opacity, 1);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: var(--fade-from-opacity, 1);
+  }
+  to {
+    opacity: var(--fade-to-opacity, 0);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(0, var(--fade-distance, 48px), 0)
+      scale(var(--fade-scale-from, 0.98));
+  }
+  to {
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(0, calc(var(--fade-distance, 48px) * -1), 0)
+      scale(var(--fade-scale-from, 0.98));
+  }
+  to {
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fade-in-left {
+  from {
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(var(--fade-distance, 48px), 0, 0)
+      scale(var(--fade-scale-from, 0.98));
+  }
+  to {
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fade-in-right {
+  from {
+    opacity: var(--fade-from-opacity, 0);
+    transform: translate3d(calc(var(--fade-distance, 48px) * -1), 0, 0)
+      scale(var(--fade-scale-from, 0.98));
+  }
+  to {
+    opacity: var(--fade-to-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fade-out-up {
+  from {
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(0, calc(var(--fade-distance, 48px) * -1), 0)
+      scale(var(--fade-scale-to, 0.98));
+  }
+}
+
+@keyframes fade-out-down {
+  from {
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(0, var(--fade-distance, 48px), 0)
+      scale(var(--fade-scale-to, 0.98));
+  }
+}
+
+@keyframes fade-out-left {
+  from {
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(calc(var(--fade-distance, 48px) * -1), 0, 0)
+      scale(var(--fade-scale-to, 0.98));
+  }
+}
+
+@keyframes fade-out-right {
+  from {
+    opacity: var(--fade-from-opacity, 1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: var(--fade-to-opacity, 0);
+    transform: translate3d(var(--fade-distance, 48px), 0, 0)
+      scale(var(--fade-scale-to, 0.98));
+  }
+}
+
+/* ============================================
+   Scale Animations
+   ============================================ */
+
+@keyframes scale-in {
+  from {
+    opacity: var(--scale-from-opacity, 0);
+    transform: scale(var(--scale-from, 0.96));
+  }
+  to {
+    opacity: var(--scale-to-opacity, 1);
+    transform: scale(1);
+  }
+}
+
+@keyframes scale-out {
+  from {
+    opacity: var(--scale-from-opacity, 1);
+    transform: scale(1);
+  }
+  to {
+    opacity: var(--scale-to-opacity, 0);
+    transform: scale(var(--scale-to, 0.96));
+  }
+}
+
+/* ============================================
+   Slide Animations
+   ============================================ */
+
+@keyframes slide-in-up {
+  from {
+    transform: translate3d(0, var(--slide-distance, 100%), 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slide-in-down {
+  from {
+    transform: translate3d(0, calc(var(--slide-distance, 100%) * -1), 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translate3d(var(--slide-distance, 100%), 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translate3d(calc(var(--slide-distance, 100%) * -1), 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slide-out-up {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--slide-distance, 100%) * -1), 0);
+  }
+}
+
+@keyframes slide-out-down {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, var(--slide-distance, 100%), 0);
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(var(--slide-distance, 100%) * -1), 0, 0);
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--slide-distance, 100%), 0, 0);
+  }
+}
+
+/* ============================================
+   Continuous Animations
+   ============================================ */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(var(--ping-scale, 2));
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: var(--pulse-opacity, 0.5);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(calc(var(--bounce-distance, 25%) * -1));
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, calc(var(--float-distance, 8px) * -1), 0);
+  }
+}
+
+@property --beam-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@keyframes border-beam {
+  from {
+    --beam-angle: 0deg;
+  }
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+.border-beam {
+  position: relative;
+  isolation: isolate;
+}
+
+.border-beam::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--beam-offset, 0px) * -1);
+  border-radius: var(--beam-radius, inherit);
+  padding: var(--beam-width, 1px);
+  pointer-events: none;
+  opacity: var(--beam-opacity, 1);
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent var(--beam-tail-start, 75%),
+    var(--beam-glow-color, color-mix(in oklch, currentColor 75%, transparent))
+      var(--beam-glow-start, 88%),
+    var(--beam-core-color, currentColor) var(--beam-core-start, 92%),
+    var(--beam-glow-color, color-mix(in oklch, currentColor 75%, transparent))
+      var(--beam-glow-end, 96%),
+    transparent 100%
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+}
+
+/* ============================================
+   Attention Seekers
+   ============================================ */
+
+@keyframes shake-x {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  15% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * -1), 0, 0);
+  }
+  30% {
+    transform: translate3d(var(--shake-distance, 10px), 0, 0);
+  }
+  45% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * -0.66), 0, 0);
+  }
+  60% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * 0.66), 0, 0);
+  }
+  75% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * -0.33), 0, 0);
+  }
+  90% {
+    transform: translate3d(calc(var(--shake-distance, 10px) * 0.33), 0, 0);
+  }
+}
+
+@keyframes shake-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  15% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * -1), 0);
+  }
+  30% {
+    transform: translate3d(0, var(--shake-distance, 10px), 0);
+  }
+  45% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * -0.66), 0);
+  }
+  60% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * 0.66), 0);
+  }
+  75% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * -0.33), 0);
+  }
+  90% {
+    transform: translate3d(0, calc(var(--shake-distance, 10px) * 0.33), 0);
+  }
+}
+
+@keyframes beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(var(--beat-scale, 1.12));
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(var(--beat-scale, 1.12));
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bell {
+  0%,
+  100% {
+    transform: rotate(0deg);
+    transform-origin: var(--bell-origin, top center);
+  }
+  15% {
+    transform: rotate(var(--bell-angle, 10deg));
+  }
+  30% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * -0.8));
+  }
+  45% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * 0.6));
+  }
+  60% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * -0.4));
+  }
+  75% {
+    transform: rotate(calc(var(--bell-angle, 10deg) * 0.2));
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  12.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -1));
+  }
+  25% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * 0.8));
+  }
+  37.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -0.65));
+  }
+  50% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * 0.5));
+  }
+  62.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -0.35));
+  }
+  75% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * 0.2));
+  }
+  87.5% {
+    transform: rotate(calc(var(--wiggle-angle, 10deg) * -0.1));
+  }
+}

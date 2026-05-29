@@ -2,6 +2,7 @@ import { SELECTOR_REPLACEMENTS } from './dictionaries';
 import { ALL_UNITS, ANGLE_UNITS } from './units';
 
 export const REGEX_CSS_ESCAPED_CHARS = /\\/g;
+export const REGEX_WHITESPACE = /\s+/;
 export const REGEX_UNSAFE_CLASS_CHARS = /([^a-zA-Z0-9_-])/g;
 export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
 export const REGEX_TO_CAMEL_CASE = /[^a-zA-Z0-9]+(.)/g;
@@ -19,6 +20,8 @@ export const REGEX_RESERVED_KEYWORDS =
   /^(initial|inherit|unset|revert|revert-layer|none|auto|transparent|currentColor|solid|dashed|dotted|double|groove|ridge|inset|outset)$/i;
 export const REGEX_OVERRIDABLE_MEDIA_QUERY =
   /@dark:|@not-dark:|@light:|@not-light:/g;
+export const REGEX_PSEUDO_ELEMENT_SUFFIX =
+  /(::?(?:before|after|first-letter|first-line|marker|placeholder|selection|backdrop)|::file-selector-button)(.*)$/;
 
 // This creates a pattern like: /^([0-9]*\.?[0-9]+)?(px|rem|vmin|vmax|...)?$/i
 export const REGEX_NUMBER_VALUE = new RegExp(

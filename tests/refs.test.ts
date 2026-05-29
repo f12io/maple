@@ -58,13 +58,13 @@ describe('NoRef Variables', () => {
 
   it('noref color', () => {
     expect(convertWithRefs('$bg-red')).toBe(
-      '.\\$bg-red { background: oklch(from var(--bgc-red, var(--color-red, var(--red, red))) calc(l * var(--bgc-red-lightness-factor, var(--red-lightness-factor, var(--bgc-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--bgc-red-chroma-factor, var(--red-chroma-factor, var(--bgc-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--bgc-red-hue-rotate, var(--red-hue-rotate, var(--bgc-hue-rotate, var(--hue-rotate, 0))))) / alpha); }',
+      '.\\$bg-red { background: oklch(from var(--bgc-red, var(--color-red, var(--red, red))) calc(l * var(--bgc-red-l-scale, var(--red-l-scale, var(--bgc-l-scale, var(--l-scale, 1))))) calc(c * var(--bgc-red-c-scale, var(--red-c-scale, var(--bgc-c-scale, var(--c-scale, 1))))) calc(h + var(--bgc-red-h-rotate, var(--red-h-rotate, var(--bgc-h-rotate, var(--h-rotate, 0))))) / alpha); }',
     );
   });
 
   it('noref color with shade and alpha', () => {
     expect(convertWithRefs('$c-red-400/50')).toBe(
-      '.\\$c-red-400\\/50 { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * (0.2 * var(--c-red-tone-factor, var(--red-tone-factor, var(--c-tone-factor, var(--tone-factor, 1)))))) * var(--c-red-lightness-factor, var(--red-lightness-factor, var(--c-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--c-red-chroma-factor, var(--red-chroma-factor, var(--c-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--c-red-hue-rotate, var(--red-hue-rotate, var(--c-hue-rotate, var(--hue-rotate, 0))))) / 50%); }',
+      '.\\$c-red-400\\/50 { color: oklch(from var(--c-red, var(--color-red, var(--red, red))) calc((l + (((var(--c-red-l-shift, var(--red-l-shift, var(--c-l-shift, var(--l-shift, 1)))) * (0.5 - 0.3889)) + (abs(var(--c-red-l-shift, var(--red-l-shift, var(--c-l-shift, var(--l-shift, 1))))) * (0.5 - l))) * calc(var(--l-edge-shift, 0.5) + ((1 - var(--l-edge-shift, 0.5)) * pow(abs(0.3889 - 0.5) * 2, 2))))) * var(--c-red-l-scale, var(--red-l-scale, var(--c-l-scale, var(--l-scale, 1))))) calc(c * calc(1 - (pow(abs(0.3889 - 0.5) * 2, 2) * var(--c-curve, 0.5))) * var(--c-red-c-scale, var(--red-c-scale, var(--c-c-scale, var(--c-scale, 1))))) calc(h + var(--c-red-h-rotate, var(--red-h-rotate, var(--c-h-rotate, var(--h-rotate, 0))))) / 50%); }',
     );
   });
 

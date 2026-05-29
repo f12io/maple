@@ -199,7 +199,7 @@ describe('Stylesheet', () => {
     const p0 = findLayer(t0, 'p0');
     const base = findLayer(p0, 'base');
     const systemRule = findMediaRule(sheet, 'not (prefers-color-scheme: dark)');
-    const manualRule = findStyleRule(base, ':root.light .\\@not-dark\\:o-0');
+    const manualRule = findStyleRule(base, '.light .\\@not-dark\\:o-0');
 
     expect(systemRule?.cssRules[0].cssText).toContain(
       ':root:not(.dark) .\\@not-dark\\:o-0',
@@ -228,7 +228,7 @@ describe('Stylesheet', () => {
     const manualMedia = findMediaRule(p0, 'not (min-width: 600px)');
     const manualRule = findStyleRule(
       manualMedia,
-      ':root.dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0',
+      '.dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0',
     );
 
     expect(systemRule).toBeDefined();

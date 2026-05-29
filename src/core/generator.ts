@@ -1,19 +1,30 @@
+import { collectAliases, expandAliasClass, isAliasDefinition } from './aliases';
 import { buildRule } from './builder';
-import { CLASS_CACHE } from './constants/caches';
+import { ALIAS_CLASS_CACHE, CLASS_CACHE } from './constants/caches';
 import { OPTIONS } from './constants/config';
+import { REGEX_WHITESPACE } from './constants/regex';
 import { isMergeException } from './helpers/merge.helper';
 import { insert } from './stylesheet';
+import { RuleData } from './types';
 
 const mergeCache = new WeakMap<Element, string>();
+type StyleCache = typeof CLASS_CACHE;
+
+interface GeneratedClass {
+  cache?: StyleCache;
+  cacheKey?: string;
+  conflictKey?: string;
+  rule?: RuleData;
+}
 
 /**
- * Processes an element's classList, removing earlier conflicting classes.
- * Uses reverse loop: later classes in classList always win.
+ * Processes an element's classes, removing earlier conflicting classes.
+ * Uses reverse loop: later classes always win.
  */
 export function processClassList(element: Element): void {
-  const classList = element.classList;
-  const currentClass = classList.toString();
-  let i = classList.length;
+  const currentClass = element.getAttribute('class') ?? '';
+
+  if (!currentClass) return;
 
   if (mergeCache.has(element)) {
     const previousClass = mergeCache.get(element);
@@ -25,11 +36,28 @@ export function processClassList(element: Element): void {
     }
   }
 
+  /**
+   * Use class attribute's value as the source of classes.
+   * classList has its own deduplication logic, in Maple
+   * we need to process all the classes to let the later
+   * classes override the earlier ones.
+   */
+  const classList = currentClass.trim().split(REGEX_WHITESPACE);
+  let i = classList.length;
+
   if (i === 0) return;
+
+  const isRoot = element.tagName.toLowerCase() === 'html';
+
+  if (isRoot) {
+    collectAliases(classList);
+  }
 
   if (OPTIONS.nomerge) {
     for (const srcClass of classList) {
-      generateStylesFromClass(srcClass);
+      for (const item of getClassItems(srcClass)) {
+        generateStylesFromClass(item.srcClass, isRoot, true, item.selClass);
+      }
     }
 
     return;
@@ -37,6 +65,7 @@ export function processClassList(element: Element): void {
 
   const seenExact = new Set<string>();
   const seenConflict = new Set<string>();
+  const rules: Array<RuleData> = [];
   let newClass = '';
 
   // Reverse iterate: later classes win
@@ -48,40 +77,82 @@ export function processClassList(element: Element): void {
 
     seenExact.add(srcClass);
 
-    // Get conflict key from cache, or generate styles and cache key
-    const conflictKey =
-      CLASS_CACHE.get(srcClass) ?? generateStylesFromClass(srcClass);
+    const items = getClassItems(srcClass);
+    let hasActiveRule = false;
 
-    // Conflict check
-    if (conflictKey) {
-      if (seenConflict.has(conflictKey)) continue;
+    for (const item of items) {
+      const { cache, cacheKey, conflictKey, rule } = generateStylesFromClass(
+        item.srcClass,
+        isRoot,
+        false,
+        item.selClass,
+      );
 
-      let coveredByShorthand = false;
+      // Conflict check
+      if (conflictKey) {
+        if (seenConflict.has(conflictKey)) continue;
 
-      const colonIndex = conflictKey.indexOf(':');
-      const propKey = conflictKey.slice(0, colonIndex);
-      const propParents = conflictKey.slice(colonIndex);
+        let coveredByShorthand = false;
 
-      // Skip hierarchy check for specific properties that share a prefix but are not covered by the shorthand
-      if (!isMergeException(propKey)) {
-        let dashIdx = propKey.lastIndexOf('-');
+        const colonIndex = conflictKey.indexOf(':');
+        const propKey = conflictKey.slice(0, colonIndex);
+        const propParents = conflictKey.slice(colonIndex);
+        const isImportant = propParents.startsWith(':!');
+        const normalPropParents = isImportant
+          ? ':' + propParents.slice(2)
+          : propParents;
 
-        while (dashIdx > 0) {
-          const parentKey = propKey.slice(0, dashIdx);
-          if (seenConflict.has(parentKey + propParents)) {
-            coveredByShorthand = true;
-            break;
+        // Skip hierarchy check for specific properties that share a prefix but are not covered by the shorthand
+        if (!isMergeException(propKey)) {
+          let dashIdx = propKey.lastIndexOf('-');
+
+          while (dashIdx > 0) {
+            const parentKey = propKey.slice(0, dashIdx);
+            if (
+              seenConflict.has(parentKey + propParents) ||
+              (isImportant && seenConflict.has(parentKey + normalPropParents))
+            ) {
+              coveredByShorthand = true;
+              break;
+            }
+            dashIdx = propKey.lastIndexOf('-', dashIdx - 1);
           }
-          dashIdx = propKey.lastIndexOf('-', dashIdx - 1);
+        }
+
+        if (coveredByShorthand) continue;
+
+        seenConflict.add(conflictKey);
+
+        /**
+         * Important utilities override earlier normal utilities with the same
+         * property/context, but normal utilities after an important one are
+         * preserved because they are still part of the authored class order.
+         */
+        if (isImportant) {
+          seenConflict.add(propKey + normalPropParents);
         }
       }
 
-      if (coveredByShorthand) continue;
+      if (rule) {
+        rules.push(rule);
+      }
 
-      seenConflict.add(conflictKey);
+      if (cache && cacheKey && conflictKey) {
+        cache.set(cacheKey, conflictKey);
+      }
+
+      hasActiveRule = true;
     }
 
-    newClass = srcClass + (newClass ? ' ' : '') + newClass;
+    if (hasActiveRule || items.length === 0) {
+      newClass = srcClass + (newClass ? ' ' : '') + newClass;
+    }
+  }
+
+  let j = rules.length;
+
+  while (j--) {
+    insert(rules[j]);
   }
 
   // Rebuild classList if anything changed
@@ -91,34 +162,79 @@ export function processClassList(element: Element): void {
   }
 }
 
-function generateStylesFromClass(srcClass: string): string | undefined {
+function generateStylesFromClass(
+  srcClass: string,
+  isRoot: boolean,
+  canInsert?: boolean,
+  selClass = srcClass,
+): GeneratedClass {
+  if (isAliasDefinition(srcClass)) {
+    return {
+      conflictKey: srcClass,
+    };
+  }
+
   /**
    * The class cache should leave as long as the
    * application is running. This will prevent the
    * same class from being parsed and inserted multiple times.
    */
-  if (CLASS_CACHE.has(srcClass)) return;
+  const { cache, cacheKey } = getStyleCache(srcClass, selClass);
 
-  CLASS_CACHE.set(srcClass, srcClass);
+  if (cache.has(cacheKey)) {
+    return {
+      conflictKey: cache.get(cacheKey),
+    };
+  }
 
   try {
-    const rule = buildRule(srcClass);
+    const rule = buildRule(srcClass, isRoot, selClass);
 
     if (rule) {
-      if (rule.parsed.isDynamic) {
-        // Dynamic rules are not cached
-        CLASS_CACHE.delete(srcClass);
-      } else {
-        CLASS_CACHE.set(srcClass, rule.parsed.conflictKey);
+      if (canInsert && !rule.parsed.isDynamic) {
+        cache.set(cacheKey, rule.parsed.conflictKey);
       }
 
-      insert(rule);
+      if (canInsert) {
+        insert(rule);
+      }
 
-      return rule.parsed.conflictKey;
+      return {
+        rule,
+        cache: rule.parsed.isDynamic ? undefined : cache,
+        cacheKey: rule.parsed.isDynamic ? undefined : cacheKey,
+        conflictKey: rule.parsed.conflictKey,
+      };
     }
   } catch (error) {
     console.error(error);
   }
 
-  return srcClass;
+  return {
+    conflictKey: srcClass,
+  };
+}
+
+function getStyleCache(srcClass: string, selClass: string) {
+  const isAliasRule = selClass !== srcClass;
+
+  return {
+    cache: isAliasRule ? ALIAS_CLASS_CACHE : CLASS_CACHE,
+    cacheKey: isAliasRule ? `${selClass}=>${srcClass}` : srcClass,
+  };
+}
+
+function getClassItems(srcClass: string) {
+  if (isAliasDefinition(srcClass)) return [];
+
+  const expanded = expandAliasClass(srcClass);
+
+  if (!expanded) {
+    return [{ srcClass, selClass: srcClass }];
+  }
+
+  return expanded.map((expandedClass) => ({
+    srcClass: expandedClass, // source class for building rule
+    selClass: srcClass, // selector class for cache key
+  }));
 }

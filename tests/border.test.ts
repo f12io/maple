@@ -10,7 +10,7 @@ describe('Border', () => {
 
   it('border with variable', () => {
     expect(convert('br-xs_primary')).toBe(
-      `.br-xs_primary { border: var(--br-xs, var(--xs, xs)) oklch(from var(--br-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--br-primary-lightness-factor, var(--primary-lightness-factor, var(--br-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--br-primary-chroma-factor, var(--primary-chroma-factor, var(--br-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--br-primary-hue-rotate, var(--primary-hue-rotate, var(--br-hue-rotate, var(--hue-rotate, 0))))) / alpha); }`,
+      `.br-xs_primary { border: var(--br-xs, var(--xs, xs)) oklch(from var(--br-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--br-primary-l-scale, var(--primary-l-scale, var(--br-l-scale, var(--l-scale, 1))))) calc(c * var(--br-primary-c-scale, var(--primary-c-scale, var(--br-c-scale, var(--c-scale, 1))))) calc(h + var(--br-primary-h-rotate, var(--primary-h-rotate, var(--br-h-rotate, var(--h-rotate, 0))))) / alpha); }`,
     );
   });
 
@@ -38,7 +38,7 @@ describe('Border', () => {
 
   it('border with variable', () => {
     expect(convert('br-px_solid_primary')).toBe(
-      `.br-px_solid_primary { border: 1px solid oklch(from var(--br-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--br-primary-lightness-factor, var(--primary-lightness-factor, var(--br-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--br-primary-chroma-factor, var(--primary-chroma-factor, var(--br-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--br-primary-hue-rotate, var(--primary-hue-rotate, var(--br-hue-rotate, var(--hue-rotate, 0))))) / alpha); }`,
+      `.br-px_solid_primary { border: 1px solid oklch(from var(--br-primary, var(--color-primary, var(--primary, primary))) calc(l * var(--br-primary-l-scale, var(--primary-l-scale, var(--br-l-scale, var(--l-scale, 1))))) calc(c * var(--br-primary-c-scale, var(--primary-c-scale, var(--br-c-scale, var(--c-scale, 1))))) calc(h + var(--br-primary-h-rotate, var(--primary-h-rotate, var(--br-h-rotate, var(--h-rotate, 0))))) / alpha); }`,
     );
   });
 
@@ -60,7 +60,7 @@ describe('Border', () => {
 
   it('border-color with variable', () => {
     expect(convert('brc-red-300/30')).toBe(
-      `.brc-red-300\\/30 { border-color: oklch(from var(--brc-red, var(--color-red, var(--red, red))) calc((l + (1 - l) * (0.4 * var(--brc-red-tone-factor, var(--red-tone-factor, var(--brc-tone-factor, var(--tone-factor, 1)))))) * var(--brc-red-lightness-factor, var(--red-lightness-factor, var(--brc-lightness-factor, var(--lightness-factor, 1))))) calc(c * var(--brc-red-chroma-factor, var(--red-chroma-factor, var(--brc-chroma-factor, var(--chroma-factor, 1))))) calc(h + var(--brc-red-hue-rotate, var(--red-hue-rotate, var(--brc-hue-rotate, var(--hue-rotate, 0))))) / 30%); }`,
+      `.brc-red-300\\/30 { border-color: oklch(from var(--brc-red, var(--color-red, var(--red, red))) calc((l + (((var(--brc-red-l-shift, var(--red-l-shift, var(--brc-l-shift, var(--l-shift, 1)))) * (0.5 - 0.2778)) + (abs(var(--brc-red-l-shift, var(--red-l-shift, var(--brc-l-shift, var(--l-shift, 1))))) * (0.5 - l))) * calc(var(--l-edge-shift, 0.5) + ((1 - var(--l-edge-shift, 0.5)) * pow(abs(0.2778 - 0.5) * 2, 2))))) * var(--brc-red-l-scale, var(--red-l-scale, var(--brc-l-scale, var(--l-scale, 1))))) calc(c * calc(1 - (pow(abs(0.2778 - 0.5) * 2, 2) * var(--c-curve, 0.5))) * var(--brc-red-c-scale, var(--red-c-scale, var(--brc-c-scale, var(--c-scale, 1))))) calc(h + var(--brc-red-h-rotate, var(--red-h-rotate, var(--brc-h-rotate, var(--h-rotate, 0))))) / 30%); }`,
     );
   });
 
