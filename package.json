@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "dev": "concurrently 'npm run build:runtime -- --watch' 'vite serve examples --host'",
+    "dev": "concurrently \"npm run build:runtime -- --watch\" \"vite serve examples --host\"",
     "clean": "rimraf dist",
     "build:module": "cross-env BUILD_TYPE=lib vite build",
     "build:runtime": "cross-env BUILD_TYPE=runtime vite build",
@@ -31,7 +31,8 @@
     "test": "vitest --browser",
     "lint": "eslint .",
     "prettier:fix": "prettier --write . --ignore-path .gitignore",
-    "preversion": "npm run lint && npm run test && npm run build"
+    "preversion": "tsx scripts/preversion-check.ts && npm run lint && npm run test && npm run build",
+    "release": "tsx scripts/release.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
