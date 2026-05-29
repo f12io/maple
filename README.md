@@ -3,7 +3,7 @@
   <h1>Maple</h1>
   <p>
     A variable-first, framework-agnostic runtime CSS engine.<br>
-    Atomic. Tiny (~10kb gzipped). Fast. Delightfully intuitive.
+    Atomic. Tiny (~12kb gzipped). Fast. Delightfully intuitive.
   </p>
 
   <p>
@@ -22,7 +22,7 @@
 
 Maple is a runtime CSS engine that generates atomic styles from class names **only when they appear in the DOM**.
 
-Instead of shipping a stylesheet upfront, Maple ships a small runtime (~10kb gzipped) that observes the DOM and constructs CSS incrementally as your application renders. If a class is never used, its style is never generated.
+Instead of shipping a stylesheet upfront, Maple ships a small runtime (~12kb gzipped) that observes the DOM and constructs CSS incrementally as your application renders. If a class is never used, its style is never generated.
 
 This shifts styling cost from upfront network transfer to demand-driven runtime generation, eliminating build steps, configuration, and unused CSS — while keeping styles encapsulated.
 
@@ -90,7 +90,7 @@ Maple is here to challenge this hard line. Instead of optimizing CSS files, Mapl
 
 **Delivery & Performance:**
 
-- Constant Transfer Size (10kb, always)
+- Constant Transfer Size (12kb, always)
 - Incremental CSSOM Construction
 - Automatic Code Splitting
 - Zero "Dead Code"
@@ -115,7 +115,7 @@ Let's examine each benefit in detail:
 
 ### Constant Transfer Size
 
-Maple ships as a single ~10kb (gzipped) JavaScript file that generates styles from utility classes at runtime. This may seem counterintuitive in a world where static CSS is considered the gold standard — but Maple operates on a fundamentally different model.
+Maple ships as a single ~12kb (gzipped) JavaScript file that generates styles from utility classes at runtime. This may seem counterintuitive in a world where static CSS is considered the gold standard — but Maple operates on a fundamentally different model.
 
 An application can easily accumulate 20kb, 200kb, or even megabytes of potential styles. On a first visit, those styles must be downloaded in full before the browser can render anything. No matter how fast the user’s device is, no matter how aggressively the CSS is optimized, that network cost is paid upfront.
 
