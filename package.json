@@ -56,7 +56,7 @@
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.1.7"
   },
-  "homepage": "https://github.com/f12io/maple",
+  "homepage": "https://maple.f12.io",
   "keywords": [
     "maple",
     "utility-classes",
