@@ -59,48 +59,30 @@ Add Maple to your project by including the script below in the document `<head>`
 
 ## Why Maple?
 
-Maple challenges the traditional model of CSS as a static asset. Instead of optimizing CSS files ahead of time, Maple generates styles **on-demand** as the browser encounters classes.
+Instead of generating or optimizing CSS files ahead of time, Maple generates styles **on-demand** as the browser encounters classes.
 
 That model creates benefits across delivery, developer experience, and styling power.
 
 ### Delivery & Performance
 
-- **Constant Transfer Size:** Maple ships as a single ~12kb gzipped JavaScript file.
-- **Incremental CSSOM:** CSS is constructed incrementally based on what appears on the page.
-- **Automatic Splitting:** If a component is not on the screen, its styling cost is zero.
-- **No Unused Styles:** Styles cannot exist "just in case"; they are generated only from classes that appear in the DOM.
-
-Read more:
-[Constant Transfer Size](https://maple.f12.io/docs/why-maple/constant-transfer-size),
-[Incremental CSSOM](https://maple.f12.io/docs/why-maple/incremental-cssom),
-[Automatic Splitting](https://maple.f12.io/docs/why-maple/automatic-splitting),
-[No Unused Styles](https://maple.f12.io/docs/why-maple/no-unused-styles)
+- [Constant Transfer Size](https://maple.f12.io/docs/why-maple/constant-transfer-size): Maple ships as a single ~12kb gzipped JavaScript file.
+- [Incremental CSSOM](https://maple.f12.io/docs/why-maple/incremental-cssom): CSS is constructed incrementally based on what appears on the page.
+- [Automatic Code Splitting](https://maple.f12.io/docs/why-maple/automatic-splitting): If a component is not on the screen, its styling cost is zero.
+- [Zero Dead Code](https://maple.f12.io/docs/why-maple/no-unused-styles): Styles cannot exist "just in case"; they are generated only from classes that appear in the DOM.
 
 ### Developer Experience
 
-- **No Build Step:** Include the script and start styling.
-- **No Configuration Files:** Maple observes the DOM using a `MutationObserver` instead of scanning source files.
-- **No Special SSR Treatment:** Maple behaves the same whether HTML is produced by Next.js, Remix, Nuxt, PHP, or served as a static file.
-- **Universal Portability:** If you can add a `<script>` tag, you can use Maple.
-
-Read more:
-[No Build Step](https://maple.f12.io/docs/why-maple/no-build-step),
-[No Configuration Files](https://maple.f12.io/docs/why-maple/no-configuration-files),
-[No Special SSR Treatment](https://maple.f12.io/docs/why-maple/no-special-ssr-treatment),
-[Universal Portability](https://maple.f12.io/docs/why-maple/universal-portability)
+- [No Build Step](https://maple.f12.io/docs/why-maple/no-build-step): Include the script and start styling.
+- [No Configuration Files](https://maple.f12.io/docs/why-maple/no-configuration-files): Maple observes the DOM using a `MutationObserver` instead of scanning source files.
+- [No Special SSR Treatment](https://maple.f12.io/docs/why-maple/no-special-ssr-treatment): Maple behaves the same whether HTML is produced by Next.js, Remix, Nuxt, PHP, or served as a static file.
+- [Universal Portability](https://maple.f12.io/docs/why-maple/universal-portability): If you can add a `<script>` tag, you can use Maple.
 
 ### Styling Power
 
-- **Dynamic Data as CSS:** Maple treats dynamic data exactly like static class names.
-- **Variable-first Architecture:** Utilities map to semantic fallback chains of CSS variables.
-- **Dynamic Color Manipulation:** Color utilities resolve through CSS variables in the OKLCH color space.
-- **True Encapsulation:** Selector logic can live inside the class name itself.
-
-Read more:
-[Dynamic Data as CSS](https://maple.f12.io/docs/why-maple/dynamic-data-as-css),
-[Variable-first Architecture](https://maple.f12.io/docs/why-maple/variable-first-architecture),
-[Dynamic Color Manipulation](https://maple.f12.io/docs/why-maple/dynamic-color-manipulation),
-[True Encapsulation](https://maple.f12.io/docs/why-maple/true-encapsulation)
+- [Dynamic Data as CSS](https://maple.f12.io/docs/why-maple/dynamic-data-as-css): Maple treats dynamic data exactly like static class names.
+- [Variable-first Architecture](https://maple.f12.io/docs/why-maple/variable-first-architecture): Utilities map to semantic fallback chains of CSS variables.
+- [Dynamic Color Manipulation](https://maple.f12.io/docs/why-maple/dynamic-color-manipulation): Color utilities resolve through CSS variables in the OKLCH color space.
+- [True Encapsulation](https://maple.f12.io/docs/why-maple/true-encapsulation): Selector logic can live inside the class name itself.
 
 ## Syntax
 
@@ -167,7 +149,7 @@ Maple supports selector logic inside utility classes.
 
 ```html
 <button class="c-red ^.card:c-green ^.nav:c-blue">
-  Text is green when in a card, blue when in a nav.
+  Text is green when in a card and blue when in a navigation bar.
 </button>
 
 <button class="&:hover:c-black">The text becomes black on hover</button>
@@ -186,9 +168,7 @@ Maple's architecture offers unique benefits but also introduces constraints you 
 - **JavaScript is Required.** Maple runs entirely in the browser and does not generate static CSS. If JavaScript is disabled, the page will render without styles.
 - **Runtime Cost Scaling.** Maple's generation work scales with the number of **unique** utility classes that appear in the DOM.
 - **Not all CSS fits in Utilities.** Certain patterns, such as keyframes, font-face declarations, and global resets, are often better expressed in traditional CSS.
-- **Relative OKLCH Colors.** Browsers that do not support relative color syntax ignore those generated color declarations.
-
-Read the full [Limitations & Trade-offs](https://maple.f12.io/docs/guide/limitations) page before adoption.
+- **Relative OKLCH Colors.** As of May 2026, global support for relative color syntax is about 89%, with broader support for plain OKLab and OKLCH colors. Browsers that do not support relative color syntax ignore those generated color declarations.
 
 ## Documentation
 
