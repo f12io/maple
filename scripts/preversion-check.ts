@@ -1,10 +1,11 @@
 import { execFileSync } from 'node:child_process';
 
 function git(args: Array<string>, options: { stdio?: 'pipe' | 'ignore' } = {}) {
-  return execFileSync('git', args, {
+  const result = execFileSync('git', args, {
     encoding: 'utf8',
     stdio: ['ignore', options.stdio ?? 'pipe', 'pipe'],
-  }).trim();
+  }) as string | null;
+  return (result ?? '').trim();
 }
 
 function fail(message: string): never {
