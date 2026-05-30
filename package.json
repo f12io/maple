@@ -55,5 +55,25 @@
     "vite": "^7.3.3",
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.0.16"
+  },
+  "homepage": "https://github.com/f12io/maple",
+  "keywords": [
+    "maple",
+    "utility-classes",
+    "css",
+    "css-engine",
+    "runtime-css",
+    "atomic-css-engine"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/f12io/maple.git"
+  },
+  "bugs": {
+    "url": "https://github.com/f12io/maple/issues"
+  },
+  "license": "ROOT",
+  "engines": {
+    "node": ">= 24"
   }
 }
