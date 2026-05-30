@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convertWithRefs } from './helpers/convert.helper';
+import { convertWithRefs } from '../src/core/helpers/convert.helper';
 
 describe('Ref Variables', () => {
   it('ref space with single value', () => {

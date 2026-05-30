@@ -1,7 +1,7 @@
-import { buildRule } from '../../src/core/builder';
-import { expandAliasClass, isAliasDefinition } from '../../src/core/aliases';
-import { OPTIONS } from '../../src/core/constants/config';
-import { insert } from '../../src/core/stylesheet';
+import { expandAliasClass, isAliasDefinition } from '../aliases';
+import { buildRule } from '../builder';
+import { OPTIONS } from '../constants/config';
+import { insert } from '../stylesheet';
 
 export function convert(
   srcClass: string,

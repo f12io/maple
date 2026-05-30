@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convert } from './helpers/convert.helper';
+import { convert } from '../src/core/helpers/convert.helper';
 
 const vars =
   'filter: var(--filter-blur,) var(--filter-brightness,) var(--filter-contrast,) var(--filter-dshadow,) var(--filter-grayscale,) var(--filter-hue,) var(--filter-invert,) var(--filter-saturate,) var(--filter-sepia,)';

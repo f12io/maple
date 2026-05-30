@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convert } from './helpers/convert.helper';
+import { convert } from '../src/core/helpers/convert.helper';
 
 const vars =
   'backdrop-filter: var(--filter-bdblur,) var(--filter-bdbrightness,) var(--filter-bdcontrast,) var(--filter-bdshadow,) var(--filter-bdgrayscale,) var(--filter-bdhue,) var(--filter-bdinvert,) var(--filter-bdsaturate,) var(--filter-bdsepia,)';

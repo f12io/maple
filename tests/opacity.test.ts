@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convert } from './helpers/convert.helper';
+import { convert } from '../src/core/helpers/convert.helper';
 
 describe('Opacity', () => {
   it('opacity 0', () => {

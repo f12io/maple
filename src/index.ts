@@ -1,10 +1,10 @@
-export { convert } from '../tests/helpers/convert.helper';
 export { startRuntime } from './core/bootstrap';
 export { buildRule } from './core/builder';
 export * from './core/constants/config';
 export * from './core/constants/dictionaries';
 export * from './core/constants/regex';
 export * from './core/constants/units';
+export { convert } from './core/helpers/convert.helper';
 export { parseClass } from './core/parser-class';
 export * from './core/types';
 export { PRECALCULATED_PROP_ABBREVIATIONS } from './generated/precalculated-prop-abbreviations';

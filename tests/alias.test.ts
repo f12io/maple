@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { collectAliases } from '../src/core/aliases';
 import { ALIAS_CLASS_CACHE, CLASS_CACHE } from '../src/core/constants/caches';
 import { processClassList } from '../src/core/generator';
-import { convert } from './helpers/convert.helper';
+import { convert } from '../src/core/helpers/convert.helper';
 
 describe('User Defined Aliases', () => {
   it('collects user aliases from root definitions', () => {
