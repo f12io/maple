@@ -215,6 +215,6 @@ jobs:
       contents: write
     steps:
       - name: Publish Draft Release
-        run: gh release edit "$GITHUB_REF_NAME" --draft=false --latest
+        run: gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false --latest
         env:
           GH_TOKEN: ${{ github.token }}
