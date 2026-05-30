@@ -118,7 +118,7 @@ Built-in aliases include:
 | `truncate`    | `of=hidden;tof=ellipsis;ws=nowrap`                                |
 
 > [!NOTE]
-> Animation aliases (like `fade-in`) and flex layout aliases (like `fxrow-cc`) are documented in their respective files: [Animations](../14-animations.md) and [Flex Layout](../15-flex-layout.md).
+> Animation aliases (like `fade-in`) and flex layout aliases (like `fxrow-cc`) are documented in their respective files: [Animations](../13-animations.md) and [Flex Layout](../14-flex-layout.md).
 
 > [!TIP]
 > Adding `antialiased` to the `<body>` element is a good practice for sharper, more consistent font rendering across browsers.
