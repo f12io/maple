@@ -68,7 +68,7 @@ That model creates benefits across delivery, developer experience, and styling p
 - [Constant Transfer Size](https://maple.f12.io/docs/why-maple/constant-transfer-size): Maple ships as a single ~12kb gzipped JavaScript file.
 - [Incremental CSSOM](https://maple.f12.io/docs/why-maple/incremental-cssom): CSS is constructed incrementally based on what appears on the page.
 - [Automatic Code Splitting](https://maple.f12.io/docs/why-maple/automatic-splitting): If a component is not on the screen, its styling cost is zero.
-- [Zero Dead Code](https://maple.f12.io/docs/why-maple/no-unused-styles): Styles cannot exist "just in case"; they are generated only from classes that appear in the DOM.
+- [No Unused Styles](https://maple.f12.io/docs/why-maple/no-unused-styles): Styles cannot exist "just in case"; they are generated only from classes that appear in the DOM.
 
 ### Developer Experience
 
