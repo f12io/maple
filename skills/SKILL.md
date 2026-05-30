@@ -4,7 +4,7 @@ description: A variable-first, stack-agnostic runtime CSS engine for building re
 license: ROOT - https://rootsrc.org
 metadata:
   author: f12.io
-  version: '1.0.0'
+  version: '2.0.0'
 ---
 
 # Maple CSS Skill
