@@ -179,7 +179,9 @@ function generateStylesFromClass(
    * application is running. This will prevent the
    * same class from being parsed and inserted multiple times.
    */
-  const { cache, cacheKey } = getStyleCache(srcClass, selClass);
+  const isAliasRule = selClass !== srcClass;
+  const cache = isAliasRule ? ALIAS_CLASS_CACHE : CLASS_CACHE;
+  const cacheKey = isAliasRule ? `${selClass}=>${srcClass}` : srcClass;
 
   if (cache.has(cacheKey)) {
     return {
@@ -212,15 +214,6 @@ function generateStylesFromClass(
 
   return {
     conflictKey: srcClass,
-  };
-}
-
-function getStyleCache(srcClass: string, selClass: string) {
-  const isAliasRule = selClass !== srcClass;
-
-  return {
-    cache: isAliasRule ? ALIAS_CLASS_CACHE : CLASS_CACHE,
-    cacheKey: isAliasRule ? `${selClass}=>${srcClass}` : srcClass,
   };
 }
 

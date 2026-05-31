@@ -18,7 +18,7 @@ type Sheet = CSSStyleSheet | null;
 type Layer = CSSLayerBlockRule | undefined;
 type Group = CSSGroupingRule | undefined;
 
-const buckets: Record<string, Array<Bucket> | undefined> = {};
+const buckets = new Map<CSSGroupingRule, Array<Bucket>>();
 const BASE_KEY = 'base';
 let sheet: Sheet = null;
 let refNumbersLayer: Group;
@@ -135,8 +135,7 @@ function insertRule({ content, isAlias, parsedMediaQuery, parsed }: RuleData) {
   let priorityIndex = 0;
 
   if (parsed.propKeyKebab && parsed.propType !== PROP_TYPE_VARIABLE) {
-    const hyphenCount = parsed.propKeyKebab.split('-').length - 1;
-    priorityIndex = hyphenCount * 2;
+    priorityIndex = countHyphens(parsed.propKeyKebab) * 2;
 
     if (DEMOTED_PROPERTIES.has(parsed.propKeyKebab)) {
       priorityIndex -= 1;
@@ -153,9 +152,9 @@ function insertRule({ content, isAlias, parsedMediaQuery, parsed }: RuleData) {
 
   if (!layer) return;
 
-  const layerKey = getLayerKey(layer);
   const targetKey = parsedMediaQuery?.bucketKey ?? BASE_KEY;
-  let bucket = buckets[layerKey]?.find((b) => b.key === targetKey);
+  const layerBuckets = buckets.get(layer);
+  let bucket = layerBuckets?.find((b) => b.key === targetKey);
 
   if (!bucket && parsedMediaQuery) {
     bucket = insertBucket(layer, targetKey, parsedMediaQuery);
@@ -169,16 +168,16 @@ function insertRule({ content, isAlias, parsedMediaQuery, parsed }: RuleData) {
   }
 }
 
-function getLayerKey(layer: Layer) {
-  const names: Array<string> = [];
-  let current = layer;
+function countHyphens(value: string) {
+  let count = 0;
 
-  while (current) {
-    names.unshift(current.name);
-    current = current.parentRule as Layer;
+  for (let i = 0; i < value.length; i++) {
+    if (value.charCodeAt(i) === 45) {
+      count++;
+    }
   }
 
-  return names.join('/');
+  return count;
 }
 
 function getOrInsertLayer(
@@ -212,14 +211,17 @@ function getOrInsertLayer(
 
       const layer = typeLayer?.cssRules[index] as Layer;
 
-      layer?.insertRule('@layer base {}', 0);
-      buckets[getLayerKey(layer)] ??= [];
-      buckets[getLayerKey(layer)]?.push({
-        key: BASE_KEY,
-        type: BASE_KEY,
-        val: 0,
-        rule: layer?.cssRules[0] as CSSGroupingRule,
-      });
+      if (layer) {
+        layer.insertRule('@layer base {}', 0);
+        buckets.set(layer, [
+          {
+            key: BASE_KEY,
+            type: BASE_KEY,
+            val: 0,
+            rule: layer.cssRules[0] as CSSGroupingRule,
+          },
+        ]);
+      }
     }
   }
 
@@ -277,7 +279,7 @@ function compareBuckets(
 }
 
 function insertBucket(
-  layer: Layer,
+  layer: CSSLayerBlockRule,
   key: string,
   parsedMediaQuery: ParsedMediaQuery,
 ) {
@@ -286,8 +288,7 @@ function insertBucket(
   const val = parsePriority(parsedMediaQuery);
   const type = parsedMediaQuery.bucketType;
   const compareParam = { type, val, key };
-  const layerKey = getLayerKey(layer);
-  const layerBuckets = buckets[layerKey] ?? [];
+  const layerBuckets = buckets.get(layer) ?? [];
   let insertIndex = 0;
 
   for (let i = 0; i < layerBuckets.length; i++) {
@@ -298,13 +299,13 @@ function insertBucket(
     insertIndex = i + 1;
   }
 
-  layer?.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
+  layer.insertRule(`${parsedMediaQuery.bucketQuery} {}`, insertIndex);
 
-  const rule = layer?.cssRules[insertIndex] as Group;
+  const rule = layer.cssRules[insertIndex] as Group;
   const bucket = { key, type, val, rule };
 
   layerBuckets.splice(insertIndex, 0, bucket);
-  buckets[layerKey] = layerBuckets;
+  buckets.set(layer, layerBuckets);
 
   return bucket;
 }
