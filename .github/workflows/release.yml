@@ -205,7 +205,17 @@ jobs:
           NODE
 
       - name: Publish Package
-        run: npm publish --access public
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            TAG_NAME=$(echo "$GITHUB_REF_NAME" | awk -F'-' '{print $2}' | awk -F'.' '{print $1}')
+            if [ -z "$TAG_NAME" ]; then
+              TAG_NAME="next"
+            fi
+            npm publish --access public --tag "$TAG_NAME"
+          else
+            npm publish --access public
+          fi
 
   publish-github-release:
     name: Publish GitHub Release
