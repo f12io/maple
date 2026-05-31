@@ -10,16 +10,14 @@ function prepareOptions() {
   const url = new URL(import.meta.url);
 
   for (const [key, value] of url.searchParams.entries()) {
-    if (key === 'refs') {
-      OPTIONS.refs = 1;
-    }
-
-    if (key === 'nomerge') {
-      OPTIONS.nomerge = 1;
-    }
-
-    if (key === 'batching') {
-      OPTIONS.batching = 1;
+    if (
+      key === 'refs' ||
+      key === 'nomerge' ||
+      key === 'batching' ||
+      key === 'nohybrid'
+    ) {
+      OPTIONS[key] = 1;
+      continue;
     }
 
     OPTIONS.breakpoints[key] = value;

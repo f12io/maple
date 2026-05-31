@@ -1,11 +1,14 @@
 import { processClassList } from './generator';
 
+let observer: MutationObserver | undefined;
+
 export function startObserver() {
   if (typeof document === 'undefined') return;
+  if (observer) return stopObserver;
 
   let streaming = 1;
 
-  const observer = new MutationObserver((muts) => {
+  observer = new MutationObserver((muts) => {
     for (const mut of muts) {
       if (mut.type === 'childList') {
         for (const node of mut.addedNodes) {
@@ -40,5 +43,10 @@ export function startObserver() {
     attributeFilter: ['class'],
   });
 
-  return () => observer.disconnect();
+  return stopObserver;
+}
+
+function stopObserver() {
+  observer?.disconnect();
+  observer = undefined;
 }
