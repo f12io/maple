@@ -74,6 +74,6 @@
   },
   "license": "ROOT",
   "engines": {
-    "node": ">= 24"
+    "node": ">= 22"
   }
 }
