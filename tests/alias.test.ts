@@ -69,10 +69,7 @@ describe('Parameterized aliases', () => {
       expandAliasClass(
         '@dark:^.card:@underline(color:[rgba(0,0,0,1)],space:2)',
       ),
-    ).toEqual([
-      '@dark:^.card:brc=rgba(0,0,0,1)',
-      '@dark:^.card:pb-2',
-    ]);
+    ).toEqual(['@dark:^.card:brc=rgba(0,0,0,1)', '@dark:^.card:pb-2']);
 
     collectAliases([]);
   });
@@ -82,9 +79,7 @@ describe('Parameterized aliases', () => {
       '--alias-complex={media,md}:@{orientation,landscape}:^{parentSelector,.card}:{property,fs}={value,2}',
     ]);
 
-    expect(expandAliasClass('@complex')).toEqual([
-      'md:@landscape:^.card:fs=2',
-    ]);
+    expect(expandAliasClass('@complex')).toEqual(['md:@landscape:^.card:fs=2']);
     expect(
       expandAliasClass(
         '@complex(media:lg,orientation:portrait,parentSelector:[.panel.active],property:c,value:primary)',
@@ -109,10 +104,7 @@ describe('Parameterized aliases', () => {
   it('maps one positional parameter to the first placeholder and defaults the rest', () => {
     collectAliases(['--alias-card=bgc-{color,body};p-{space,2}']);
 
-    expect(expandAliasClass('@card(primary)')).toEqual([
-      'bgc-primary',
-      'p-2',
-    ]);
+    expect(expandAliasClass('@card(primary)')).toEqual(['bgc-primary', 'p-2']);
 
     collectAliases([]);
   });
@@ -135,6 +127,23 @@ describe('Parameterized aliases', () => {
     expect(expandAliasClass('@card(color:accent,space:4)')).toEqual([
       'bgc-accent',
       'p-4',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('ignores empty forwarded parameters so nested aliases can use defaults', () => {
+    collectAliases([
+      '--alias-paragraph=c-{color,body}-700/{alpha,100}',
+      '--alias-p1=@paragraph(color:{color},alpha:{alpha})',
+    ]);
+
+    expect(expandAliasClass('@p1(red)')).toEqual(['c-red-700/100']);
+    expect(expandAliasClass('@p1(color:red,alpha:60)')).toEqual([
+      'c-red-700/60',
+    ]);
+    expect(expandAliasClass('@paragraph(color:red,alpha:)')).toEqual([
+      'c-red-700/100',
     ]);
 
     collectAliases([]);

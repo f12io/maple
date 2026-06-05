@@ -152,9 +152,13 @@ function parseAliasParams(
     const pair = split(part, REF_CHAR_UTILITY_DELIMITER);
 
     if (pair.length > 1 && pair[0]) {
-      params[pair[0]] = removeBrackets(
+      const value = removeBrackets(
         pair.slice(1).join(REF_CHAR_UTILITY_DELIMITER),
       );
+
+      if (value) {
+        params[pair[0]] = value;
+      }
     } else {
       positional.push(removeBrackets(part));
     }
