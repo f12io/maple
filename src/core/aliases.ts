@@ -5,6 +5,7 @@ import {
   REF_CHAR_ALIAS_PARTS,
   REF_CHAR_ALIAS_PREFIX,
   REF_CHAR_CUSTOM,
+  REF_CHAR_VALUE_PARTS,
   REF_CHAR_SEL_CHILD,
   REF_CHAR_SEL_PARENT,
   REF_CHAR_SEL_SELF,
@@ -20,6 +21,7 @@ const ALIAS_DEFINITION_PREFIX = '--alias-';
 const MAX_ALIAS_DEPTH = 5;
 let USER_ALIASES: Record<string, string | undefined> = {};
 let aliasSignature = '';
+const REGEX_ALIAS_PARAM = /\{([^{}]+)\}/g;
 
 export function isAliasDefinition(srcClass: string): boolean {
   return srcClass.startsWith(ALIAS_DEFINITION_PREFIX);
@@ -72,10 +74,10 @@ function expandAliasClassInternal(
   if (!alias) return;
 
   const result: Array<string> = [];
-  const aliasItems = split(alias, REF_CHAR_ALIAS_PARTS).filter(Boolean);
+  const aliasItems = split(alias.value, REF_CHAR_ALIAS_PARTS).filter(Boolean);
 
   for (const item of aliasItems) {
-    const itemParts = splitClass(item);
+    const itemParts = splitClass(applyAliasParams(item, alias.params));
     const mergedContext = mergeContexts(context, itemParts.context);
     const expandedClass =
       prefix +
@@ -93,13 +95,116 @@ function expandAliasClassInternal(
   return result.length ? result : undefined;
 }
 
-function resolveAlias(utility: string): string | undefined {
+function resolveAlias(
+  utility: string,
+): { value: string; params: Record<string, string | undefined> } | undefined {
   if (utility.startsWith(REF_CHAR_ALIAS_PREFIX)) {
-    const key = utility.slice(REF_CHAR_ALIAS_PREFIX.length);
-    return USER_ALIASES[key] ?? BUILTIN_ALIASES[key];
+    const usage = parseAliasUsage(utility);
+    const value = USER_ALIASES[usage.key] ?? BUILTIN_ALIASES[usage.key];
+
+    if (!value) return;
+
+    const params = parseAliasParams(usage.paramsRaw, value);
+
+    if (!params) return;
+
+    return { value, params };
   }
 
-  return BUILTIN_ALIASES[utility];
+  const value = BUILTIN_ALIASES[utility];
+
+  if (!value) return;
+
+  return {
+    value,
+    params: {},
+  };
+}
+
+function parseAliasUsage(utility: string): {
+  key: string;
+  paramsRaw: string | undefined;
+} {
+  const body = utility.slice(REF_CHAR_ALIAS_PREFIX.length);
+  const openIndex = body.indexOf('(');
+
+  if (openIndex === -1 || !body.endsWith(')')) {
+    return { key: body, paramsRaw: undefined };
+  }
+
+  return {
+    key: body.slice(0, openIndex),
+    paramsRaw: body.slice(openIndex + 1, -1),
+  };
+}
+
+function parseAliasParams(
+  paramsRaw: string | undefined,
+  alias: string,
+): Record<string, string | undefined> | undefined {
+  if (paramsRaw === undefined) return {};
+
+  const params: Record<string, string | undefined> = {};
+  const positional: Array<string> = [];
+  const parts = split(paramsRaw, REF_CHAR_VALUE_PARTS).filter(Boolean);
+
+  for (const part of parts) {
+    const pair = split(part, REF_CHAR_UTILITY_DELIMITER);
+
+    if (pair.length > 1 && pair[0]) {
+      params[pair[0]] = removeBrackets(
+        pair.slice(1).join(REF_CHAR_UTILITY_DELIMITER),
+      );
+    } else {
+      positional.push(removeBrackets(part));
+    }
+  }
+
+  if (
+    positional.length > 1 ||
+    (positional.length && Object.keys(params).length)
+  ) {
+    return;
+  }
+
+  if (positional.length === 1 && Object.keys(params).length === 0) {
+    const firstParam = getAliasParamNames(alias)[0];
+
+    if (firstParam) {
+      params[firstParam] = positional[0];
+    }
+  }
+
+  return params;
+}
+
+function getAliasParamNames(alias: string): Array<string> {
+  const names: Array<string> = [];
+
+  alias.replace(REGEX_ALIAS_PARAM, (_, content: string) => {
+    const name = split(content, REF_CHAR_VALUE_PARTS)[0];
+
+    if (name && !names.includes(name)) {
+      names.push(name);
+    }
+
+    return '';
+  });
+
+  return names;
+}
+
+function applyAliasParams(
+  value: string,
+  params: Record<string, string | undefined>,
+): string {
+  return value.replace(REGEX_ALIAS_PARAM, (_, content: string) => {
+    const parts = split(content, REF_CHAR_VALUE_PARTS);
+    const name = parts[0];
+    const defaultValue = parts.length > 1 ? parts.slice(1).join(',') : '';
+
+    return params[name] ?? removeBrackets(defaultValue);
+  });
 }
 
 function splitClass(srcClass: string) {

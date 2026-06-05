@@ -377,6 +377,24 @@ describe('Merge', () => {
       collectAliases([]);
     });
 
+    it('uses parameterized alias expansions for merge conflicts', () => {
+      collectAliases(['--alias-space=p-{space,4}']);
+
+      testMerge('@space(4) p-8', 'p-8');
+      testMerge('p-8 @space(4)', '@space(4)');
+
+      collectAliases([]);
+    });
+
+    it('keeps parameterized aliases when one expanded utility survives merging', () => {
+      collectAliases(['--alias-card=p-{space,4};bgc-{color,white}']);
+
+      testMerge('@card(color:red,space:4) p-8', '@card(color:red,space:4) p-8');
+      testMerge('p-8 @card(color:red,space:4)', '@card(color:red,space:4)');
+
+      collectAliases([]);
+    });
+
     it('does not insert overridden alias utilities after a cached later utility', () => {
       collectAliases(['--alias-runtime-card=p-4;bgc-white']);
 

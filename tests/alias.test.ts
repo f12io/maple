@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { collectAliases } from '../src/core/aliases';
+import { collectAliases, expandAliasClass } from '../src/core/aliases';
 import { ALIAS_CLASS_CACHE, CLASS_CACHE } from '../src/core/constants/caches';
 import { processClassList } from '../src/core/generator';
 import { convert } from '../src/core/helpers/convert.helper';
@@ -23,6 +23,129 @@ describe('User Defined Aliases', () => {
     );
 
     expect(convert('fx')).toBe('.fx { display: flex; }');
+
+    collectAliases([]);
+  });
+});
+
+describe('Parameterized aliases', () => {
+  it('expands a single positional parameter', () => {
+    collectAliases(['--alias-underline=brc-{color}-900;pb-2']);
+
+    expect(expandAliasClass('@underline(primary)')).toEqual([
+      'brc-primary-900',
+      'pb-2',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('expands multiple named parameters', () => {
+    collectAliases(['--alias-pill=bgc-{color};px-{space};content={label}']);
+
+    expect(expandAliasClass('@pill(color:primary,space:3,label:New)')).toEqual([
+      'bgc-primary',
+      'px-3',
+      'content=New',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('keeps bracketed commas inside parameter values', () => {
+    collectAliases(['--alias-swatch=bgc={color};content={label}']);
+
+    expect(
+      expandAliasClass('@swatch(color:[rgba(0,0,0,1)],label:[Hello, world])'),
+    ).toEqual(['bgc=rgba(0,0,0,1)', 'content=Hello, world']);
+
+    collectAliases([]);
+  });
+
+  it('expands parameters with media queries, selectors, and bracketed commas', () => {
+    collectAliases(['--alias-underline=brc={color};pb-{space,2}']);
+
+    expect(
+      expandAliasClass(
+        '@dark:^.card:@underline(color:[rgba(0,0,0,1)],space:2)',
+      ),
+    ).toEqual([
+      '@dark:^.card:brc=rgba(0,0,0,1)',
+      '@dark:^.card:pb-2',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('expands parameters in media, selector, property, and value positions', () => {
+    collectAliases([
+      '--alias-complex={media,md}:@{orientation,landscape}:^{parentSelector,.card}:{property,fs}={value,2}',
+    ]);
+
+    expect(expandAliasClass('@complex')).toEqual([
+      'md:@landscape:^.card:fs=2',
+    ]);
+    expect(
+      expandAliasClass(
+        '@complex(media:lg,orientation:portrait,parentSelector:[.panel.active],property:c,value:primary)',
+      ),
+    ).toEqual(['lg:@portrait:^.panel.active:c=primary']);
+
+    collectAliases([]);
+  });
+
+  it('falls back to placeholder defaults for omitted parameters', () => {
+    collectAliases(['--alias-underline=brc-{color,body}-900;pb-{space,2}']);
+
+    expect(expandAliasClass('@underline')).toEqual(['brc-body-900', 'pb-2']);
+    expect(expandAliasClass('@underline(color:primary)')).toEqual([
+      'brc-primary-900',
+      'pb-2',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('maps one positional parameter to the first placeholder and defaults the rest', () => {
+    collectAliases(['--alias-card=bgc-{color,body};p-{space,2}']);
+
+    expect(expandAliasClass('@card(primary)')).toEqual([
+      'bgc-primary',
+      'p-2',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('rejects multiple positional parameters', () => {
+    collectAliases(['--alias-card=bgc-{color,body};p-{space,2}']);
+
+    expect(expandAliasClass('@card(primary,3)')).toBeUndefined();
+
+    collectAliases([]);
+  });
+
+  it('expands nested aliases with forwarded parameters', () => {
+    collectAliases([
+      '--alias-background=bgc-{color,body}',
+      '--alias-card=@background({color});p-{space,2}',
+    ]);
+
+    expect(expandAliasClass('@card(primary)')).toEqual(['bgc-primary', 'p-2']);
+    expect(expandAliasClass('@card(color:accent,space:4)')).toEqual([
+      'bgc-accent',
+      'p-4',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('generates CSS for parameterized aliases', () => {
+    collectAliases(['--alias-space=p-{space,2}']);
+
+    expect(convert('@space(4)')).toBe(
+      '.\\@space\\(4\\) { padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25))))); }',
+    );
 
     collectAliases([]);
   });

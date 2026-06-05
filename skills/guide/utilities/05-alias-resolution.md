@@ -26,6 +26,31 @@ Use `;` to separate multiple classes inside an alias.
 </html>
 ```
 
+Aliases can accept parameters with `{name}` placeholders. When an alias has one supplied value, you can pass it positionally. When passing more than one value, use named parameters:
+
+```html
+<html class="--alias-underline=brc-{color,body}-900;pb-{space,2}">
+  <a class="@underline(primary)">Primary underline</a>
+  <a class="@underline(color:accent,space:3)">Accent underline</a>
+</html>
+```
+
+The value after the comma in a placeholder is the default. If a parameter value contains a comma, wrap it in brackets so Maple can split the parameter list correctly:
+
+```html
+<html class="--alias-swatch=bgc={color}">
+  <div class="@swatch([rgba(0,0,0,1)])"></div>
+</html>
+```
+
+Parameterized aliases can forward values into nested aliases:
+
+```html
+<html class="--alias-background=bgc-{color,body} --alias-card=@background({color});p-{space,2}">
+  <article class="@card(primary)"></article>
+</html>
+```
+
 Alias definitions are collected only from `<html>` and definitions on other elements are ignored. If the same custom alias is defined more than once on `<html>`, the later definition wins.
 
 Aliases are not reactive. If you change an alias definition on `<html>` after elements using that alias have already been processed, Maple does not automatically revisit those existing alias usages. Treat aliases as root-level configuration for reusable utility shortcuts. For live changes, use CSS variables instead.
