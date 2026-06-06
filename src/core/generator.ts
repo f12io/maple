@@ -79,8 +79,10 @@ export function processClassList(element: Element): void {
 
     const items = getClassItems(srcClass);
     let hasActiveRule = false;
+    let itemIndex = items.length;
 
-    for (const item of items) {
+    while (itemIndex--) {
+      const item = items[itemIndex];
       const { cache, cacheKey, conflictKey, rule } = generateStylesFromClass(
         item.srcClass,
         isRoot,

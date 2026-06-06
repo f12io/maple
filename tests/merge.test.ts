@@ -395,6 +395,21 @@ describe('Merge', () => {
       collectAliases([]);
     });
 
+    it('lets later members inside an alias override earlier nested alias members', () => {
+      collectAliases(['--alias-theme=p-4', '--alias-solid=@theme;p-8']);
+
+      const el = document.createElement('div');
+      el.className = '@solid';
+      document.body.append(el);
+      processClassList(el);
+
+      expect(el.className).toBe('@solid');
+      expect(getComputedStyle(el).paddingTop).toBe('32px');
+
+      el.remove();
+      collectAliases([]);
+    });
+
     it('does not insert overridden alias utilities after a cached later utility', () => {
       collectAliases(['--alias-runtime-card=p-4;bgc-white']);
 
