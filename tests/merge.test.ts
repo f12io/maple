@@ -410,6 +410,37 @@ describe('Merge', () => {
       collectAliases([]);
     });
 
+    it('lets later alias classes override earlier alias class members', () => {
+      collectAliases([
+        '--alias-square=px-{space,1.5};py-{space,1.5};ar=1;lh-0',
+        '--alias-btn=fxrow-cc;px-4;py-1.5;rad-2',
+      ]);
+
+      const square = document.createElement('button');
+      square.className = '@square';
+      document.body.append(square);
+      processClassList(square);
+
+      const btn = document.createElement('button');
+      btn.className = '@btn';
+      document.body.append(btn);
+      processClassList(btn);
+
+      const el = document.createElement('button');
+      el.className = '@btn @square';
+      document.body.append(el);
+      processClassList(el);
+
+      expect(el.className).toBe('@btn @square');
+      expect(getComputedStyle(el).paddingLeft).toBe('6px');
+      expect(getComputedStyle(el).paddingTop).toBe('6px');
+
+      square.remove();
+      btn.remove();
+      el.remove();
+      collectAliases([]);
+    });
+
     it('does not insert overridden alias utilities after a cached later utility', () => {
       collectAliases(['--alias-runtime-card=p-4;bgc-white']);
 

@@ -4,10 +4,12 @@ import { ALIAS_CLASS_CACHE, CLASS_CACHE } from './constants/caches';
 import { OPTIONS } from './constants/config';
 import { REGEX_WHITESPACE } from './constants/regex';
 import { isMergeException } from './helpers/merge.helper';
+import { parseClass } from './parser-class';
 import { insert } from './stylesheet';
 import { RuleData } from './types';
 
 const mergeCache = new WeakMap<Element, string>();
+const selectorCache = new Map<string, string>();
 type StyleCache = typeof CLASS_CACHE;
 
 interface GeneratedClass {
@@ -15,6 +17,11 @@ interface GeneratedClass {
   cacheKey?: string;
   conflictKey?: string;
   rule?: RuleData;
+}
+
+interface ClassItem {
+  srcClass: string;
+  selClass: string;
 }
 
 /**
@@ -65,6 +72,7 @@ export function processClassList(element: Element): void {
 
   const seenExact = new Set<string>();
   const seenConflict = new Set<string>();
+  const seenConflictItems = new Map<string, ClassItem>();
   const rules: Array<RuleData> = [];
   let newClass = '';
 
@@ -92,7 +100,16 @@ export function processClassList(element: Element): void {
 
       // Conflict check
       if (conflictKey) {
-        if (seenConflict.has(conflictKey)) continue;
+        if (seenConflict.has(conflictKey)) {
+          const winner = seenConflictItems.get(conflictKey);
+          const overrideRule = buildAliasOverrideRule(item, winner, isRoot);
+
+          if (overrideRule) {
+            rules.push(overrideRule);
+          }
+
+          continue;
+        }
 
         let coveredByShorthand = false;
 
@@ -124,6 +141,7 @@ export function processClassList(element: Element): void {
         if (coveredByShorthand) continue;
 
         seenConflict.add(conflictKey);
+        seenConflictItems.set(conflictKey, item);
 
         /**
          * Important utilities override earlier normal utilities with the same
@@ -132,6 +150,7 @@ export function processClassList(element: Element): void {
          */
         if (isImportant) {
           seenConflict.add(propKey + normalPropParents);
+          seenConflictItems.set(propKey + normalPropParents, item);
         }
       }
 
@@ -219,7 +238,48 @@ function generateStylesFromClass(
   };
 }
 
-function getClassItems(srcClass: string) {
+function buildAliasOverrideRule(
+  loser: ClassItem,
+  winner: ClassItem | undefined,
+  isRoot: boolean,
+): RuleData | undefined {
+  if (!winner) return;
+  if (loser.selClass === loser.srcClass) return;
+  if (winner.selClass === winner.srcClass) return;
+  if (loser.selClass === winner.selClass) return;
+
+  const cacheKey = `${winner.selClass}+${loser.selClass}=>${winner.srcClass}`;
+
+  if (ALIAS_CLASS_CACHE.has(cacheKey)) return;
+
+  const selectorOverride =
+    getClassSelector(loser.selClass) + getClassSelector(winner.selClass);
+  const rule = buildRule(
+    winner.srcClass,
+    isRoot,
+    winner.selClass,
+    selectorOverride,
+  );
+
+  if (rule) {
+    ALIAS_CLASS_CACHE.set(cacheKey, rule.parsed.conflictKey);
+  }
+
+  return rule;
+}
+
+function getClassSelector(srcClass: string): string {
+  let selector = selectorCache.get(srcClass);
+
+  if (!selector) {
+    selector = parseClass(srcClass).srcSel;
+    selectorCache.set(srcClass, selector);
+  }
+
+  return selector;
+}
+
+function getClassItems(srcClass: string): Array<ClassItem> {
   if (isAliasDefinition(srcClass)) return [];
 
   const expanded = expandAliasClass(srcClass);

@@ -34,12 +34,13 @@ export function buildRule(
   srcClass: string,
   isRoot = false,
   selectorSrcClass = srcClass,
+  selectorOverride?: string,
 ): RuleData | undefined {
   const isAlias = selectorSrcClass !== srcClass;
   const parsed = parseClass(srcClass);
 
   if (isAlias) {
-    parsed.srcSel = parseClass(selectorSrcClass).srcSel;
+    parsed.srcSel = selectorOverride ?? parseClass(selectorSrcClass).srcSel;
   }
 
   const styleContent = buildProp(parsed);
@@ -66,6 +67,7 @@ export function buildRule(
     styleContent,
     parsedMediaQuery?.overrideRootSelector,
     isRoot,
+    selectorOverride,
   );
 
   parsed.conflictKey = OPTIONS.nomerge
@@ -82,6 +84,7 @@ function buildOverrideRule(
   styleContent: string,
   overrideRootSelector: string | undefined,
   isRoot: boolean,
+  selectorOverride?: string,
 ): RuleData | undefined {
   if (!overrideRootSelector) {
     return;
@@ -92,9 +95,10 @@ function buildOverrideRule(
   );
 
   if (selectorSrcClass !== srcClass) {
-    parsed.srcSel = parseClass(
-      selectorSrcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''),
-    ).srcSel;
+    parsed.srcSel =
+      selectorOverride ??
+      parseClass(selectorSrcClass.replace(REGEX_OVERRIDABLE_MEDIA_QUERY, ''))
+        .srcSel;
   }
 
   const parsedMediaQuery = parseMediaQuery(parsed);
