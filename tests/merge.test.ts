@@ -441,6 +441,86 @@ describe('Merge', () => {
       collectAliases([]);
     });
 
+    it('keeps nested alias self selectors on child slots', () => {
+      collectAliases([
+        '--alias-test-slot-heading=mb-0;&:first-child:mbs-0',
+        '--alias-test-slot-h5=@test-slot-heading;mt-6',
+        '--alias-test-slot-note=/.\\@test-slot-header:@test-slot-h5',
+      ]);
+
+      const note = document.createElement('div');
+      note.className = '@test-slot-note';
+
+      const header = document.createElement('div');
+      header.className = '@test-slot-header';
+
+      note.append(header);
+      document.body.append(note);
+      processClassList(note);
+
+      expect(note.className).toBe('@test-slot-note');
+      expect(getComputedStyle(header).marginTop).toBe('0px');
+
+      note.remove();
+      collectAliases([]);
+    });
+
+    it('keeps nested alias child selectors on child slots', () => {
+      collectAliases([
+        '--alias-test-slot-heading=mb-0;/.child:mbs-0',
+        '--alias-test-slot-h5=@test-slot-heading;mt-6',
+        '--alias-test-slot-note=/.\\@test-slot-header:@test-slot-h5',
+      ]);
+
+      const note = document.createElement('div');
+      note.className = '@test-slot-note';
+
+      const header = document.createElement('div');
+      header.className = '@test-slot-header';
+
+      const child = document.createElement('div');
+      child.className = 'child';
+
+      header.append(child);
+      note.append(header);
+      document.body.append(note);
+      processClassList(note);
+
+      expect(note.className).toBe('@test-slot-note');
+      expect(getComputedStyle(child).marginTop).toBe('0px');
+
+      note.remove();
+      collectAliases([]);
+    });
+
+    it('keeps nested alias parent selectors on child slots', () => {
+      collectAliases([
+        '--alias-test-slot-heading=mb-0;^.parent:mbs-0',
+        '--alias-test-slot-h5=@test-slot-heading;mt-6',
+        '--alias-test-slot-note=/.\\@test-slot-header:@test-slot-h5',
+      ]);
+
+      const note = document.createElement('div');
+      note.className = '@test-slot-note';
+
+      const header = document.createElement('div');
+      header.className = '@test-slot-header';
+
+      const parent = document.createElement('div');
+      parent.className = 'parent';
+
+      parent.append(note);
+      note.append(header);
+      document.body.append(parent);
+      processClassList(note);
+
+      expect(note.className).toBe('@test-slot-note');
+      expect(getComputedStyle(header).marginTop).toBe('0px');
+
+      parent.remove();
+      collectAliases([]);
+    });
+
     it('does not insert overridden alias utilities after a cached later utility', () => {
       collectAliases(['--alias-runtime-card=p-4;bgc-white']);
 

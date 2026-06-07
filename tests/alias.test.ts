@@ -409,6 +409,51 @@ describe('Alias Behavior Tests', () => {
     collectAliases([]);
   });
 
+  it('applies nested alias self selectors to the scoped child selector', () => {
+    collectAliases([
+      '--alias-test-heading=mb-0;&:first-child:mbs-0',
+      '--alias-test-h5=@test-heading;mt-6',
+    ]);
+
+    expect(expandAliasClass('/.slot:@test-h5')).toEqual([
+      '/.slot:mb-0',
+      '/.slot:first-child:mbs-0',
+      '/.slot:mt-6',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('applies nested alias child selectors to the scoped child selector', () => {
+    collectAliases([
+      '--alias-test-heading=mb-0;/.child:mbs-0',
+      '--alias-test-h5=@test-heading;mt-6',
+    ]);
+
+    expect(expandAliasClass('/.slot:@test-h5')).toEqual([
+      '/.slot:mb-0',
+      '/.slot_.child:mbs-0',
+      '/.slot:mt-6',
+    ]);
+
+    collectAliases([]);
+  });
+
+  it('applies nested alias parent selectors to the scoped child selector', () => {
+    collectAliases([
+      '--alias-test-heading=mb-0;^.parent:mbs-0',
+      '--alias-test-h5=@test-heading;mt-6',
+    ]);
+
+    expect(expandAliasClass('/.slot:@test-h5')).toEqual([
+      '/.slot:mb-0',
+      '^.parent/.slot:mbs-0',
+      '/.slot:mt-6',
+    ]);
+
+    collectAliases([]);
+  });
+
   it('define media queries and selectors in alias definition', () => {
     collectAliases(['--alias-card=@lg:p-4;&:hover:p-8']);
 

@@ -248,8 +248,16 @@ function mergeContexts(baseContext: string, aliasContext: string): string {
     .filter(Boolean)
     .join(REF_CHAR_UTILITY_DELIMITER);
   const parentSel = joinSelector(base?.parentSel, alias?.parentSel);
-  const selfSel = joinSelfSelector(base?.selfSel, alias?.selfSel);
-  const childSel = joinSelector(base?.childSel, alias?.childSel);
+  let selfSel = base?.selfSel;
+  let childSel = base?.childSel;
+
+  if (childSel && alias?.selfSel) {
+    childSel = joinSelfSelector(childSel, alias.selfSel);
+  } else {
+    selfSel = joinSelfSelector(selfSel, alias?.selfSel);
+  }
+
+  childSel = joinSelector(childSel, alias?.childSel);
   const selector = [
     parentSel ? `${REF_CHAR_SEL_PARENT}${parentSel}` : '',
     selfSel ? `${REF_CHAR_SEL_SELF}${selfSel}` : '',
