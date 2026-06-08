@@ -34,6 +34,7 @@ Do not guess Maple classes from Tailwind, Bootstrap, UnoCSS, or other utility sy
 - Automatic conflict resolution: [guide/16-conflict-resolution.md](guide/16-conflict-resolution.md)
 - Configuration, refs, nomerge, and breakpoints: [guide/17-configuration.md](guide/17-configuration.md)
 - Abbreviations reference: [guide/18-abbreviations-reference.md](guide/18-abbreviations-reference.md)
+- Advanced installation: [guide/19-advanced-installation.md](guide/19-advanced-installation.md)
 
 If an abbreviation exists in the abbreviations reference, Maple can also use the camelCase version of that CSS property.
 
