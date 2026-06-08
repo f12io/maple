@@ -161,6 +161,38 @@ Maple supports selector logic inside utility classes.
 
 Read more in [True Encapsulation](https://maple.f12.io/docs/why-maple/true-encapsulation) and [Selectors](https://maple.f12.io/docs/syntax/selectors).
 
+### Aliases
+
+Aliases expand into one or more utility classes, letting you build reusable grouped classes. You can define custom aliases on the root `<html>` element using `--alias-{name}=...` and apply them with `@`.
+
+```html
+<html class="--alias-truncate=of=hidden;tof=ellipsis;ws=nowrap">
+  <body>
+    <!-- Usage: Grouped utility classes under a single name -->
+    <span class="@truncate w-40">Long text that should truncate</span>
+  </body>
+</html>
+```
+
+#### Parameterized Aliases
+
+Aliases can also accept parameters using `{name}` placeholders. This allows you to create incredibly flexible, reusable utility abstractions that adapt dynamically to your design needs, bridging the gap between static utility classes and dynamic components.
+
+By combining parameterized aliases with nested forwarding, you can build entire component systems directly in your root HTML:
+
+```html
+<html
+  class="--alias-swatch=c-{color,black}-600;bgc-{color,black}-100;brc-{color,black}-200;square-8;br"
+>
+  <body>
+    <!-- Usage: Instant, dynamic variations -->
+    <div class="@swatch"></div> <!-- Black (Default) -->
+    <div class="@swatch(red)"></div>
+    <div class="@swatch(green)"></div>
+  </body>
+</html>
+```
+
 ## Limitations & Trade-offs
 
 Maple's architecture offers unique benefits but also introduces constraints you should understand before adoption.
