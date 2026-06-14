@@ -5,6 +5,8 @@
 /examples/maple.js
 /examples/keyframes.css
 /examples/ignored/*.html
+/examples/benchmarks/reports
+/examples/benchmarks/artifacts
 /tmp
 /out-tsc
 # Only exists if Bazel was run

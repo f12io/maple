@@ -45,6 +45,13 @@ export default defineConfig([
       ],
     },
   },
+  {
+    files: ['examples/benchmarks/run.js'],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
   // Brower Environment (Source)
   {
     files: ['src/**/*.{ts}'],
@@ -60,6 +67,7 @@ export default defineConfig([
       'tests/**/*.{ts}',
       '*.config.js',
       'examples/*.config.js',
+      'examples/benchmarks/run.js',
     ],
     languageOptions: {
       globals: globals.node,

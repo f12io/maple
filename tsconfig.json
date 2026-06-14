@@ -18,6 +18,7 @@
     "scripts",
     "build",
     "*.config.js",
-    "examples/*.config.js"
+    "examples/*.config.js",
+    "examples/benchmarks/run.js"
   ]
 }
