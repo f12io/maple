@@ -13,7 +13,6 @@
   <p>
     <a href="#quick-start">Quick Start</a> •
     <a href="#why-maple">Why Maple?</a> •
-    <a href="#runtime-vs-static">Runtime vs Static</a> •
     <a href="#documentation">Documentation</a> •
     <a href="https://maple.f12.io">Website</a>
   </p>
@@ -210,7 +209,7 @@ Maple includes a Playwright-based benchmark suite that compares runtime delivery
 
 The default static fixture is intentionally a best-case baseline: it contains exactly the CSS rules needed by the generated page. For a payload model closer to common real-world CSS delivery, the benchmark can also add unused static CSS to represent shared bundles, global styles, route-level CSS, component-library CSS, or conservatively extracted utilities.
 
-See the [benchmark methodology](examples/benchmarks/README.md) for the command reference, reproducibility notes, fixture design, measurement contract, and report interpretation.
+See the [benchmark methodology](examples/benchmarks/README.md) for the command reference, reproducibility notes, fixture design, measurement contract, and report interpretation. For a deeper dive into the results and analysis, check out the dedicated [Guide](https://maple.f12.io/docs/guide/performance) page.
 
 ## Documentation
 

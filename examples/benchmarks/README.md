@@ -41,7 +41,8 @@ PORT=3005 node run.js \
   --seed 12345 \
   --reuse-ratio 3 \
   --fast \
-  --add-unused-css
+  --add-unused-css \
+  --caching
 ```
 
 | Argument                 | Default                             | Effect                                                                                                                                                                                                                                                                        | Why it matters                                                                                                                                                                                                                   |
@@ -51,6 +52,7 @@ PORT=3005 node run.js \
 | `--seed <integer>`       | random integer from `0` to `999999` | Uses a deterministic seed for fixture generation, fixture ordering, unused-CSS expansion, and per-iteration variant shuffle order. The value must be a JavaScript safe integer; invalid values throw.                                                                         | The benchmark intentionally randomizes fixture shape and run order. A seed makes a result reproducible and lets another machine regenerate the same workload topology.                                                           |
 | `--reuse-ratio <number>` | unset                               | Overrides each workload's unique-class target to approximately `total class occurrences / reuse ratio`. The value must be `>= 1`; values below `1` throw, and non-numeric values are ignored.                                                                                 | Class reuse is a major CSS-size lever. A lower reuse ratio increases uniqueness and tends to increase generated static CSS. A higher reuse ratio repeats the same utilities more often and tends to reduce generated static CSS. |
 | `--add-unused-css`       | disabled                            | After extracting the static CSS that the page actually uses, appends synthetic unused rules until the static CSS reaches an approximate gzip target: small `20 KB`, medium `55 KB`, large `110 KB`. The expanded file is minified again before measurement.                   | This models global or framework CSS that is downloaded and parsed but not matched by the current page. It intentionally changes the static payload, so compare these runs separately from default runs.                          |
+| `--caching`              | disabled                            | Simulates a cached visit by executing an initial, unthrottled cache warm-up request to fetch static assets before reloading the page under the emulated network and CPU conditions to measure readiness.                                                                      | Measures performance when static assets (CSS, JS) are served from the browser cache, reflecting subsequent page visits or single-page app navigations where network transfer costs for assets are bypassed.                      |
 | `PORT=<n>`               | `3005`                              | Sets the local HTTP server port used for fixture generation and measurement. This is an environment variable, not a CLI flag.                                                                                                                                                 | Use this when port `3005` is already occupied or when running multiple benchmark processes. The value should be a valid integer port.                                                                                            |
 
 Without `--add-unused-css`, the static CSS payload is an idealized best case: it contains exactly the rules needed by the current fixture and no unused CSS. That represents perfect per-page extraction, which is valuable as a lower bound for static CSS cost but is often more precise than real production CSS delivery.
@@ -154,3 +156,7 @@ max(25ms, average runtime/static IQR)
 The fixed `25ms` floor prevents small absolute differences from being presented as meaningful wins when browser timing variance could explain the result. The IQR term scales the noise threshold for unstable cells.
 
 Aggregate sections average medians across the active matrix cells. These averages are useful as a compact summary, but the per-size matrix is the primary evidence because network and CPU profiles can change the winner.
+
+## Deep Dive & Analysis
+
+For a deeper dive into the results, analysis of specific scenarios, and high-level architectural takeaways, check out the dedicated [Guide](https://maple.f12.io/docs/guide/performance) page.

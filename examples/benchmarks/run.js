@@ -123,6 +123,7 @@ function parseOptions(argv) {
   return {
     argv,
     expandCss: argv.includes('--add-unused-css'),
+    isCachingEnabled: argv.includes('--caching'),
     iterations: parsePositiveIntegerFlag(argv, '--iterations', 5),
     isFastOnly: argv.includes('--fast'),
     isRandomSeed,
@@ -683,15 +684,23 @@ function serveStaticFile(request, response) {
   const contentType = getContentType(filePath);
 
   if ((request.headers['accept-encoding'] || '').includes('gzip')) {
-    response.writeHead(200, {
+    const headers = {
       'Content-Encoding': 'gzip',
       'Content-Type': contentType,
-    });
+    };
+    if (contentType !== 'text/html') {
+      headers['Cache-Control'] = 'public, max-age=31536000';
+    }
+    response.writeHead(200, headers);
     response.end(gzipSync(content));
     return;
   }
 
-  response.writeHead(200, { 'Content-Type': contentType });
+  const headers = { 'Content-Type': contentType };
+  if (contentType !== 'text/html') {
+    headers['Cache-Control'] = 'public, max-age=31536000';
+  }
+  response.writeHead(200, headers);
   response.end(content);
 }
 
@@ -896,6 +905,7 @@ async function runBenchmarks({
           networkConfig: network.config,
           progress,
           random: options.random,
+          isCachingEnabled: options.isCachingEnabled,
         }),
       );
     }
@@ -912,6 +922,7 @@ async function runBenchmarkSuite({
   networkConfig,
   progress,
   random,
+  isCachingEnabled,
 }) {
   const variantResults = Object.fromEntries(
     variants.map((variant) => [variant, { styledReadyTimes: [] }]),
@@ -929,6 +940,7 @@ async function runBenchmarkSuite({
         cpuConfig,
         networkConfig,
         variant,
+        isCachingEnabled,
       });
 
       // The first pass warms the browser, server, and generated assets; only
@@ -967,12 +979,25 @@ function writeProgress({ iteration, matrixName, progress, variant }) {
   );
 }
 
-async function measureVariant({ browser, cpuConfig, networkConfig, variant }) {
+async function measureVariant({
+  browser,
+  cpuConfig,
+  networkConfig,
+  variant,
+  isCachingEnabled,
+}) {
   const context = await browser.newContext();
 
   try {
     const page = await context.newPage();
     const client = await context.newCDPSession(page);
+
+    if (isCachingEnabled) {
+      await page.goto(`${baseUrl}/${variant}.html`, {
+        waitUntil: 'networkidle',
+        timeout: 60000,
+      });
+    }
 
     await client.send(
       'Network.emulateNetworkConditions',
