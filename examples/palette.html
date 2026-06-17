@@ -17,7 +17,7 @@
       import {
         createCoco,
         namedColors,
-      } from 'https://cdn.jsdelivr.net/npm/@f12io/coco@2.1.4/+esm';
+      } from 'https://cdn.jsdelivr.net/npm/@f12io/coco@2.1.9/+esm';
 
       const coco = createCoco({ namedColors });
       const cssColors = Object.keys(namedColors);
@@ -193,10 +193,6 @@
       // 1. Initial DOM Generation
       const grid = document.getElementById('grid');
       cssColors.forEach((color) => {
-        if (color === 'burntsienna') {
-          return;
-        }
-
         const row = document.createElement('div');
         row.className =
           'color-row @gr cols=[160px_repeat(11,_1fr)] g-3 ai=center';
