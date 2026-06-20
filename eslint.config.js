@@ -5,7 +5,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist', 'src/generated', 'examples/maple.js']),
+  globalIgnores(['dist', 'src/generated', 'examples/maple.js', 'examples/benchmarks/artifacts/maple.js']),
   {
     extends: [
       eslintJs.configs.recommended,
