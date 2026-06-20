@@ -30,6 +30,11 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    define: isRuntime
+      ? {
+          'import.meta.url': 'document.currentScript.src',
+        }
+      : undefined,
     server: {
       port: 3000,
     },
@@ -70,7 +75,7 @@ export default defineConfig(({ mode }) => {
           },
       rollupOptions: {
         output: {
-          inlineDynamicImports: isRuntime,
+          codeSplitting: !isRuntime,
         },
       },
     },
