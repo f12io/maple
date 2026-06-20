@@ -213,6 +213,12 @@ export const BACKDROP_FILTER_KEYS: Record<string, string> = {
   bdsepia: 'sepia',
 };
 
+export const COMPOSABLE_KEYS = new Set([
+  ...Object.keys(FILTER_KEYS),
+  ...Object.keys(BACKDROP_FILTER_KEYS),
+  ...Object.keys(TRANSFORM_KEYS),
+]);
+
 export const PROP_UNIT_MAP: Record<string, string> = {
   animation: DEFAULT_TIME_UNIT,
   animationDelay: DEFAULT_TIME_UNIT,

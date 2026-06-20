@@ -22,6 +22,7 @@ import {
   DEFAULT_TIME_VALUE,
 } from '../constants/units';
 import { setCacheItem } from './cache.helper';
+import { toCamelCase } from './string.helper';
 
 export function resolveType(
   propKeyKebab: string,
@@ -64,9 +65,14 @@ export function resolveType(
   return type;
 }
 
-export function isKnownProperty(propKeyKebab: string): 1 | 0 {
+export function isKnownProperty(
+  propKeyKebab: string,
+  propKeyCamel?: string,
+): 1 | 0 {
+  propKeyCamel ??= toCamelCase(propKeyKebab);
+
   if (
-    propKeyKebab in PRECALCULATED_PROP_TYPES ||
+    propKeyCamel in PRECALCULATED_PROP_TYPES ||
     PROP_TYPE_CACHE.has(propKeyKebab)
   ) {
     return 1;

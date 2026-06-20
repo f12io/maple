@@ -4,11 +4,7 @@ import {
   REF_CHAR_VALUE_PARTS,
 } from './constants/chars';
 import { OPTIONS } from './constants/config';
-import {
-  BACKDROP_FILTER_KEYS,
-  FILTER_KEYS,
-  TRANSFORM_KEYS,
-} from './constants/dictionaries';
+import { COMPOSABLE_KEYS } from './constants/dictionaries';
 import { REGEX_OVERRIDABLE_MEDIA_QUERY } from './constants/regex';
 import { escapeVariable, split } from './helpers/string.helper';
 import { parseClass } from './parser-class';
@@ -23,13 +19,6 @@ import {
 } from './serializer';
 import { ParsedClass, ParsedMediaQuery, RuleData } from './types';
 
-// Composable keys - these don't conflict with each other
-const COMPOSABLE_KEYS = new Set([
-  ...Object.keys(FILTER_KEYS),
-  ...Object.keys(BACKDROP_FILTER_KEYS),
-  ...Object.keys(TRANSFORM_KEYS),
-]);
-
 export function buildRule(
   srcClass: string,
   isRoot = false,
@@ -38,6 +27,10 @@ export function buildRule(
 ): RuleData | undefined {
   const isAlias = selectorSrcClass !== srcClass;
   const parsed = parseClass(srcClass);
+
+  if (!parsed.utilKey) {
+    return;
+  }
 
   if (isAlias) {
     parsed.srcSel = selectorOverride ?? parseClass(selectorSrcClass).srcSel;

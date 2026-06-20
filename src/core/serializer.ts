@@ -152,6 +152,14 @@ const INTERNAL_DECISION_MODIFIERS: Modifiers = {
   ),
 };
 
+export function isValidModifier(utilKey: string): boolean {
+  return (
+    utilKey in INTERNAL_DECISION_MODIFIERS ||
+    utilKey in CUSTOM_MODIFIERS ||
+    utilKey in PREDEFINED_MODIFIERS
+  );
+}
+
 export function applyModifier(parsed: ParsedClass): string | undefined {
   return (
     INTERNAL_DECISION_MODIFIERS[parsed.utilKey] ??

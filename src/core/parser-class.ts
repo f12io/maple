@@ -21,7 +21,7 @@ import {
 import { OPTIONS } from './constants/config';
 import { ABBREVIATIONS, ABBREVIATIONS_REVERSE } from './constants/dictionaries';
 import { setCacheItem } from './helpers/cache.helper';
-import { resolveType } from './helpers/property.helper';
+import { isKnownProperty, resolveType } from './helpers/property.helper';
 import {
   escapeVariable,
   removeBrackets,
@@ -30,7 +30,7 @@ import {
   startsWithNegative,
   toKebabCase,
 } from './helpers/string.helper';
-import { serializeValue } from './serializer';
+import { isValidModifier, serializeValue } from './serializer';
 import { ParsedClass, ParsedSelector } from './types';
 
 export function parseClass(srcClass: string): ParsedClass {
@@ -134,6 +134,14 @@ function parseUtility(utilityRaw: string): {
   }
 
   const propKeyKebab = escapeVariable(toKebabCase(propKeyCamel));
+
+  if (
+    utilOp === REF_CHAR_PREDEFINED &&
+    !isKnownProperty(propKeyKebab, propKeyCamel) &&
+    !isValidModifier(utilKey)
+  ) {
+    utilKey = '';
+  }
 
   return {
     utilKey,
