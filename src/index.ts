@@ -9,3 +9,5 @@ export { parseClass } from './core/parser-class';
 export * from './core/types';
 export { PRECALCULATED_PROP_ABBREVIATIONS } from './generated/precalculated-prop-abbreviations';
 export { PRECALCULATED_PROP_TYPES } from './generated/precalculated-prop-types';
+export * as StringHelper from './core/helpers/string.helper';
+export * as PropertyHelper from './core/helpers/property.helper';
