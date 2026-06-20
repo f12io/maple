@@ -1,6 +1,6 @@
 {
   "name": "@f12io/maple",
-  "version": "2.0.18",
+  "version": "2.0.19",
   "private": false,
   "type": "module",
   "main": "./dist/module/index.cjs",
