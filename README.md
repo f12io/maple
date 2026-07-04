@@ -221,8 +221,8 @@ See the [benchmark methodology](examples/benchmarks/README.md) for the command r
 
 ## Contributing
 
-If you're interested in contributing to Maple, please read our [contributing docs](https://github.com/f12io/maple/blob/main/.github/CONTRIBUTING.md) **before submitting a pull request**.
+Contributions are welcome! See [contributing docs](https://github.com/f12io/maple/blob/main/.github/CONTRIBUTING.md) for development setup, project layout, and pull request guidelines.
 
 ## License
 
-Released under the [Root Source License (ROOT)](https://github.com/f12io/maple/blob/main/LICENSE), an MIT-style permissive license with an additional distribution condition for systems that can recreate the source on demand. © [f12.io](https://f12.io)
+Released under the [Root Source License (ROOT)](LICENSE), an MIT-style permissive license with an additional distribution condition for systems that can recreate the source on demand. © [f12.io](https://f12.io)
