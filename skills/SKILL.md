@@ -19,7 +19,6 @@ Do not guess Maple classes from Tailwind, Bootstrap, UnoCSS, or other utility sy
 - Syntax reference and utilities: [guide/02-utilities.md](guide/02-utilities.md)
 - Selectors: [guide/03-selectors.md](guide/03-selectors.md)
 - Media queries: [guide/04-media-queries.md](guide/04-media-queries.md)
-- Usage guide introduction: [guide/00-usage-guide.md](guide/00-usage-guide.md)
 - Borders: [guide/05-borders.md](guide/05-borders.md)
 - Transforms: [guide/06-transforms.md](guide/06-transforms.md)
 - Transitions: [guide/07-transitions.md](guide/07-transitions.md)
