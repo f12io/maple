@@ -1,5 +1,6 @@
 export { startRuntime } from './core/bootstrap';
 export { buildRule } from './core/builder';
+export * from './core/constants/chars';
 export * from './core/constants/config';
 export * from './core/constants/dictionaries';
 export * from './core/constants/regex';
