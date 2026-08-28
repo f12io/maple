@@ -15,6 +15,9 @@ Define and use CSS variables directly in class names.
 <div class="--accent=var(--primary)"></div>
 ```
 
+> [!IMPORTANT]
+> A variable holds a raw CSS value and reaches the stylesheet as written, so Maple's shade notation does not resolve inside one: `--brand=blue-300` produces the invalid declaration `--brand: blue-300`. Keep the color in the variable and put the shade on the utility that reads it—`--brand=blue` with `bgc-brand-300`—or write the color out in full: `--brand=oklch(0.62_0.19_260)`.
+
 ### Root-Level Variables
 
 Add variables to the `<html>` element to make them globally available—no CSS file required.
@@ -45,8 +48,8 @@ Variables can be combined with selectors and media queries.
 ### State-Based Variables
 
 ```html
-<div class="--bg=gray-100 &:hover:--bg=gray-200">
-  <div class="bgc-bg ts-200_bgc">
+<div class="--bg=gray &:hover:--bg=slategray">
+  <div class="bgc-bg-100 ts-200_bgc">
     <!-- Smooth hover transition -->
   </div>
 </div>
