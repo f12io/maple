@@ -3,7 +3,7 @@
   <h1>Maple</h1>
   <p>
     A variable-first, stack-agnostic runtime CSS engine.<br>
-    Atomic. Tiny (~12kb gzipped). Delightfully intuitive.
+    Atomic. Tiny (~14kb gzipped). Delightfully intuitive.
   </p>
 
   <p>
@@ -45,10 +45,7 @@ Add Maple to your project by including the script below in the document `<head>`
 </html>
 ```
 
-> [!IMPORTANT]
-> Load Maple as a blocking script in the document head.
->
-> Maple replaces a render-blocking stylesheet with a small render-blocking runtime. Loading it with `async`, `defer`, `type="module"`, or at the end of the body allows the browser to paint elements before Maple has generated their styles, which can cause a Flash of Unstyled Content.
+Like stylesheets, Maple is a render-blocking resource and belongs in `<head>` as a `<script>`, so styles exist before the browser paints. Skip `async`, `defer`, `type="module"`, and end-of-body placement, for the same reason you wouldn't defer your main stylesheet: they let the browser paint before styles are ready.
 
 > [!TIP]
 > For production, pin Maple to a specific version:
@@ -65,7 +62,7 @@ That model creates benefits across delivery, developer experience, and styling p
 
 ### Delivery & Performance
 
-- [Constant Transfer Size](https://maple.f12.io/docs/why-maple/constant-transfer-size): Maple ships as a single ~12kb gzipped JavaScript file.
+- [Constant Transfer Size](https://maple.f12.io/docs/why-maple/constant-transfer-size): Maple ships as a single ~14kb gzipped JavaScript file.
 - [Incremental CSSOM](https://maple.f12.io/docs/why-maple/incremental-cssom): CSS is constructed incrementally based on what appears on the page.
 - [Automatic Code Splitting](https://maple.f12.io/docs/why-maple/automatic-splitting): If a component is not on the screen, its styling cost is zero.
 - [No Unused Styles](https://maple.f12.io/docs/why-maple/no-unused-styles): Styles cannot exist "just in case"; they are generated only from classes that appear in the DOM.
@@ -194,14 +191,13 @@ By combining parameterized aliases with nested forwarding, you can build entire 
 </html>
 ```
 
-## Limitations & Trade-offs
+## Trade-offs
 
-Maple's architecture offers unique benefits but also introduces constraints you should understand before adoption.
+Maple moves styling work from build time to runtime. That gives you zero build steps, zero configuration, no unused CSS, and dynamic styling. It also means the following.
 
-- **JavaScript is Required.** Maple runs entirely in the browser and does not generate static CSS. If JavaScript is disabled, the page will render without styles.
-- **Runtime Cost Scaling.** Maple's generation work scales with the number of **unique** utility classes that appear in the DOM.
-- **Not all CSS fits in Utilities.** Certain patterns, such as keyframes, font-face declarations, and global resets, are often better expressed in traditional CSS.
-- **Relative OKLCH Colors.** As of May 2026, global support for relative color syntax is about 89%, with broader support for plain OKLab and OKLCH colors. Browsers that do not support relative color syntax ignore those generated color declarations.
+- **JavaScript is required.** Maple generates styles in the browser rather than shipping a static stylesheet, so it carries the same requirement as any client-rendered application. This is the fundamental trade-off for a no-build pipeline and constant transfer size. If you need to fully support JavaScript-disabled clients, Maple may not be the right tool for you.
+- **Runtime work scales with utility classes.** Work is proportional to the number of **unique** utility classes that appear in the DOM, not to the number of elements; a class that repeats reuses the rule already generated. In exchange, a class that never appears is never generated, so a page pays only for what it renders.
+- **Relative OKLCH colors need modern browsers.** Maple color utilities use CSS relative color syntax with OKLCH, so colors can be adjusted from their base values in the browser. As of August 2026, [global support for relative color syntax](https://caniuse.com/css-relative-colors) is about 91%, with broader support for plain [OKLab and OKLCH colors](https://caniuse.com/wf-oklab). Browsers that do not support relative color syntax ignore those generated color declarations.
 
 ## Runtime vs Static
 
