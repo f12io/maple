@@ -53,7 +53,7 @@ Parameterized aliases can forward values into nested aliases:
 
 Alias definitions are collected only from `<html>` and definitions on other elements are ignored. If the same custom alias is defined more than once on `<html>`, the later definition wins.
 
-Aliases are not reactive. If you change an alias definition on `<html>` after elements using that alias have already been processed, Maple does not automatically revisit those existing alias usages. Treat aliases as root-level configuration for reusable utility shortcuts. For live changes, use CSS variables instead.
+Aliases are not reactive. The alias set is read from `<html>` once, when the runtime starts, and locked for the lifetime of the page — adding, changing, or removing `--alias-*` definitions after the initial load has no effect. This keeps alias resolution deterministic: identical markup always produces the same rules regardless of when it is processed. Treat aliases as root-level configuration for reusable utility shortcuts. For live changes, use CSS variables instead.
 
 > [!TIP]
 > Aliases work best when they follow utility-first logic: multiple declarations doing one clear job, like `antialiased` or `truncate`. Avoid using aliases as component-sized CSS classes for buttons, cards, or panels; extract those patterns into components or templates instead.

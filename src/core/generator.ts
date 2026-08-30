@@ -1,6 +1,6 @@
 import { collectAliases, expandAliasClass, isAliasDefinition } from './aliases';
 import { buildRule } from './builder';
-import { ALIAS_CLASS_CACHE, CLASS_CACHE } from './constants/caches';
+import { CLASS_CACHE } from './constants/caches';
 import { OPTIONS } from './constants/config';
 import { REGEX_WHITESPACE } from './constants/regex';
 import { isMergeException } from './helpers/merge.helper';
@@ -10,10 +10,8 @@ import { RuleData } from './types';
 
 const mergeCache = new WeakMap<Element, string>();
 const selectorCache = new Map<string, string>();
-type StyleCache = typeof CLASS_CACHE;
 
 interface GeneratedClass {
-  cache?: StyleCache;
   cacheKey?: string;
   conflictKey?: string;
   rule?: RuleData;
@@ -91,7 +89,7 @@ export function processClassList(element: Element): void {
 
     while (itemIndex--) {
       const item = items[itemIndex];
-      const { cache, cacheKey, conflictKey, rule } = generateStylesFromClass(
+      const { cacheKey, conflictKey, rule } = generateStylesFromClass(
         item.srcClass,
         isRoot,
         false,
@@ -158,8 +156,8 @@ export function processClassList(element: Element): void {
         rules.push(rule);
       }
 
-      if (cache && cacheKey && conflictKey) {
-        cache.set(cacheKey, conflictKey);
+      if (cacheKey && conflictKey) {
+        CLASS_CACHE.set(cacheKey, conflictKey);
       }
 
       hasActiveRule = true;
@@ -199,14 +197,15 @@ function generateStylesFromClass(
    * The class cache should leave as long as the
    * application is running. This will prevent the
    * same class from being parsed and inserted multiple times.
+   * Alias-expanded rules use a `selClass=>srcClass` key so they
+   * never collide with the plain entry for the same source class.
    */
   const isAliasRule = selClass !== srcClass;
-  const cache = isAliasRule ? ALIAS_CLASS_CACHE : CLASS_CACHE;
   const cacheKey = isAliasRule ? `${selClass}=>${srcClass}` : srcClass;
 
-  if (cache.has(cacheKey)) {
+  if (CLASS_CACHE.has(cacheKey)) {
     return {
-      conflictKey: cache.get(cacheKey),
+      conflictKey: CLASS_CACHE.get(cacheKey),
     };
   }
 
@@ -215,7 +214,7 @@ function generateStylesFromClass(
 
     if (rule) {
       if (canInsert && !rule.parsed.isDynamic) {
-        cache.set(cacheKey, rule.parsed.conflictKey);
+        CLASS_CACHE.set(cacheKey, rule.parsed.conflictKey);
       }
 
       if (canInsert) {
@@ -224,7 +223,6 @@ function generateStylesFromClass(
 
       return {
         rule,
-        cache: rule.parsed.isDynamic ? undefined : cache,
         cacheKey: rule.parsed.isDynamic ? undefined : cacheKey,
         conflictKey: rule.parsed.conflictKey,
       };
@@ -250,7 +248,7 @@ function buildAliasOverrideRule(
 
   const cacheKey = `${winner.selClass}+${loser.selClass}=>${winner.srcClass}`;
 
-  if (ALIAS_CLASS_CACHE.has(cacheKey)) return;
+  if (CLASS_CACHE.has(cacheKey)) return;
 
   const selectorOverride =
     getClassSelector(loser.selClass) + getClassSelector(winner.selClass);
@@ -262,7 +260,7 @@ function buildAliasOverrideRule(
   );
 
   if (rule) {
-    ALIAS_CLASS_CACHE.set(cacheKey, rule.parsed.conflictKey);
+    CLASS_CACHE.set(cacheKey, rule.parsed.conflictKey);
   }
 
   return rule;

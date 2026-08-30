@@ -160,7 +160,7 @@ Read more in [True Encapsulation](https://maple.f12.io/docs/why-maple/true-encap
 
 ### Aliases
 
-Aliases expand into one or more utility classes, letting you build reusable grouped classes. You can define custom aliases on the root `<html>` element using `--alias-{name}=...` and apply them with `@`.
+Aliases expand into one or more utility classes, letting you build reusable grouped classes. You can define custom aliases on the root `<html>` element using `--alias-{name}=...` and apply them with `@`. Alias definitions are read once at load and locked — changing them at runtime has no effect.
 
 ```html
 <html class="--alias-truncate=of=hidden;tof=ellipsis;ws=nowrap">

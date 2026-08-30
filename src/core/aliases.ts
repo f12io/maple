@@ -1,4 +1,3 @@
-import { ALIAS_CLASS_CACHE } from './constants/caches';
 import {
   CHAR_DOLLAR,
   CHAR_EXCLAMATION_MARK,
@@ -20,14 +19,27 @@ import { parseSelectors } from './parser-class';
 const ALIAS_DEFINITION_PREFIX = '--alias-';
 const MAX_ALIAS_DEPTH = 5;
 let USER_ALIASES: Record<string, string | undefined> = {};
-let aliasSignature = '';
+let aliasesLocked = false;
 const REGEX_ALIAS_PARAM = /\{([^{}]+)\}/g;
 
 export function isAliasDefinition(srcClass: string): boolean {
   return srcClass.startsWith(ALIAS_DEFINITION_PREFIX);
 }
 
+/**
+ * Freezes the user alias set for the lifetime of the app. Aliases are
+ * root-level configuration read from the initial `<html>` markup; if
+ * definitions could change afterwards, identical markup would merge
+ * differently depending on when it was processed, and rules generated
+ * from an earlier definition would go stale or be inserted again.
+ */
+export function lockAliases(): void {
+  aliasesLocked = true;
+}
+
 export function collectAliases(srcClasses: Array<string>): void {
+  if (aliasesLocked) return;
+
   const aliases: Record<string, string | undefined> = {};
 
   for (const srcClass of srcClasses) {
@@ -43,16 +55,6 @@ export function collectAliases(srcClasses: Array<string>): void {
     if (key && value) {
       aliases[key] = value;
     }
-  }
-
-  const nextSignature = Object.keys(aliases)
-    .sort()
-    .map((key) => `${key}=${aliases[key]}`)
-    .join(REF_CHAR_ALIAS_PARTS);
-
-  if (nextSignature !== aliasSignature) {
-    ALIAS_CLASS_CACHE.clear();
-    aliasSignature = nextSignature;
   }
 
   USER_ALIASES = aliases;

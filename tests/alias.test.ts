@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { collectAliases, expandAliasClass } from '../src/core/aliases';
-import { ALIAS_CLASS_CACHE, CLASS_CACHE } from '../src/core/constants/caches';
+import { CLASS_CACHE } from '../src/core/constants/caches';
 import { processClassList } from '../src/core/generator';
 import { convert } from '../src/core/helpers/convert.helper';
 
@@ -337,8 +337,8 @@ describe('Built-in aliases', () => {
 });
 
 describe('Alias Behavior Tests', () => {
-  it('caches alias-expanded rules separately from normal utility rules', () => {
-    ALIAS_CLASS_CACHE.clear();
+  it('caches alias-expanded rules under a key distinct from the plain utility', () => {
+    CLASS_CACHE.delete('@cached-card=>p-4');
     CLASS_CACHE.delete('p-4');
     collectAliases(['--alias-cached-card=p-4']);
 
@@ -346,7 +346,7 @@ describe('Alias Behavior Tests', () => {
     aliasEl.className = '@cached-card';
     processClassList(aliasEl);
 
-    expect(ALIAS_CLASS_CACHE.get('@cached-card=>p-4')).toBe('padding:');
+    expect(CLASS_CACHE.get('@cached-card=>p-4')).toBe('padding:');
     expect(CLASS_CACHE.has('p-4')).toBe(false);
 
     const utilityEl = document.createElement('div');
@@ -354,23 +354,6 @@ describe('Alias Behavior Tests', () => {
     processClassList(utilityEl);
 
     expect(CLASS_CACHE.get('p-4')).toBe('padding:');
-
-    collectAliases([]);
-  });
-
-  it('clears alias-expanded cache when root aliases change', () => {
-    ALIAS_CLASS_CACHE.clear();
-    collectAliases(['--alias-cache-change=p-4']);
-
-    const el = document.createElement('div');
-    el.className = '@cache-change';
-    processClassList(el);
-
-    expect(ALIAS_CLASS_CACHE.has('@cache-change=>p-4')).toBe(true);
-
-    collectAliases(['--alias-cache-change=p-8']);
-
-    expect(ALIAS_CLASS_CACHE.has('@cache-change=>p-4')).toBe(false);
 
     collectAliases([]);
   });

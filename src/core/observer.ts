@@ -1,3 +1,4 @@
+import { lockAliases } from './aliases';
 import { processClassList } from './generator';
 
 let observer: MutationObserver | undefined;
@@ -35,6 +36,7 @@ export function startObserver() {
   });
 
   processClassList(document.documentElement);
+  lockAliases();
 
   observer.observe(document.documentElement, {
     childList: true,
