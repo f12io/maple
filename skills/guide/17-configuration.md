@@ -8,13 +8,14 @@ Maple accepts configuration via script query string parameters.
 <script src="https://cdn.jsdelivr.net/npm/@f12io/maple/dist/maple.js?refs&nomerge&md=680px&4xl=1920px"></script>
 ```
 
-| Parameter              | Description                                  |
-| ---------------------- | -------------------------------------------- |
-| `refs`                 | Enable reference mode for better performance |
-| `nomerge`              | Disable merging of utility classes           |
-| `nohybrid`             | Disable the hybrid dark mode generation.     |
+| Parameter              | Description                                   |
+| ---------------------- | --------------------------------------------- |
+| `refs`                 | Enable reference mode for better performance  |
+| `nomerge`              | Disable merging of utility classes            |
+| `nohybrid`             | Disable the hybrid dark mode generation.      |
 | `important`            | Mark every generated declaration `!important` |
-| `{breakpoint}={value}` | Override or add custom breakpoints           |
+| `debug`                | Enable console warnings for silent failures   |
+| `{breakpoint}={value}` | Override or add custom breakpoints            |
 
 ### Custom Breakpoints
 
@@ -70,6 +71,32 @@ The per-utility `!` prefix continues to work and produces the same output; you o
 **When to avoid it:**
 
 - Greenfield projects, or sites where all CSS lives in layers — the cascade already resolves correctly, and blanket `!important` makes any later per-element override harder.
+
+### Debug Mode (`debug`)
+
+By default, Maple stays silent when a class produces no styles — an invalid utility, a dropped merge conflict, or an ignored alias simply does nothing. Add `debug` to the script query string to surface these cases as `[maple]`-prefixed console warnings:
+
+```html
+<script src="maple.js?debug"></script>
+```
+
+**What debug mode reports:**
+
+1. **Startup configuration**: The resolved options object is logged once at boot, including breakpoints — a mistyped flag (e.g. `?nomrege`) is treated as a breakpoint and becomes immediately visible here.
+2. **Skipped classes**: A class that shows Maple intent but produces no rule is reported with the reason (unknown utility, no style declaration). Intent means the class resolved to a known utility key (e.g. the typo `bgc-`), or carries Maple syntax markers (contains `:` or `=`, or starts with `!` or `$`). Plain CSS classes like `btn-primary` stay silent.
+3. **Merge rewrites**: When conflict resolution changes an element's class attribute, the full rewrite is logged — e.g. `merged: "pt-2 p-8" -> "p-8"`.
+4. **Alias problems**: Unknown alias usage, invalid alias params, expansion depth limit hits (circular definitions), and alias definitions that arrive after the lock — a new or changed `--alias-*` definition on `<html>` after the initial markup is processed is ignored, and debug mode is the only signal.
+5. **Cache evictions**: Internal parse caches evict their oldest entries when full; repeated eviction warnings suggest unbounded dynamic class generation.
+
+Warnings raised while an element's classes are being processed — skipped classes, merge rewrites, alias problems — include the element as a second console argument, so you can click it in DevTools to locate the node.
+
+**When to use `debug`:**
+
+- During development, or when diagnosing "why isn't this class applying?" on any page.
+
+**When to avoid it:**
+
+- Production — the checks are skipped entirely when the flag is off, so leaving it out keeps the hot path free of debug work.
 
 ### Reference Mode (`refs`)
 

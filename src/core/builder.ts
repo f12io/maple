@@ -1,11 +1,13 @@
 import {
   REF_CHAR_CUSTOM,
+  REF_CHAR_PREDEFINED,
   REF_CHAR_SPACE,
   REF_CHAR_VALUE_PARTS,
 } from './constants/chars';
 import { OPTIONS } from './constants/config';
 import { COMPOSABLE_KEYS } from './constants/dictionaries';
 import { REGEX_OVERRIDABLE_MEDIA_QUERY } from './constants/regex';
+import { debugWarnSkippedClass } from './helpers/debug.helper';
 import { escapeVariable, split } from './helpers/string.helper';
 import { parseClass } from './parser-class';
 import { parseMediaQuery } from './parser-media-query';
@@ -29,6 +31,7 @@ export function buildRule(
   const parsed = parseClass(srcClass);
 
   if (!parsed.utilKey) {
+    if (OPTIONS.debug) debugWarnSkippedClass(srcClass, 'unknown utility');
     return;
   }
 
@@ -38,7 +41,21 @@ export function buildRule(
 
   const styleContent = buildProp(parsed);
 
-  if (!styleContent) return;
+  if (!styleContent) {
+    /**
+     * A predefined operator at this point means the utility key survived
+     * the known-property check, which is Maple intent on its own — the
+     * skip warning then applies even without other syntax markers.
+     */
+    if (OPTIONS.debug) {
+      debugWarnSkippedClass(
+        srcClass,
+        'no style declaration',
+        parsed.utilOp === REF_CHAR_PREDEFINED,
+      );
+    }
+    return;
+  }
 
   const selectors = buildSelector(parsed);
 

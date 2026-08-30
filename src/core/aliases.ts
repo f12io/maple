@@ -4,15 +4,17 @@ import {
   REF_CHAR_ALIAS_PARTS,
   REF_CHAR_ALIAS_PREFIX,
   REF_CHAR_CUSTOM,
-  REF_CHAR_VALUE_PARTS,
   REF_CHAR_SEL_CHILD,
   REF_CHAR_SEL_PARENT,
   REF_CHAR_SEL_SELF,
   REF_CHAR_SPACE,
   REF_CHAR_UTILITY_DELIMITER,
+  REF_CHAR_VALUE_PARTS,
 } from './constants/chars';
+import { OPTIONS } from './constants/config';
 import { BUILTIN_ALIASES } from './constants/dictionaries';
 import { REGEX_PSEUDO_ELEMENT_SUFFIX } from './constants/regex';
+import { debugWarn } from './helpers/debug.helper';
 import { removeBrackets, split } from './helpers/string.helper';
 import { parseSelectors } from './parser-class';
 
@@ -38,26 +40,55 @@ export function lockAliases(): void {
 }
 
 export function collectAliases(srcClasses: Array<string>): void {
-  if (aliasesLocked) return;
+  if (aliasesLocked) {
+    if (OPTIONS.debug) warnLockedAliasDefinitions(srcClasses);
+    return;
+  }
 
   const aliases: Record<string, string | undefined> = {};
 
   for (const srcClass of srcClasses) {
-    if (!isAliasDefinition(srcClass)) continue;
+    const definition = parseAliasDefinition(srcClass);
 
-    const eqIndex = srcClass.indexOf(REF_CHAR_CUSTOM);
-
-    if (eqIndex === -1) continue;
-
-    const key = srcClass.slice(ALIAS_DEFINITION_PREFIX.length, eqIndex);
-    const value = removeBrackets(srcClass.slice(eqIndex + 1));
-
-    if (key && value) {
-      aliases[key] = value;
+    if (definition) {
+      aliases[definition.key] = definition.value;
     }
   }
 
   USER_ALIASES = aliases;
+}
+
+function parseAliasDefinition(
+  srcClass: string,
+): { key: string; value: string } | undefined {
+  if (!isAliasDefinition(srcClass)) return;
+
+  const eqIndex = srcClass.indexOf(REF_CHAR_CUSTOM);
+
+  if (eqIndex === -1) return;
+
+  const key = srcClass.slice(ALIAS_DEFINITION_PREFIX.length, eqIndex);
+  const value = removeBrackets(srcClass.slice(eqIndex + 1));
+
+  if (!key || !value) return;
+
+  return { key, value };
+}
+
+/**
+ * The locked set still contains the definitions collected at startup, so
+ * only definitions that are new or changed since the lock are reported.
+ */
+function warnLockedAliasDefinitions(srcClasses: Array<string>): void {
+  for (const srcClass of srcClasses) {
+    const definition = parseAliasDefinition(srcClass);
+
+    if (definition && USER_ALIASES[definition.key] !== definition.value) {
+      debugWarn(
+        `ignored alias definition after initial load "${definition.key}"`,
+      );
+    }
+  }
 }
 
 export function expandAliasClass(srcClass: string): Array<string> | undefined {
@@ -68,7 +99,14 @@ function expandAliasClassInternal(
   srcClass: string,
   depth: number,
 ): Array<string> | undefined {
-  if (depth >= MAX_ALIAS_DEPTH) return;
+  if (depth >= MAX_ALIAS_DEPTH) {
+    if (OPTIONS.debug) {
+      debugWarn(
+        `alias depth limit (${MAX_ALIAS_DEPTH}) reached at "${srcClass}" — circular alias definition?`,
+      );
+    }
+    return;
+  }
 
   const { prefix, context, utility } = splitClass(srcClass);
   const alias = resolveAlias(utility);
@@ -104,11 +142,23 @@ function resolveAlias(
     const usage = parseAliasUsage(utility);
     const value = USER_ALIASES[usage.key] ?? BUILTIN_ALIASES[usage.key];
 
-    if (!value) return;
+    if (!value) {
+      if (OPTIONS.debug && usage.key) {
+        debugWarn(`unknown alias "${REF_CHAR_ALIAS_PREFIX}${usage.key}"`);
+      }
+      return;
+    }
 
     const params = parseAliasParams(usage.paramsRaw, value);
 
-    if (!params) return;
+    if (!params) {
+      if (OPTIONS.debug) {
+        debugWarn(
+          `invalid params for alias "${REF_CHAR_ALIAS_PREFIX}${usage.key}"`,
+        );
+      }
+      return;
+    }
 
     return { value, params };
   }

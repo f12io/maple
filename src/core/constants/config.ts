@@ -6,6 +6,7 @@ export const OPTIONS: {
   batching: 1 | 0;
   nohybrid: 1 | 0;
   important: 1 | 0;
+  debug: 1 | 0;
   breakpoints: Record<string, string>;
 } = {
   refs: 0,
@@ -13,6 +14,7 @@ export const OPTIONS: {
   batching: 0,
   nohybrid: 0,
   important: 0,
+  debug: 0,
   breakpoints: {
     xs: '480px',
     sm: '640px',

@@ -3,6 +3,7 @@ import { buildRule } from './builder';
 import { CLASS_CACHE } from './constants/caches';
 import { OPTIONS } from './constants/config';
 import { REGEX_WHITESPACE } from './constants/regex';
+import { debugWarn, setDebugContext } from './helpers/debug.helper';
 import { isMergeException } from './helpers/merge.helper';
 import { parseClass } from './parser-class';
 import { insert } from './stylesheet';
@@ -30,6 +31,8 @@ export function processClassList(element: Element): void {
   const currentClass = element.getAttribute('class') ?? '';
 
   if (!currentClass) return;
+
+  if (OPTIONS.debug) setDebugContext(element);
 
   if (mergeCache.has(element)) {
     const previousClass = mergeCache.get(element);
@@ -176,6 +179,10 @@ export function processClassList(element: Element): void {
 
   // Rebuild classList if anything changed
   if (currentClass !== newClass) {
+    if (OPTIONS.debug) {
+      debugWarn(`merged: "${currentClass}" -> "${newClass}"`);
+    }
+
     mergeCache.set(element, newClass);
     element.setAttribute('class', newClass);
   }
@@ -228,7 +235,7 @@ function generateStylesFromClass(
       };
     }
   } catch (error) {
-    console.error(error);
+    console.error('[maple]', error);
   }
 
   return {
