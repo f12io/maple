@@ -1,6 +1,6 @@
-import { supportedCssProperties } from '../data/supported-css-properties.data';
-import { prepareContent, writeFile } from '../helpers/file.helper';
-import { abbreviationMap } from './abbreviation-map';
+import { supportedCssProperties } from '../data/supported-css-properties.data.ts';
+import { prepareContent, writeFile } from '../helpers/file.helper.ts';
+import { abbreviationMap } from './abbreviation-map.ts';
 
 export function precalculatePropAbbreviations() {
   return {

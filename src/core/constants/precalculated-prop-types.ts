@@ -1,4 +1,4 @@
-import { PROP_TYPE_COLOR } from './config';
+import { PROP_TYPE_COLOR } from './config.ts';
 
 /**
  * This map will be used in the browser build. Only include

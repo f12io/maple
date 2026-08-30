@@ -2,16 +2,16 @@ import { playwright } from '@vitest/browser-playwright';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
-import { prepareExamples } from './build/plugins/prepare-examples';
-import { prepareKeyframes } from './build/plugins/prepare-keyframes';
-import { precalculatePropAbbreviations } from './build/plugins/prop-abbr-precalculator';
-import { precalculatePropTypes } from './build/plugins/prop-type-precalculator';
+import { prepareExamples } from './build/plugins/prepare-examples/index.ts';
+import { prepareKeyframes } from './build/plugins/prepare-keyframes/index.ts';
+import { precalculatePropAbbreviations } from './build/plugins/prop-abbr-precalculator/index.ts';
+import { precalculatePropTypes } from './build/plugins/prop-type-precalculator/index.ts';
 
 export default defineConfig(({ mode }) => {
   /** @type {{ name: string; version: string; }} */
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const pkg = JSON.parse(
-    readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'),
+    readFileSync(path.resolve(import.meta.dirname, 'package.json'), 'utf-8'),
   );
 
   const isRuntime = process.env.BUILD_TYPE === 'runtime';
@@ -62,13 +62,13 @@ export default defineConfig(({ mode }) => {
       },
       lib: isRuntime
         ? {
-            entry: path.resolve(__dirname, 'src/runtime.ts'),
+            entry: path.resolve(import.meta.dirname, 'src/runtime.ts'),
             name: 'Maple',
             formats: ['iife'],
             fileName: () => 'maple.js',
           }
         : {
-            entry: path.resolve(__dirname, 'src/index.ts'),
+            entry: path.resolve(import.meta.dirname, 'src/index.ts'),
             name: 'Maple Module',
             formats: ['es', 'cjs'],
             fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
@@ -83,19 +83,22 @@ export default defineConfig(({ mode }) => {
       alias: {
         'internal:escape-class':
           isRuntime || isTest
-            ? path.resolve(__dirname, 'src/core/helpers/escape-class.ts')
+            ? path.resolve(
+                import.meta.dirname,
+                'src/core/helpers/escape-class.ts',
+              )
             : path.resolve(
-                __dirname,
+                import.meta.dirname,
                 'src/core/helpers/escape-class-polyfill.ts',
               ),
         'internal:precalculated-prop-types':
           isRuntime || isTest
             ? path.resolve(
-                __dirname,
+                import.meta.dirname,
                 'src/core/constants/precalculated-prop-types.ts',
               )
             : path.resolve(
-                __dirname,
+                import.meta.dirname,
                 'src/generated/precalculated-prop-types.ts',
               ),
       },

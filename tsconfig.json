@@ -2,12 +2,17 @@
   "compilerOptions": {
     "target": "ES2024",
     "module": "ESNext",
-    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2024",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "declaration": true,
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "allowJs": true,
     "noEmit": true

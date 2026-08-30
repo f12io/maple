@@ -2,16 +2,16 @@ import {
   PROP_TYPE_COLOR,
   PROP_TYPE_OTHER,
   PROP_TYPE_SPACE,
-} from '../../../src/core/constants/config';
-import { PRECALCULATED_PROP_TYPES } from '../../../src/core/constants/precalculated-prop-types';
+} from '../../../src/core/constants/config.ts';
+import { PRECALCULATED_PROP_TYPES } from '../../../src/core/constants/precalculated-prop-types.ts';
 import {
   DEFAULT_ANGLE_VALUE,
   DEFAULT_COLOR_VALUE,
   DEFAULT_SPACE_VALUE,
   DEFAULT_TIME_VALUE,
-} from '../../../src/core/constants/units';
-import { supportedCssProperties } from '../data/supported-css-properties.data';
-import { prepareContent, writeFile } from '../helpers/file.helper';
+} from '../../../src/core/constants/units.ts';
+import { supportedCssProperties } from '../data/supported-css-properties.data.ts';
+import { prepareContent, writeFile } from '../helpers/file.helper.ts';
 
 export function precalculatePropTypes() {
   return {

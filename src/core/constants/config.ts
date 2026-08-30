@@ -1,4 +1,4 @@
-import { BucketType } from '../types';
+import { BucketType } from '../types.ts';
 
 export const OPTIONS: {
   refs: 1 | 0;
