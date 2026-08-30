@@ -13,6 +13,7 @@ Maple accepts configuration via script query string parameters.
 | `refs`                 | Enable reference mode for better performance |
 | `nomerge`              | Disable merging of utility classes           |
 | `nohybrid`             | Disable the hybrid dark mode generation.     |
+| `important`            | Mark every generated declaration `!important` |
 | `{breakpoint}={value}` | Override or add custom breakpoints           |
 
 ### Custom Breakpoints
@@ -49,6 +50,26 @@ You can disable this behavior by adding `nomerge` to the script query string:
 
 - When you are sure your class lists don't contain conflicting utilities.
 - When preserving the exact class attribute is more important than automatic cleanup.
+
+### Global Important Mode (`important`)
+
+Maple generates its rules inside CSS cascade layers, and unlayered CSS always beats layered CSS. On a page with an existing unlayered stylesheet (a WordPress theme, a legacy CSS file), Maple utilities silently lose for any property that stylesheet already sets. The per-utility `!` prefix fixes this case by case, but prefixing every class is impractical when retrofitting Maple onto an existing site.
+
+Add `important` to the script query string to mark every generated declaration `!important` globally:
+
+```html
+<script src="maple.js?important"></script>
+```
+
+The per-utility `!` prefix continues to work and produces the same output; you only stop needing it.
+
+**When to use `important`:**
+
+- Retrofitting Maple onto a site with existing unlayered CSS that you can't move into layers.
+
+**When to avoid it:**
+
+- Greenfield projects, or sites where all CSS lives in layers — the cascade already resolves correctly, and blanket `!important` makes any later per-element override harder.
 
 ### Reference Mode (`refs`)
 

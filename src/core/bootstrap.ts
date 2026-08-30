@@ -14,7 +14,8 @@ function prepareOptions() {
       key === 'refs' ||
       key === 'nomerge' ||
       key === 'batching' ||
-      key === 'nohybrid'
+      key === 'nohybrid' ||
+      key === 'important'
     ) {
       OPTIONS[key] = 1;
       continue;

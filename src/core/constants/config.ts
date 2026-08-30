@@ -5,12 +5,14 @@ export const OPTIONS: {
   nomerge: 1 | 0;
   batching: 1 | 0;
   nohybrid: 1 | 0;
+  important: 1 | 0;
   breakpoints: Record<string, string>;
 } = {
   refs: 0,
   nomerge: 0,
   batching: 0,
   nohybrid: 0,
+  important: 0,
   breakpoints: {
     xs: '480px',
     sm: '640px',

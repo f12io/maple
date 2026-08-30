@@ -182,7 +182,7 @@ export function serializeProp(
   isImportant: 1 | 0,
 ) {
   const prefixes = VENDOR_PREFIXES[propKeyKebab];
-  const important = isImportant ? ' !important' : '';
+  const important = isImportant || OPTIONS.important ? ' !important' : '';
   const result = `${propKeyKebab}: ${value}${important};`;
 
   if (prefixes) {
