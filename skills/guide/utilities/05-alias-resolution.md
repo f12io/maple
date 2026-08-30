@@ -141,6 +141,7 @@ Built-in aliases include:
 | `cnt`         | `cnt=inline-size`                                                 |
 | `antialiased` | `-webkitFontSmoothing=antialiased;-mozOsxFontSmoothing=grayscale` |
 | `truncate`    | `of=hidden;tof=ellipsis;ws=nowrap`                                |
+| `pill`        | `rad=calc(infinity_*_1px)`                                        |
 
 > [!NOTE]
 > Animation aliases (like `fade-in`) and flex layout aliases (like `fxrow-cc`) are documented in their respective files: [Animations](../13-animations.md) and [Flex Layout](../14-flex-layout.md).

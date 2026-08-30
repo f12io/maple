@@ -57,6 +57,9 @@ export const BUILTIN_ALIASES: Record<string, string> = {
   brys: 'borderBlockStartWidth-px;borderBlockStartStyle=solid',
   brye: 'borderBlockEndWidth-px;borderBlockEndStyle=solid',
 
+  // border radius
+  pill: 'rad=calc(infinity_*_1px)',
+
   // container
   cnt: 'cnt=inline-size',
 

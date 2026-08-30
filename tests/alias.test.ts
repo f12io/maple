@@ -334,6 +334,12 @@ describe('Built-in aliases', () => {
       '.truncate { overflow: hidden; } .truncate { text-overflow: ellipsis; } .truncate { white-space: nowrap; }',
     );
   });
+
+  it('pill', () => {
+    expect(convert('pill')).toBe(
+      '.pill { border-radius: calc(infinity * 1px); }',
+    );
+  });
 });
 
 describe('Alias Behavior Tests', () => {
