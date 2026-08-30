@@ -1,3 +1,4 @@
-import { startRuntime } from './core/bootstrap';
+import { prepareOptions, startRuntime } from './core/bootstrap';
 
+prepareOptions();
 startRuntime();
