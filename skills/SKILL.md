@@ -71,19 +71,27 @@ Maple's architecture shines when you use tokens that express intent rather than 
 <div class="bgc=#3b82f6 c=white p=16px rad=8px"></div>
 ```
 
-### Use Aliases for Utility-Like Jobs
+### Match Alias Scale to Your Stack
 
-Reserve aliases for utility-first shortcuts: multiple declarations that perform one clear styling job. They are a good fit for behaviors like text truncation, font smoothing, or focus rings, not for component-sized button or card recipes.
+Aliases come in all sizes. A small alias does one styling job, such as text truncation or a focus ring. A large alias can hold the styles for a whole repeated element. An alias holds classes only. When the stack has components or templates, put each repeated element in a component or a template and keep the shared styles in aliases. On a plain HTML site, a large alias gives the repeated styles one home.
 
 ```html
-<!-- ✅ Good: Alias for one utility-like job -->
+<!-- ✅ Utility-scale: one clear styling job -->
 <html class="--alias-truncate=of=hidden;tof=ellipsis;ws=nowrap">
   <body>
     <span class="@truncate w-40">Long text that should truncate</span>
   </body>
 </html>
 
-<!-- ⚠️ Avoid: Component-sized aliases like @button or @card -->
+<!-- ✅ Component-scale: one recipe for a repeated element.
+     @chip(calm) fills {color,accent}; plain @chip uses the
+     accent fallback. -->
+<html class="--alias-chip=ifxrow-cc;g-1;px-3;py-1.5;rad-9999px;fs-3;lh-4;fw=600;bgc-{color,accent}-100;c-{color,accent}-700">
+  <body class="fxrow-cs fxwr=wrap g-2">
+    <span class="@chip">Default</span>
+    <span class="@chip(calm)">Calm</span>
+  </body>
+</html>
 ```
 
 ### Use Scoped Variables

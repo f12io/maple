@@ -56,7 +56,7 @@ Alias definitions are collected only from `<html>` and definitions on other elem
 Aliases are not reactive. The alias set is read from `<html>` once, when the runtime starts, and locked for the lifetime of the page — adding, changing, or removing `--alias-*` definitions after the initial load has no effect. This keeps alias resolution deterministic: identical markup always produces the same rules regardless of when it is processed. Treat aliases as root-level configuration for reusable utility shortcuts. For live changes, use CSS variables instead.
 
 > [!TIP]
-> Aliases work best when they follow utility-first logic: multiple declarations doing one clear job, like `antialiased` or `truncate`. Avoid using aliases as component-sized CSS classes for buttons, cards, or panels; extract those patterns into components or templates instead.
+> You can use an alias at any scale. A small alias does one styling job, for example `truncate`. A large alias can hold all the styles for a repeated element, such as a chip or a button. An alias holds classes only, so keep the markup in a component or a template when the stack has them. On a plain HTML site, a large alias gives the repeated styles one home.
 
 Alias definitions must be plain root classes. If you combine `--alias-*` with a media query or selector, Maple treats it like a normal CSS custom property utility:
 
