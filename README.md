@@ -214,6 +214,7 @@ See the [benchmark methodology](examples/benchmarks/README.md) for the command r
 - [Why Maple?](https://maple.f12.io/docs/why-maple)
 - [Syntax Reference](https://maple.f12.io/docs/syntax)
 - [Guide](https://maple.f12.io/docs/guide)
+- [FAQ](https://maple.f12.io/docs/faq)
 
 ## Contributing
 
