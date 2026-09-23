@@ -105,3 +105,15 @@ Maple supports two syntaxes for negative values:
 > [!TIP]
 > Use prefix syntax (`-m-4`) when you want to negate a design token. Use inline negative (`m--4`) when you specifically need a negative spacer value that can still be overridden via CSS variables.
 
+**Variable Factors**
+
+The factor can be read from a CSS variable with `$name`. `fs-$display` emits the spacer chain with `var(--display)` as factor, so `--display=11` on `<html>` equals `fs-11` while a local `--spacer` still applies. Number tokens can also be summed: `brw-$stroke+stroke-px` adds a plain length token to the scaled factor, `h-100vh+-4` subtracts one step from the viewport height. See [Variable Magnitudes](10-variable-magnitudes.md).
+
+```css
+.fs-\$display {
+  font-size: calc(
+    var(--display) * 1rem *
+      var(--fs-spacer, var(--f-spacer, var(--spacer, 0.25)))
+  );
+}
+```

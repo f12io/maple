@@ -7,6 +7,7 @@ export const REF_CHAR_PREDEFINED = '-';
 export const REF_CHAR_CUSTOM = '=';
 export const REF_CHAR_CUSTOM_NOT = '!=';
 export const REF_CHAR_VALUE_PARTS = ',';
+export const REF_CHAR_SUM = '+';
 export const REF_CHAR_ALIAS_PARTS = ';';
 export const REF_CHAR_ALIAS_PREFIX = '@';
 export const REF_CHAR_FUNCTION_START = '-';

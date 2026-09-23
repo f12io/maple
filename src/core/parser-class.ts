@@ -30,6 +30,7 @@ import {
   startsWithNegative,
   toKebabCase,
 } from './helpers/string.helper';
+import { REGEX_VAR_NAME } from './constants/regex';
 import { isValidModifier, serializeValue } from './serializer';
 import { ParsedClass, ParsedSelector } from './types';
 
@@ -99,6 +100,7 @@ function parseUtility(utilityRaw: string): {
   propType: number;
   propVal: string;
   validVarVal: string;
+  vars?: Array<string>;
 } {
   let utilKey = utilityRaw;
   let utilVal = '';
@@ -153,7 +155,28 @@ function parseUtility(utilityRaw: string): {
     propType: resolveType(propKeyKebab, propKeyCamel),
     propVal: serializeValue(utilVal),
     validVarVal: escapeVariable(utilVal),
+    vars: utilOp === REF_CHAR_PREDEFINED ? extractVars(utilVal) : undefined,
   };
+}
+
+/**
+ * Collects the `$name` references of a token value so a validator can
+ * check they are declared. Bracket values are raw CSS and carry none.
+ */
+function extractVars(utilVal: string): Array<string> | undefined {
+  if (utilVal.charCodeAt(0) === CHAR_OPEN_BRACKET || !utilVal.includes('$')) {
+    return;
+  }
+
+  const vars: Array<string> = [];
+
+  for (const match of utilVal.matchAll(REGEX_VAR_NAME)) {
+    if (!vars.includes(match[1])) {
+      vars.push(match[1]);
+    }
+  }
+
+  return vars.length ? vars : undefined;
 }
 
 export function parseSelectors(contextRaw: string): ParsedSelector | undefined {

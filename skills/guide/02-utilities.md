@@ -16,11 +16,12 @@ Do not guess Maple utilities from Tailwind, Bootstrap, UnoCSS, plain CSS propert
 - Setting values directly: [utilities/07-setting-values-directly.md](utilities/07-setting-values-directly.md) explains literal `=` values, bracket syntax, and special-character handling.
 - Important modifier: [utilities/08-important-modifier.md](utilities/08-important-modifier.md) explains Maple's `!important` prefix and suffix forms.
 - Dynamic values: [utilities/09-dynamic-values.md](utilities/09-dynamic-values.md) explains ephemeral `$$` classes for frequently changing runtime values.
+- Variable magnitudes: [utilities/10-variable-magnitudes.md](utilities/10-variable-magnitudes.md) explains `$name` tokens that read a tone, a factor or an alpha from a CSS variable while the engine still emits its formula in the rule, and `a+b` sums of number tokens.
 
 ## Required Workflow
 
 1. Identify which utility feature is needed.
 2. Read the relevant utility reference file before writing classes for that feature.
-3. Use token form, literal form, bracket form, CSS variable utilities, aliases, important modifiers, and dynamic values only as documented in the reference files.
+3. Use token form, literal form, bracket form, CSS variable utilities, aliases, important modifiers, dynamic values, and variable magnitudes only as documented in the reference files.
 4. If a semantic token is used, make sure it is already defined in the surrounding code or define it with Maple CSS variable utilities.
 5. Prefer documented Maple utilities and examples over invented class names.

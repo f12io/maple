@@ -6,8 +6,16 @@ export const REGEX_WHITESPACE = /\s+/;
 export const REGEX_UNSAFE_CLASS_CHARS = /([^a-zA-Z0-9_-])/g;
 export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
 export const REGEX_TO_CAMEL_CASE = /[^a-zA-Z0-9]+(.)/g;
-export const REGEX_COLOR_TOKEN =
-  /^([a-z]+(?:-[a-z]+)*)(?:-(\d{1,4}))?(?:\/(\d{1,3}))?$/i;
+// `$name` in a tone, alpha or number slot puts `var(--name)` inside the slot's formula; the name ends at `/`, `_`, `+`, `,` or the token end.
+// Hyphens only join segments, so `$a-$b` reads as `$a`, `-`, `$b` and never as the name `a-`.
+const VAR_NAME = '[a-z][a-z0-9]*(?:-[a-z0-9]+)*';
+export const REGEX_VAR_NAME = new RegExp(`\\$(${VAR_NAME})`, 'g');
+// A whole token that is one `$name`
+export const REGEX_VAR_TOKEN = new RegExp(`^\\$(${VAR_NAME})$`);
+export const REGEX_COLOR_TOKEN = new RegExp(
+  `^([a-z]+(?:-[a-z]+)*)(?:-(\\d{1,4}|\\$${VAR_NAME}))?(?:\\/(\\d{1,3}|\\$${VAR_NAME}))?$`,
+  'i',
+);
 export const REGEX_NUMBER_WITH_UNIT = /^([\d.]+)([a-z]*)/;
 export const REGEX_NON_FUNCTION_PARAM_SPLITTER = /(?<=[^|]["'\])])__/;
 export const REGEX_BACKDROP_PREFIX = /^bd/;

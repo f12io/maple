@@ -1,6 +1,11 @@
 import { VARIABLE_CACHE } from './constants/caches';
 import {
+  CHAR_CLOSE_PAREN,
+  CHAR_DOLLAR,
+  CHAR_OPEN_BRACKET,
+  CHAR_OPEN_PAREN,
   REF_CHAR_CUSTOM,
+  REF_CHAR_SUM,
   REF_CHAR_FUNCTION_COMMA,
   REF_CHAR_NON_FUNCTION_START,
   REF_CHAR_PREDEFINED,
@@ -34,6 +39,7 @@ import {
   REGEX_COLOR_TOKEN,
   REGEX_NON_FUNCTION_PARAM_SPLITTER,
   REGEX_SELECTOR_REPLACEMENTS,
+  REGEX_VAR_TOKEN,
 } from './constants/regex';
 import {
   COVER_UNITS,
@@ -290,16 +296,119 @@ function serializeValueAsVariable(
   return `var(--ref-${refKey})`;
 }
 
-function serializeNumberValue({
-  utilKey,
-  utilVal,
-  propKeyCamel,
-  propKeyKebab,
-  validVarVal,
-  isUtilNegative,
-  isNoRef,
-  varCat,
-}: ParsedClass): string {
+function hasVarToken(value: string): boolean {
+  return value.includes('$');
+}
+
+function isVarToken(value: string | undefined): value is string {
+  return !!value && value.charCodeAt(0) === CHAR_DOLLAR;
+}
+
+/**
+ * A value that belongs to a number slot even though it is not a plain
+ * number: a `$name` magnitude, or a `+` sum of number tokens. Bracket
+ * values are raw CSS and are left to their own path.
+ */
+function isNumberSlotToken(value: string): boolean {
+  return (
+    value.charCodeAt(0) !== CHAR_OPEN_BRACKET &&
+    (REGEX_VAR_TOKEN.test(value) || value.includes(REF_CHAR_SUM))
+  );
+}
+
+function serializeSpacerChain(utilKey: string, propKeyKebab: string): string {
+  const spacerType =
+    SPACER_CATEGORY[utilKey] ??
+    ABBREVIATIONS_REVERSE[propKeyKebab.split('-')[0]];
+
+  let spacer = 'var(--spacer, 0.25)';
+
+  if (spacerType) {
+    spacer = `var(--${spacerType}-spacer, ${spacer})`;
+  }
+
+  if (spacerType !== utilKey) {
+    spacer = `var(--${utilKey}-spacer, ${spacer})`;
+  }
+
+  return spacer;
+}
+
+/**
+ * `$name` in a number slot: the variable holds a magnitude on Maple's
+ * scale (`--display=11`, as in `fs-11`) and the engine emits the spacer
+ * chain around it. The formula stays in the rule so a local `--spacer`
+ * still resolves on the element, which a formula stored in the variable
+ * cannot do.
+ *
+ * There is no fallback on purpose: an undefined variable makes the
+ * declaration invalid at computed-value time (behaves as `unset`), where
+ * `0` would collapse a font size or a padding.
+ */
+function serializeVarNumberValue(
+  name: string,
+  utilKey: string,
+  propKeyKebab: string,
+  unit: string,
+): string {
+  const factor = `var(--${name})`;
+
+  if (unit === DEFAULT_SPACE_UNIT) {
+    return `calc(${factor} * 1${unit} * ${serializeSpacerChain(utilKey, propKeyKebab)})`;
+  }
+
+  return unit ? `calc(${factor} * 1${unit})` : factor;
+}
+
+/**
+ * `a+b` in a number slot: each side is resolved exactly as it would be on
+ * its own (a literal, a plain token or a `$name` magnitude) and the sides
+ * are summed in the rule. `-` stays a sign, so `100vh+-4` is the way to
+ * subtract. The sum depends on element scope, so it never goes through
+ * the refs cache.
+ */
+function serializeSumValue(parsed: ParsedClass): string | undefined {
+  const parts = split(parsed.utilVal, REF_CHAR_SUM);
+
+  if (parts.length < 2 || parts.some((part) => !part)) return;
+
+  const terms = parts.map((part) =>
+    unwrapCalc(
+      serializeNumberValue({
+        ...parsed,
+        utilVal: part,
+        validVarVal: escapeVariable(part),
+        isUtilNegative: 0,
+        isNoRef: 1,
+      }),
+    ),
+  );
+
+  return `calc(${terms.join(' + ')})`;
+}
+
+/** `calc(x)` → `x` when the whole value is one calc, so sums stay flat */
+function unwrapCalc(value: string): string {
+  if (!value.startsWith('calc(') || !value.endsWith(')')) return value;
+
+  let depth = 0;
+
+  for (let i = 4; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+
+    if (code === CHAR_OPEN_PAREN) depth++;
+    else if (code === CHAR_CLOSE_PAREN && --depth === 0) {
+      return i === value.length - 1 ? value.slice(5, -1) : value;
+    }
+  }
+
+  return value;
+}
+
+function serializeNumberValue(parsed: ParsedClass): string {
+  const { utilKey, propKeyCamel, propKeyKebab, validVarVal, isNoRef, varCat } =
+    parsed;
+  let { utilVal, isUtilNegative } = parsed;
   const utilityValueAsIs = removeBrackets(utilVal);
 
   if (utilityValueAsIs !== utilVal) {
@@ -310,15 +419,42 @@ function serializeNumberValue({
     return utilVal;
   }
 
+  const transformFnName = TRANSFORM_KEYS[utilKey];
+  const unit =
+    PROP_UNIT_MAP[transformFnName || propKeyCamel] ?? DEFAULT_SPACE_UNIT;
+
+  if (utilVal.includes(REF_CHAR_SUM)) {
+    const sum = serializeSumValue(parsed);
+
+    if (sum) {
+      return isUtilNegative ? `calc(${sum} * -1)` : sum;
+    }
+  }
+
+  // `-$name` negates the magnitude, as `-4` does for a literal
+  const isVarNegative = startsWithNegative(utilVal);
+  const varToken = REGEX_VAR_TOKEN.exec(
+    isVarNegative ? utilVal.slice(1) : utilVal,
+  );
+
+  if (varToken) {
+    const varValue = serializeVarNumberValue(
+      varToken[1],
+      utilKey,
+      propKeyKebab,
+      unit,
+    );
+
+    return isUtilNegative !== isVarNegative
+      ? `calc(${varValue} * -1)`
+      : varValue;
+  }
+
   const refKey = `${utilKey}-${validVarVal}`;
   const isNoRefMode = !OPTIONS.refs || isNoRef;
 
   if (isNoRefMode || !VARIABLE_CACHE.has(refKey)) {
     const numberValue = Number(utilVal);
-
-    const transformFnName = TRANSFORM_KEYS[utilKey];
-    const unit =
-      PROP_UNIT_MAP[transformFnName || propKeyCamel] ?? DEFAULT_SPACE_UNIT;
 
     if (numberValue === 0) {
       return unit === DEFAULT_TIME_UNIT ? `0${unit}` : '0';
@@ -358,21 +494,7 @@ function serializeNumberValue({
       }
     } else if (isKnownNumberValue(utilVal)) {
       if (unit === DEFAULT_SPACE_UNIT) {
-        const spacerType =
-          SPACER_CATEGORY[utilKey] ??
-          ABBREVIATIONS_REVERSE[propKeyKebab.split('-')[0]];
-
-        let spacer = 'var(--spacer, 0.25)';
-
-        if (spacerType) {
-          spacer = `var(--${spacerType}-spacer, ${spacer})`;
-        }
-
-        if (spacerType !== utilKey) {
-          spacer = `var(--${utilKey}-spacer, ${spacer})`;
-        }
-
-        fallbackValue = `calc(${numberValue}${unit} * ${spacer})`;
+        fallbackValue = `calc(${numberValue}${unit} * ${serializeSpacerChain(utilKey, propKeyKebab)})`;
       } else {
         fallbackValue = `${numberValue}${unit}`;
       }
@@ -413,7 +535,8 @@ function serializeColorValue(parsed: ParsedClass): string {
   }
 
   const refKey = `${utilKey}-${parsed.validVarVal}`;
-  const isNoRefMode = !OPTIONS.refs || parsed.isNoRef;
+  // `$`-tokens depend on element scope, so they never go through the refs cache
+  const isNoRefMode = !OPTIONS.refs || parsed.isNoRef || hasVarToken(utilVal);
 
   if (isNoRefMode || !VARIABLE_CACHE.has(refKey)) {
     const tokenParts = REGEX_COLOR_TOKEN.exec(utilVal);
@@ -427,19 +550,27 @@ function serializeColorValue(parsed: ParsedClass): string {
     }
 
     const name = tokenParts[1];
-    const hasToneShift = !!tokenParts[2];
+    const toneToken = tokenParts[2];
+    const alphaToken = tokenParts[3];
+    const hasToneShift = !!toneToken;
+    const isToneVar = isVarToken(toneToken);
+    const isAlphaVar = isVarToken(alphaToken);
     const maxTone = COLOR_MAX_TONE;
     const minTone = COLOR_MIN_TONE;
     const midTone = (minTone + maxTone) / 2;
-    const tone = Number(tokenParts[2]) || midTone;
-    const opacity = tokenParts[3] ? Number(tokenParts[3]) : null;
+    const tone = Number(toneToken) || midTone;
+    const opacity = alphaToken && !isAlphaVar ? Number(alphaToken) : null;
 
     /**
      * Lightness CSS Targeting
      * Scale mapping: Tone 50 = 1.0 Lightness, Tone 950 = 0.0 Lightness.
+     *
+     * A variable tone keeps the mapping in the rule, unrounded, with the
+     * base tone as fallback so an undefined variable yields the base colour.
      */
-    const mappedTone =
-      Math.round(((tone - minTone) / (maxTone - minTone)) * 10000) / 10000;
+    const mappedTone = isToneVar
+      ? `((var(--${toneToken.slice(1)}, ${midTone}) - ${minTone}) / ${maxTone - minTone})`
+      : Math.round(((tone - minTone) / (maxTone - minTone)) * 10000) / 10000;
     const mappedMidpoint =
       Math.round(((midTone - minTone) / (maxTone - minTone)) * 10000) / 10000;
 
@@ -467,7 +598,11 @@ function serializeColorValue(parsed: ParsedClass): string {
     let l = `calc(l * ${lightnessScale})`;
     let c = `calc(c * ${chromaScale})`;
     const h = `calc(h + ${hueRotate})`;
-    const alpha = opacity !== null && opacity < 100 ? `${opacity}%` : 'alpha';
+    let alpha = opacity !== null && opacity < 100 ? `${opacity}%` : 'alpha';
+
+    if (isAlphaVar) {
+      alpha = `calc(var(--${alphaToken.slice(1)}, 100) * 1%)`;
+    }
 
     if (hasToneShift) {
       const midDistanceSq = `pow(abs(${mappedTone} - ${mappedMidpoint}) * 2, 2)`;
@@ -601,7 +736,10 @@ function serializeFilter(
               valueItems,
             ),
           );
-        } else if (isKnownNumberValue(valueItem)) {
+        } else if (
+          isKnownNumberValue(valueItem) ||
+          isNumberSlotToken(valueItem)
+        ) {
           serializedValue.push(
             serializeNumberValue({
               ...parsed,
@@ -932,7 +1070,7 @@ function serializeMultipleValues(
 ): string | undefined {
   let type = PROP_TYPE_OTHER;
 
-  if (isKnownNumberValue(valueItem)) {
+  if (isKnownNumberValue(valueItem) || isNumberSlotToken(valueItem)) {
     type = PROP_TYPE_SPACE;
   } else if (items.length > 1 && index === items.length - 1) {
     type = PROP_TYPE_COLOR;

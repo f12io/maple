@@ -53,7 +53,7 @@ Maple class names are composed as:
 {media-query}:{selector}:{utility}
 ```
 
-The media query and selector parts are optional. Utilities can use token resolution, literal values, bracket values, CSS variable utilities, aliases, important modifiers, dynamic values, and feature-specific serializers as documented in the reference files.
+The media query and selector parts are optional. Utilities can use token resolution, literal values, bracket values, CSS variable utilities, variable magnitudes (`$name` inside a tone, alpha or number slot) and sums (`a+b` in a number slot), aliases, important modifiers, dynamic values, and feature-specific serializers as documented in the reference files.
 
 The utility consists of a property name and a value separated by a hyphen or equal sign. All camelCase CSS properties are supported (e.g. `accentColor`). Some properties have shorthand versions (e.g. `bgc` for `backgroundColor`). See the list of shorthand versions in [guide/18-abbreviations-reference.md](guide/18-abbreviations-reference.md). If a property does not have a shorthand version, use the camelCase version of that property.
 
@@ -86,7 +86,9 @@ Aliases come in all sizes. A small alias does one styling job, such as text trun
 <!-- ✅ Component-scale: one recipe for a repeated element.
      @chip(calm) fills {color,accent}; plain @chip uses the
      accent fallback. -->
-<html class="--alias-chip=ifxrow-cc;g-1;px-3;py-1.5;rad-9999px;fs-3;lh-4;fw=600;bgc-{color,accent}-100;c-{color,accent}-700">
+<html
+  class="--alias-chip=ifxrow-cc;g-1;px-3;py-1.5;rad-9999px;fs-3;lh-4;fw=600;bgc-{color,accent}-100;c-{color,accent}-700"
+>
   <body class="fxrow-cs fxwr=wrap g-2">
     <span class="@chip">Default</span>
     <span class="@chip(calm)">Calm</span>
@@ -106,6 +108,18 @@ Scope variables locally for contextual theming. This keeps components portable: 
 <div class="--accent=purple">
   <button class="bgc-accent-500 c-white">Purple Button</button>
 </div>
+```
+
+### Let Themes Hold Magnitudes
+
+When a theme should decide how heavy, how dark or how large something is, keep the number in a variable and read it with `$name` in the magnitude slot (a tone, an alpha, a factor). The engine emits its formula in the rule, so local `--spacer` and `--l-shift` overrides keep working — unlike a variable that holds the whole `calc()` or `oklch()`, which resolves at the root. For keyword and length values the plain token already reads a variable (`pos-mode` with `--mode=absolute`); `$` is only for numbers that must sit inside a formula. See [Variable Magnitudes](guide/utilities/10-variable-magnitudes.md).
+
+```html
+<html class="--tone-stroke=900 --stroke=0.5 --stroke-px=0px">
+  <button class="brc-body-$tone-stroke brw-$stroke+stroke-px">
+    Themed stroke
+  </button>
+</html>
 ```
 
 ### Use Selectors Responsibly

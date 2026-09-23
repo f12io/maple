@@ -84,6 +84,8 @@ export interface ParsedClass {
   propKeyCamel: string;
   propKeyKebab: string;
   validVarVal: string;
+  /** Names referenced by `$name` tokens in the value (without `--`) */
+  vars?: Array<string>;
   conflictKey?: string;
   varCat?: string;
 }

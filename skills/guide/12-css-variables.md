@@ -18,6 +18,16 @@ Define and use CSS variables directly in class names.
 > [!IMPORTANT]
 > A variable holds a raw CSS value and reaches the stylesheet as written, so Maple's shade notation does not resolve inside one: `--brand=blue-300` produces the invalid declaration `--brand: blue-300`. Keep the color in the variable and put the shade on the utility that reads it—`--brand=blue` with `bgc-brand-300`—or write the color out in full: `--brand=oklch(0.62_0.19_260)`.
 
+### Variables as Magnitudes
+
+The other way round also works: a variable can hold the **number** of a token, and the utility reads it with `$name`. `--tone=300` with `bgc-brand-$tone` equals `bgc-brand-300`; `--display=11` with `fs-$display` equals `fs-11`. The formula stays in the rule, so local `--spacer` and `--l-shift` overrides keep applying. See [Variable Magnitudes](utilities/10-variable-magnitudes.md).
+
+```html
+<html class="--brand=blue --tone=300 --display=11">
+  <h1 class="bgc-brand-$tone fs-$display"></h1>
+</html>
+```
+
 ### Root-Level Variables
 
 Add variables to the `<html>` element to make them globally available—no CSS file required.

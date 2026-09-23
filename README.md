@@ -140,6 +140,20 @@ Maple color utilities resolve through CSS variables in the OKLCH color space, ma
 
 Read more in [Dynamic Color Manipulation](https://maple.f12.io/docs/why-maple/dynamic-color-manipulation) and try the [Native Palette](https://maple.f12.io/docs/guide/native-palette).
 
+### Variable Magnitudes
+
+A theme can hold the tone, the factor or the alpha of a token as a plain number, and a utility reads it with `$name`. The formula stays in the rule, so local `--spacer` and `--l-shift` overrides keep applying. Number tokens can be summed with `+`, each side resolved by its own rule.
+
+```html
+<html class="--tone-stroke=900 --stroke=0.5 --stroke-px=0px --display=11">
+  <button
+    class="brc-body-$tone-stroke brw-$stroke+stroke-px fs-$display"
+  ></button>
+</html>
+```
+
+Read more in [Variable Magnitudes](skills/guide/utilities/10-variable-magnitudes.md).
+
 ### Inline Selectors
 
 Maple supports selector logic inside utility classes.

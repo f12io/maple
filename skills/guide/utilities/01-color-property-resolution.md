@@ -71,3 +71,5 @@ You can also combine the tone and transparency suffixes: `c-primary-232/68` will
 
 > [!IMPORTANT]
 > The 500 tone represents a mathematically aligned midpoint, rather than the exact starting color. For example, c-navy (no tone) uses the raw base color as-is, while c-navy-500 applies the shading formula, so they are not equivalent.
+
+The tone and the alpha can also be read from a CSS variable with `$name`: `c-primary-$tone-stroke` and `c-primary-500/$alpha-elev` emit the same formula with `var(--tone-stroke)` and `var(--alpha-elev)` in the magnitude slots, so a theme can hold the numbers on `<html>`. See [Variable Magnitudes](10-variable-magnitudes.md).
