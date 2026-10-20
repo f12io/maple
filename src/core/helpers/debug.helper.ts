@@ -4,6 +4,7 @@ import {
   REF_CHAR_CUSTOM,
   REF_CHAR_UTILITY_DELIMITER,
 } from '../constants/chars';
+import { REGEX_VENDOR_PREFIXED } from '../constants/regex';
 
 const warned = new Set<string>();
 
@@ -48,8 +49,11 @@ export function debugWarnSkippedClass(
   reason: string,
   hasKnownUtility?: boolean,
 ): void {
+  const isVendorPrefixed = REGEX_VENDOR_PREFIXED.test(srcClass);
+
   if (
     !hasKnownUtility &&
+    !isVendorPrefixed &&
     !srcClass.includes(REF_CHAR_UTILITY_DELIMITER) &&
     !srcClass.includes(REF_CHAR_CUSTOM) &&
     srcClass.charCodeAt(0) !== CHAR_EXCLAMATION_MARK &&
@@ -58,5 +62,16 @@ export function debugWarnSkippedClass(
     return;
   }
 
-  debugWarn(`skipped "${srcClass}": ${reason}`);
+  /**
+   * A vendor prefixed property written in token form cannot parse: the
+   * leading dash reads as the negative marker and the key ends at the
+   * next one, so `-webkit-line-clamp-3` asks for the `webkit`
+   * property. Naming the assignment form is more use than the reason.
+   */
+  const hint =
+    isVendorPrefixed && !srcClass.includes(REF_CHAR_CUSTOM)
+      ? ' (a vendor prefixed property needs the assignment form, as in `-webkit-line-clamp=3`)'
+      : '';
+
+  debugWarn(`skipped "${srcClass}": ${reason}${hint}`);
 }

@@ -57,6 +57,33 @@ describe('Debug mode', () => {
       ).toBe(true);
     });
 
+    it('warns for a vendor prefixed property in token form', () => {
+      convert('-webkit-line-clamp-3');
+
+      expect(warnings()).toContain(
+        '[maple] skipped "-webkit-line-clamp-3": unknown utility (a vendor prefixed property needs the assignment form, as in `-webkit-line-clamp=3`)',
+      );
+    });
+
+    it('does not hint when the vendor prefixed property is assigned', () => {
+      convert('-webkit-line-clamp=');
+
+      expect(
+        warnings().some(
+          (message) =>
+            message.includes('skipped "-webkit-line-clamp="') &&
+            !message.includes('assignment form'),
+        ),
+      ).toBe(true);
+    });
+
+    it('does not treat a working vendor prefixed property as skipped', () => {
+      expect(convert('-webkit-box-orient=vertical')).toBe(
+        '.-webkit-box-orient\\=vertical { -webkit-box-orient: vertical; }',
+      );
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
     it('stays silent for plain CSS classes', () => {
       convert('btn-primary');
       convert('navitem');

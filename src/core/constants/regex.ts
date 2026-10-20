@@ -4,6 +4,8 @@ import { ALL_UNITS, ANGLE_UNITS } from './units';
 export const REGEX_CSS_ESCAPED_CHARS = /\\/g;
 export const REGEX_WHITESPACE = /\s+/;
 export const REGEX_UNSAFE_CLASS_CHARS = /([^a-zA-Z0-9_-])/g;
+// A class naming a vendor prefixed property, such as `-webkit-line-clamp=3`
+export const REGEX_VENDOR_PREFIXED = /^!?-(?:webkit|moz|ms|o)-/;
 export const REGEX_LOWERCASE_UPPERCASE = /([a-z])([A-Z])/g;
 export const REGEX_TO_CAMEL_CASE = /[^a-zA-Z0-9]+(.)/g;
 // `$name` in a tone, alpha or number slot puts `var(--name)` inside the slot's formula; the name ends at `/`, `_`, `+`, `,` or the token end.
