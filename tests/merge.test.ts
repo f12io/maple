@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { collectAliases } from '../src/core/aliases';
+import { SKIPPED_CLASS_CACHE } from '../src/core/constants/caches';
 import { processClassList } from '../src/core/generator';
 
 function testMerge(className: string, expected: string) {
@@ -369,6 +370,25 @@ describe('Merge', () => {
       testMerge('btn-primary btn-secondary', 'btn-primary btn-secondary');
       testMerge('card-header card-footer', 'card-header card-footer');
       testMerge('card-header card-footer', 'card-header card-footer');
+    });
+  });
+
+  describe('Skipped class cache', () => {
+    it('parses a non-utility class once, not once per element', () => {
+      SKIPPED_CLASS_CACHE.delete('promo-banner');
+
+      testMerge('promo-banner p-4', 'promo-banner p-4');
+      expect(SKIPPED_CLASS_CACHE.has('promo-banner')).toBe(true);
+
+      testMerge('promo-banner p-4', 'promo-banner p-4');
+    });
+
+    it('does not cache dynamic classes', () => {
+      testMerge('$$promo-banner', '$$promo-banner');
+      testMerge('!$$promo-banner', '!$$promo-banner');
+
+      expect(SKIPPED_CLASS_CACHE.has('$$promo-banner')).toBe(false);
+      expect(SKIPPED_CLASS_CACHE.has('!$$promo-banner')).toBe(false);
     });
   });
 

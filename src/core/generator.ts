@@ -1,8 +1,10 @@
 import { collectAliases, expandAliasClass, isAliasDefinition } from './aliases';
 import { buildRule } from './builder';
-import { CLASS_CACHE } from './constants/caches';
+import { CLASS_CACHE, SKIPPED_CLASS_CACHE } from './constants/caches';
+import { CHAR_DOLLAR, CHAR_EXCLAMATION_MARK } from './constants/chars';
 import { OPTIONS } from './constants/config';
 import { REGEX_WHITESPACE } from './constants/regex';
+import { setCacheItem } from './helpers/cache.helper';
 import { debugWarn, setDebugContext } from './helpers/debug.helper';
 import { isMergeException } from './helpers/merge.helper';
 import { parseClass } from './parser-class';
@@ -216,6 +218,12 @@ function generateStylesFromClass(
     };
   }
 
+  if (SKIPPED_CLASS_CACHE.has(cacheKey)) {
+    return {
+      conflictKey: srcClass,
+    };
+  }
+
   try {
     const rule = buildRule(srcClass, isRoot, selClass);
 
@@ -234,6 +242,10 @@ function generateStylesFromClass(
         conflictKey: rule.parsed.conflictKey,
       };
     }
+
+    if (!isDynamicClass(srcClass)) {
+      setCacheItem(SKIPPED_CLASS_CACHE, cacheKey, 1);
+    }
   } catch (error) {
     console.error('[maple]', error);
   }
@@ -241,6 +253,19 @@ function generateStylesFromClass(
   return {
     conflictKey: srcClass,
   };
+}
+
+/**
+ * Mirrors the `$$` detection in `parseClass`, which reads the flag
+ * after an optional `!`.
+ */
+function isDynamicClass(srcClass: string): boolean {
+  const offset = srcClass.charCodeAt(0) === CHAR_EXCLAMATION_MARK ? 1 : 0;
+
+  return (
+    srcClass.charCodeAt(offset) === CHAR_DOLLAR &&
+    srcClass.charCodeAt(offset + 1) === CHAR_DOLLAR
+  );
 }
 
 function buildAliasOverrideRule(
