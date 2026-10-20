@@ -358,6 +358,20 @@ describe('Merge', () => {
     });
   });
 
+  describe('Plain classes with a shared first segment', () => {
+    it('keeps state classes that are not utilities', () => {
+      testMerge('is-read is-mark', 'is-read is-mark');
+      testMerge('is-read is-mark', 'is-read is-mark');
+    });
+
+    it('keeps BEM-style classes that share a prefix', () => {
+      testMerge('btn-primary btn-secondary', 'btn-primary btn-secondary');
+      testMerge('btn-primary btn-secondary', 'btn-primary btn-secondary');
+      testMerge('card-header card-footer', 'card-header card-footer');
+      testMerge('card-header card-footer', 'card-header card-footer');
+    });
+  });
+
   describe('Aliases', () => {
     it('uses expanded utilities for merge conflicts', () => {
       collectAliases(['--alias-space=p-4']);

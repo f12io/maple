@@ -1,5 +1,5 @@
 import { PRECALCULATED_PROP_TYPES } from 'internal:precalculated-prop-types';
-import { PROP_TYPE_CACHE } from '../constants/caches';
+import { KNOWN_PROP_CACHE, PROP_TYPE_CACHE } from '../constants/caches';
 import { CHAR_DASH, REF_CHAR_VAR_PREFIX } from '../constants/chars';
 import {
   PROP_TYPE_COLOR,
@@ -71,18 +71,25 @@ export function isKnownProperty(
 ): 1 | 0 {
   propKeyCamel ??= toCamelCase(propKeyKebab);
 
-  if (
-    propKeyCamel in PRECALCULATED_PROP_TYPES ||
-    PROP_TYPE_CACHE.has(propKeyKebab)
-  ) {
+  if (propKeyCamel in PRECALCULATED_PROP_TYPES) {
     return 1;
+  }
+
+  const cached = KNOWN_PROP_CACHE.get(propKeyKebab);
+
+  if (cached !== undefined) {
+    return cached;
   }
 
   if (typeof CSS === 'undefined') {
     return 0;
   }
 
-  return CSS.supports(propKeyKebab, 'inherit') ? 1 : 0;
+  const known = CSS.supports(propKeyKebab, 'inherit') ? 1 : 0;
+
+  setCacheItem(KNOWN_PROP_CACHE, propKeyKebab, known);
+
+  return known;
 }
 
 export function isKnownNumberValue(val: string): 1 | 0 {
