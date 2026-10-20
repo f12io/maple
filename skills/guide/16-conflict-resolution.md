@@ -46,4 +46,40 @@ Maple's merge model is property-aware rather than string-only:
 
 Maple also handles CSS shorthand relationships carefully. A later broad shorthand can remove earlier covered utilities, but Maple avoids false positives for properties that share a prefix without actually overriding each other. For example, `br-px rad-px`, `fx-1 fxdir=row`, `of=hidden ofwr=anywhere`, and `cols-1 col-2` are kept because those pairs target distinct CSS behavior.
 
+**Shorthand and Longhand Across Contexts**
+
+Conflict resolution only rewrites the class attribute when two utilities collide in the _same_ context. Across contexts both classes survive, so a shorthand and one of its own longhands can end up on the same element with both rules live. The cascade decides those, and Maple guarantees one outcome: **the longhand wins, whatever the class order and whatever the selector.**
+
+```html
+<div class="tdeco=none &:hover:text-decoration-line=underline">
+  <!-- Underlines on hover: text-decoration-line outranks text-decoration -->
+</div>
+
+<div class="background=gray @md:bgimg=[url(wide.png)]">
+  <!-- The image applies from md up, even though background sets it too -->
+</div>
+```
+
+The rule is unconditional, which cuts both ways. A variant on the _shorthand_ cannot override a base longhand, because the property decides before the context does:
+
+```html
+<div class="bgimg=[url(a.png)] &:hover:background=gray">
+  <!-- The image stays on hover; the shorthand cannot remove it -->
+</div>
+
+<div class="bgimg=[url(a.png)] &:hover:bgimg=none &:hover:bgc=gray">
+  <!-- Reset the longhand in the variant instead -->
+</div>
+```
+
+Specificity cannot change this either way: these rules sit in different cascade layers, and layer order is resolved before specificity. Marking only the variant `!important` does override it, because importance outranks layer order — but marking _both_ sides important reverses it, since layer order itself reverses for important declarations. Mark the variant, not the base.
+
+Debug mode reports every pair this applies to, so a page can be audited for it:
+
+```txt
+[maple] layer order decides between "&:hover:text-decoration-line=underline" (text-decoration-line)
+        and "tdeco=none" (text-decoration) on this element: the longhand wins
+        whatever the class order
+```
+
 This changes the usual utility-class architecture. React applications using Maple do not need a `cn`-style merge helper for conflict resolution. They may still use helpers for conditional string construction, variants, or ergonomics, but correctness no longer depends on funneling every class through a JavaScript merge function. The same conflict resolution applies in non-JavaScript-first environments, where adding a package-level class merging convention would otherwise be difficult or impossible without extra runtime code.

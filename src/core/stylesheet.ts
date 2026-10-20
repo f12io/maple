@@ -197,8 +197,8 @@ function insertRule({
 
   const layer = getOrInsertLayer(
     isAlias ? aliasesLayer : utilsLayer,
-    typeIndex,
     priorityIndex,
+    typeIndex,
   );
 
   if (!layer) return;
@@ -236,36 +236,47 @@ function countHyphens(value: string) {
   return count;
 }
 
+/**
+ * Nests the property's shorthand depth outside its value kind, so a
+ * longhand always outranks the shorthand that sets it. The two only
+ * ever decide a competition between a shorthand and its own longhand —
+ * rules for the same property share both indexes, and rules for
+ * unrelated properties never compete — and with the kind outside, a
+ * keyword longhand such as `background-image` would sit in an earlier
+ * layer than its length- or colour-valued shorthand and lose to it
+ * whatever the class order or specificity. Kind still orders two
+ * properties of equal depth.
+ */
 function getOrInsertLayer(
   rootLayer: Group,
-  typeIndex: number,
   priorityIndex: number,
+  typeIndex: number,
 ) {
-  let typeLayer = rootLayer?.cssRules[typeIndex] as Layer;
-
-  if (!typeLayer) {
-    for (
-      let index = rootLayer?.cssRules.length ?? 0;
-      index <= typeIndex;
-      index++
-    ) {
-      rootLayer?.insertRule(`@layer t${index} {}`, index);
-    }
-  }
-
-  typeLayer = rootLayer?.cssRules[typeIndex] as Layer;
-
-  let priorityLayer = typeLayer?.cssRules[priorityIndex] as Layer;
+  let priorityLayer = rootLayer?.cssRules[priorityIndex] as Layer;
 
   if (!priorityLayer) {
     for (
-      let index = typeLayer?.cssRules.length ?? 0;
+      let index = rootLayer?.cssRules.length ?? 0;
       index <= priorityIndex;
       index++
     ) {
-      typeLayer?.insertRule(`@layer p${index} {}`, index);
+      rootLayer?.insertRule(`@layer p${index} {}`, index);
+    }
+  }
 
-      const layer = typeLayer?.cssRules[index] as Layer;
+  priorityLayer = rootLayer?.cssRules[priorityIndex] as Layer;
+
+  let typeLayer = priorityLayer?.cssRules[typeIndex] as Layer;
+
+  if (!typeLayer) {
+    for (
+      let index = priorityLayer?.cssRules.length ?? 0;
+      index <= typeIndex;
+      index++
+    ) {
+      priorityLayer?.insertRule(`@layer t${index} {}`, index);
+
+      const layer = priorityLayer?.cssRules[index] as Layer;
 
       if (layer) {
         /**
@@ -291,9 +302,9 @@ function getOrInsertLayer(
     }
   }
 
-  priorityLayer = typeLayer?.cssRules[priorityIndex] as Layer;
+  typeLayer = priorityLayer?.cssRules[typeIndex] as Layer;
 
-  return priorityLayer;
+  return typeLayer;
 }
 
 function parsePriority(parsedMediaQuery: ParsedMediaQuery): number {

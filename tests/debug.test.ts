@@ -84,6 +84,51 @@ describe('Debug mode', () => {
       expect(warnSpy).not.toHaveBeenCalled();
     });
 
+    it('warns when layer order decides a shorthand/longhand pair', () => {
+      const el = document.createElement('div');
+      el.className = 'background=gray &.on:bgimg=[url(a.png)]';
+      processClassList(el);
+
+      expect(
+        warnings().some(
+          (message) =>
+            message.includes('layer order decides') &&
+            message.includes('background-image') &&
+            message.includes('background'),
+        ),
+      ).toBe(true);
+    });
+
+    it('stays silent when the pair takes the same kind of value', () => {
+      const el = document.createElement('div');
+      el.className = 'background=white &.on:bgc=black';
+      processClassList(el);
+
+      expect(
+        warnings().some((message) => message.includes('layer order decides')),
+      ).toBe(false);
+    });
+
+    it('stays silent when the merge step already resolved the pair', () => {
+      const el = document.createElement('div');
+      el.className = 'background=silver bgimg=[url(b.png)]';
+      processClassList(el);
+
+      expect(
+        warnings().some((message) => message.includes('layer order decides')),
+      ).toBe(false);
+    });
+
+    it('stays silent for unrelated properties', () => {
+      const el = document.createElement('div');
+      el.className = 'p-4 &.on:bgc=teal';
+      processClassList(el);
+
+      expect(
+        warnings().some((message) => message.includes('layer order decides')),
+      ).toBe(false);
+    });
+
     it('stays silent for plain CSS classes', () => {
       convert('btn-primary');
       convert('navitem');

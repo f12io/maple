@@ -7,6 +7,8 @@ import { REGEX_WHITESPACE } from './constants/regex';
 import { setCacheItem } from './helpers/cache.helper';
 import { debugWarn, setDebugContext } from './helpers/debug.helper';
 import { isMergeException } from './helpers/merge.helper';
+import { resolveType } from './helpers/property.helper';
+import { toCamelCase } from './helpers/string.helper';
 import { parseClass } from './parser-class';
 import { insert } from './stylesheet';
 import { RuleData } from './types';
@@ -23,6 +25,12 @@ interface GeneratedClass {
 interface ClassItem {
   srcClass: string;
   selClass: string;
+}
+
+interface SurvivingProp {
+  propKey: string;
+  context: string;
+  srcClass: string;
 }
 
 /**
@@ -75,6 +83,7 @@ export function processClassList(element: Element): void {
 
   const seenExact = new Set<string>();
   const seenConflict = new Set<string>();
+  const surviving: Array<SurvivingProp> = [];
   const seenConflictItems = new Map<string, ClassItem>();
   const rules: Array<RuleData> = [];
   let newClass = '';
@@ -145,6 +154,14 @@ export function processClassList(element: Element): void {
         seenConflict.add(conflictKey);
         seenConflictItems.set(conflictKey, item);
 
+        if (OPTIONS.debug) {
+          surviving.push({
+            propKey,
+            context: normalPropParents,
+            srcClass,
+          });
+        }
+
         /**
          * Important utilities override earlier normal utilities with the same
          * property/context, but normal utilities after an important one are
@@ -172,6 +189,8 @@ export function processClassList(element: Element): void {
     }
   }
 
+  if (OPTIONS.debug) warnShorthandOverlap(surviving);
+
   let j = rules.length;
 
   while (j--) {
@@ -186,6 +205,31 @@ export function processClassList(element: Element): void {
 
     mergeCache.set(element, newClass);
     element.setAttribute('class', newClass);
+  }
+}
+
+function warnShorthandOverlap(surviving: Array<SurvivingProp>): void {
+  for (const longhand of surviving) {
+    for (const shorthand of surviving) {
+      if (longhand.context === shorthand.context) continue;
+      if (!longhand.propKey.startsWith(shorthand.propKey + '-')) continue;
+      if (isMergeException(longhand.propKey, shorthand.propKey)) continue;
+
+      const longType = resolveType(
+        longhand.propKey,
+        toCamelCase(longhand.propKey),
+      );
+      const shortType = resolveType(
+        shorthand.propKey,
+        toCamelCase(shorthand.propKey),
+      );
+
+      if (longType === shortType) continue;
+
+      debugWarn(
+        `layer order decides between "${longhand.srcClass}" (${longhand.propKey}) and "${shorthand.srcClass}" (${shorthand.propKey}) on this element: the longhand wins whatever the class order`,
+      );
+    }
   }
 }
 

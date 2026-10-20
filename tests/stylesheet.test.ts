@@ -74,9 +74,9 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t0 = findLayer(utils, 't0');
-    const p0 = findLayer(t0, 'p0');
-    const styleRule = findStyleRule(p0, '.d-block');
+    const p0 = findLayer(utils, 'p0');
+    const t0 = findLayer(p0, 't0');
+    const styleRule = findStyleRule(t0, '.d-block');
 
     expect(styleRule?.style.display).toBe('var(--ref-d-block)');
   });
@@ -88,9 +88,9 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t1 = findLayer(utils, 't1');
-    const p2 = findLayer(t1, 'p2');
-    const styleRule = findStyleRule(p2, '.ml-4');
+    const p2 = findLayer(utils, 'p2');
+    const t1 = findLayer(p2, 't1');
+    const styleRule = findStyleRule(t1, '.ml-4');
 
     expect(styleRule?.style.marginLeft).toBe('var(--ref-ml-4)');
   });
@@ -102,9 +102,9 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t1 = findLayer(utils, 't1');
-    const p0 = findLayer(t1, 'p0');
-    const styleRule = findStyleRule(p0, '.p-4');
+    const p0 = findLayer(utils, 'p0');
+    const t1 = findLayer(p0, 't1');
+    const styleRule = findStyleRule(t1, '.p-4');
 
     expect(styleRule?.style.padding).toBe('var(--ref-p-4)');
   });
@@ -117,10 +117,10 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t3 = findLayer(utils, 't3');
-    const p0 = findLayer(t3, 'p0');
-    const p3 = findLayer(t3, 'p3');
-    const styleRule = findStyleRule(p0, '.--custom-long-var-name\\=1');
+    const p0 = findLayer(utils, 'p0');
+    const t3_p0 = findLayer(p0, 't3');
+    const p3 = findLayer(utils, 'p3');
+    const styleRule = findStyleRule(t3_p0, '.--custom-long-var-name\\=1');
 
     expect(p3).toBeUndefined(); // Should NOT exist
     expect(styleRule?.style.getPropertyValue('--custom-long-var-name')).toBe(
@@ -142,15 +142,16 @@ describe('Stylesheet', () => {
     // We need to look inside the correct bucket.
     // ml-8 is Space (Type 1), Priority 1 (margin-left).
     const utils = findLayer(sheet, 'utils');
-    const t1 = findLayer(utils, 't1');
-    const p2 = findLayer(t1, 'p2');
+    const p2 = findLayer(utils, 'p2');
+    const t1 = findLayer(p2, 't1');
 
     let idxMd = -1;
     let idxLg = -1;
 
-    if (p2) {
-      for (let i = 0; i < p2.cssRules.length; i++) {
-        const r = p2.cssRules[i];
+    // buckets sit in the innermost layer, which is the kind layer
+    if (t1) {
+      for (let i = 0; i < t1.cssRules.length; i++) {
+        const r = t1.cssRules[i];
         if (r instanceof CSSMediaRule) {
           if (r.conditionText === '(min-width: 768px)') idxMd = i;
           if (r.conditionText === '(min-width: 1024px)') idxLg = i;
@@ -195,10 +196,10 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t0 = findLayer(utils, 't0');
-    const p0 = findLayer(t0, 'p0');
+    const p0 = findLayer(utils, 'p0');
+    const t0 = findLayer(p0, 't0');
     // the base bucket is an `@media all` group rule, not a nested layer
-    const base = findMediaRule(p0, 'all');
+    const base = findMediaRule(t0, 'all');
     const systemRule = findMediaRule(sheet, 'not (prefers-color-scheme: dark)');
     const manualRule = findStyleRule(base, '.light .\\@not-dark\\:o-0');
 
@@ -214,8 +215,8 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t0 = findLayer(utils, 't0');
-    const p0 = findLayer(t0, 'p0');
+    const p0 = findLayer(utils, 'p0');
+    const t0 = findLayer(p0, 't0');
 
     // System Rule: @media (prefers-color-scheme: dark)
     const outerMedia = findMediaRule(sheet, '(prefers-color-scheme: dark)');
@@ -226,7 +227,7 @@ describe('Stylesheet', () => {
     );
 
     // Manual Rule: @media not (min-width: 600px)
-    const manualMedia = findMediaRule(p0, 'not (min-width: 600px)');
+    const manualMedia = findMediaRule(t0, 'not (min-width: 600px)');
     const manualRule = findStyleRule(
       manualMedia,
       '.dark .\\@mnw\\!\\=600px\\:\\@dark\\:o-0',
@@ -258,9 +259,9 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t1 = findLayer(utils, 't1');
-    const p0 = findLayer(t1, 'p0'); // w=... has 0 dashes in key -> Priority 0
-    const styleRule = findStyleRule(p0, '.w\\=100px');
+    const p0 = findLayer(utils, 'p0'); // w=... has 0 dashes in key -> Priority 0
+    const t1 = findLayer(p0, 't1');
+    const styleRule = findStyleRule(t1, '.w\\=100px');
 
     expect(styleRule?.style.width).toBe('100px');
   });
@@ -272,9 +273,9 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t1 = findLayer(utils, 't1');
-    const p0 = findLayer(t1, 'p0');
-    const styleRule = findStyleRule(p0, '.w\\=\\[100px\\]');
+    const p0 = findLayer(utils, 'p0');
+    const t1 = findLayer(p0, 't1');
+    const styleRule = findStyleRule(t1, '.w\\=\\[100px\\]');
 
     expect(styleRule?.style.width).toBe('100px');
   });
@@ -286,9 +287,9 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t1 = findLayer(utils, 't1'); // border is Type 1 (Space)
-    const p0 = findLayer(t1, 'p0');
-    const styleRule = findStyleRule(p0, '.br\\=1px_solid_black');
+    const p0 = findLayer(utils, 'p0');
+    const t1 = findLayer(p0, 't1'); // border is Type 1 (Space)
+    const styleRule = findStyleRule(t1, '.br\\=1px_solid_black');
 
     expect(styleRule?.style.borderWidth).toBe('1px');
     expect(styleRule?.style.borderStyle).toBe('solid');
@@ -301,9 +302,9 @@ describe('Stylesheet', () => {
 
     const sheet = getSheet();
     const utils = findLayer(sheet, 'utils');
-    const t1 = findLayer(utils, 't1');
-    const p0 = findLayer(t1, 'p0');
-    const styleRule = findStyleRule(p0, '.m-4_\\[calc\\(100\\%_-_20px\\)\\]');
+    const p0 = findLayer(utils, 'p0');
+    const t1 = findLayer(p0, 't1');
+    const styleRule = findStyleRule(t1, '.m-4_\\[calc\\(100\\%_-_20px\\)\\]');
 
     expect(styleRule?.style.margin).toContain('calc(100% - 20px)');
   });
@@ -324,14 +325,16 @@ describe('Stylesheet', () => {
 
       const sheet = getSheet();
       const utils = findLayer(sheet, 'utils');
-      const t1 = findLayer(utils, 't1');
-      const p0 = findLayer(t1, 'p0'); // m-4
-      const p1 = findLayer(t1, 'p1'); // mx-4
-      const p2 = findLayer(t1, 'p2'); // ml-4
+      const p0 = findLayer(utils, 'p0'); // m-4
+      const t1_p0 = findLayer(p0, 't1');
+      const p1 = findLayer(utils, 'p1'); // mx-4
+      const t1_p1 = findLayer(p1, 't1');
+      const p2 = findLayer(utils, 'p2'); // ml-4
+      const t1_p2 = findLayer(p2, 't1');
 
-      expect(findStyleRule(p0, '.m-4')).toBeDefined();
-      expect(findStyleRule(p1, '.mx-4')).toBeDefined();
-      expect(findStyleRule(p2, '.ml-4')).toBeDefined();
+      expect(findStyleRule(t1_p0, '.m-4')).toBeDefined();
+      expect(findStyleRule(t1_p1, '.mx-4')).toBeDefined();
+      expect(findStyleRule(t1_p2, '.ml-4')).toBeDefined();
     });
 
     it('resolves Logical vs Physical: mx (margin-inline) vs mr (margin-right)', () => {
@@ -346,12 +349,13 @@ describe('Stylesheet', () => {
 
       const sheet = getSheet();
       const utils = findLayer(sheet, 'utils');
-      const t1 = findLayer(utils, 't1');
-      const p1 = findLayer(t1, 'p1'); // mx
-      const p2 = findLayer(t1, 'p2'); // mr
+      const p1 = findLayer(utils, 'p1'); // mx
+      const t1_p1 = findLayer(p1, 't1');
+      const p2 = findLayer(utils, 'p2'); // mr
+      const t1_p2 = findLayer(p2, 't1');
 
-      expect(findStyleRule(p1, '.mx-4')).toBeDefined();
-      expect(findStyleRule(p2, '.mr-4')).toBeDefined();
+      expect(findStyleRule(t1_p1, '.mx-4')).toBeDefined();
+      expect(findStyleRule(t1_p2, '.mr-4')).toBeDefined();
     });
 
     it('resolves Positioning: inset < left', () => {
@@ -365,12 +369,13 @@ describe('Stylesheet', () => {
 
       const sheet = getSheet();
       const utils = findLayer(sheet, 'utils');
-      const t1 = findLayer(utils, 't1');
-      const p0 = findLayer(t1, 'p0'); // inset
-      const p1 = findLayer(t1, 'p1'); // left
+      const p0 = findLayer(utils, 'p0'); // inset
+      const t1_p0 = findLayer(p0, 't1');
+      const p1 = findLayer(utils, 'p1'); // left
+      const t1_p1 = findLayer(p1, 't1');
 
-      expect(findStyleRule(p0, '.inset-0')).toBeDefined();
-      expect(findStyleRule(p1, '.left-0')).toBeDefined();
+      expect(findStyleRule(t1_p0, '.inset-0')).toBeDefined();
+      expect(findStyleRule(t1_p1, '.left-0')).toBeDefined();
     });
 
     it('resolves Border Shorthands: brl < brw', () => {
@@ -385,12 +390,13 @@ describe('Stylesheet', () => {
 
       const sheet = getSheet();
       const utils = findLayer(sheet, 'utils');
-      const t1 = findLayer(utils, 't1');
-      const p2 = findLayer(t1, 'p2');
-      const p3 = findLayer(t1, 'p3');
+      const p2 = findLayer(utils, 'p2');
+      const t1_p2 = findLayer(p2, 't1');
+      const p3 = findLayer(utils, 'p3');
+      const t1_p3 = findLayer(p3, 't1');
 
-      expect(findStyleRule(p2, '.brl-4px_solid')).toBeDefined();
-      expect(findStyleRule(p3, '.brw-2px')).toBeDefined();
+      expect(findStyleRule(t1_p2, '.brl-4px_solid')).toBeDefined();
+      expect(findStyleRule(t1_p3, '.brw-2px')).toBeDefined();
     });
   });
 });

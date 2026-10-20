@@ -86,9 +86,10 @@ By default, Maple stays silent when a class produces no styles — an invalid ut
 2. **Skipped classes**: A class that shows Maple intent but produces no rule is reported with the reason (unknown utility, no style declaration). Intent means the class resolved to a known utility key (e.g. the typo `bgc-`), or carries Maple syntax markers (contains `:` or `=`, or starts with `!` or `$`). Plain CSS classes like `btn-primary` stay silent.
 3. **Merge rewrites**: When conflict resolution changes an element's class attribute, the full rewrite is logged — e.g. `merged: "pt-2 p-8" -> "p-8"`.
 4. **Alias problems**: Unknown alias usage, invalid alias params, expansion depth limit hits (circular definitions), and alias definitions that arrive after the lock — a new or changed `--alias-*` definition on `<html>` after the initial markup is processed is ignored, and debug mode is the only signal.
-5. **Cache evictions**: Internal parse caches evict their oldest entries when full; repeated eviction warnings suggest unbounded dynamic class generation.
+5. **Shorthand/longhand overlaps**: When a shorthand and one of its own longhands apply to the same element in different contexts, the pair is reported, since the cascade resolves it by layer order rather than by class order — see [Conflict Resolution](16-conflict-resolution.md).
+6. **Cache evictions**: Internal parse caches evict their oldest entries when full; repeated eviction warnings suggest unbounded dynamic class generation.
 
-Warnings raised while an element's classes are being processed — skipped classes, merge rewrites, alias problems — include the element as a second console argument, so you can click it in DevTools to locate the node.
+Warnings raised while an element's classes are being processed — skipped classes, merge rewrites, alias problems, shorthand/longhand overlaps — include the element as a second console argument, so you can click it in DevTools to locate the node.
 
 **When to use `debug`:**
 
