@@ -197,7 +197,8 @@ describe('Stylesheet', () => {
     const utils = findLayer(sheet, 'utils');
     const t0 = findLayer(utils, 't0');
     const p0 = findLayer(t0, 'p0');
-    const base = findLayer(p0, 'base');
+    // the base bucket is an `@media all` group rule, not a nested layer
+    const base = findMediaRule(p0, 'all');
     const systemRule = findMediaRule(sheet, 'not (prefers-color-scheme: dark)');
     const manualRule = findStyleRule(base, '.light .\\@not-dark\\:o-0');
 

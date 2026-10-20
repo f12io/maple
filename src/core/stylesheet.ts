@@ -268,7 +268,17 @@ function getOrInsertLayer(
       const layer = typeLayer?.cssRules[index] as Layer;
 
       if (layer) {
-        layer.insertRule('@layer base {}', 0);
+        /**
+         * The base bucket is a conditional group rule rather than a
+         * nested layer, so that it and the media buckets beside it sit
+         * in one layer and plain source order decides between them.
+         * As a nested layer it would be layered while the buckets are
+         * unlayered, and that relationship reverses for `!important`
+         * declarations: a matching variant would lose to its own base
+         * whenever both are important — which the `important` config
+         * flag makes true of every declaration.
+         */
+        layer.insertRule('@media all {}', 0);
         buckets.set(layer, [
           {
             key: BASE_KEY,
