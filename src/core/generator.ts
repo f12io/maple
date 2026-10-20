@@ -125,20 +125,19 @@ export function processClassList(element: Element): void {
           : propParents;
 
         // Skip hierarchy check for specific properties that share a prefix but are not covered by the shorthand
-        if (!isMergeException(propKey)) {
-          let dashIdx = propKey.lastIndexOf('-');
+        let dashIdx = propKey.lastIndexOf('-');
 
-          while (dashIdx > 0) {
-            const parentKey = propKey.slice(0, dashIdx);
-            if (
-              seenConflict.has(parentKey + propParents) ||
-              (isImportant && seenConflict.has(parentKey + normalPropParents))
-            ) {
-              coveredByShorthand = true;
-              break;
-            }
-            dashIdx = propKey.lastIndexOf('-', dashIdx - 1);
+        while (dashIdx > 0) {
+          const parentKey = propKey.slice(0, dashIdx);
+          if (
+            !isMergeException(propKey, parentKey) &&
+            (seenConflict.has(parentKey + propParents) ||
+              (isImportant && seenConflict.has(parentKey + normalPropParents)))
+          ) {
+            coveredByShorthand = true;
+            break;
           }
+          dashIdx = propKey.lastIndexOf('-', dashIdx - 1);
         }
 
         if (coveredByShorthand) continue;

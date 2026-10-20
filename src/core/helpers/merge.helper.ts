@@ -1,8 +1,36 @@
 import { REF_CHAR_VAR_PREFIX } from '../constants/chars';
 
-export function isMergeException(key: string): boolean {
+export function isMergeException(key: string, parentKey: string): boolean {
   // css variable exception
   if (key.startsWith(REF_CHAR_VAR_PREFIX)) {
+    return true;
+  }
+
+  // position-* exceptions: position-area, position-anchor,
+  // position-visibility and position-try are independent properties
+  if (parentKey === 'position') {
+    return true;
+  }
+
+  // contain-* exceptions: `contain` is not a shorthand at all, while
+  // `contain-intrinsic-size` is one for the width/height longhands
+  if (parentKey === 'contain') {
+    return true;
+  }
+
+  // background-* exception: the shorthand does not set blend mode
+  if (key === 'background-blend-mode') {
+    return true;
+  }
+
+  // mask-* exception: mask-type applies to the SVG mask element and is
+  // not part of the mask shorthand
+  if (key === 'mask-type') {
+    return true;
+  }
+
+  // text-emphasis-* exception: the shorthand sets style and color only
+  if (key === 'text-emphasis-position') {
     return true;
   }
 

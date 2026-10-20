@@ -359,6 +359,113 @@ describe('Merge', () => {
     });
   });
 
+  describe('Position family', () => {
+    /**
+     * `position` shares its prefix with the anchor positioning
+     * properties but is not their shorthand, so it must not swallow
+     * them whichever order they appear in.
+     */
+    it('pos does not drop position-* utilities before it', () => {
+      testMerge('posv=always pos=absolute', 'posv=always pos=absolute');
+      testMerge('position-area=top pos=absolute', 'position-area=top pos=absolute');
+      testMerge(
+        'position-anchor=--a pos-absolute',
+        'position-anchor=--a pos-absolute',
+      );
+      testMerge(
+        'position-try-order=normal pos=absolute',
+        'position-try-order=normal pos=absolute',
+      );
+    });
+
+    it('pos does not drop position-* utilities after it', () => {
+      testMerge('pos=absolute posv=always', 'pos=absolute posv=always');
+      testMerge('pos=absolute position-area=top', 'pos=absolute position-area=top');
+    });
+
+    /**
+     * `position-absolute` normalizes to the `pos` key, so the spelled
+     * out and abbreviated forms are one exact conflict rather than a
+     * hierarchy one.
+     */
+    it('merges the spelled out form with the abbreviation', () => {
+      testMerge('position-absolute pos=fixed', 'pos=fixed');
+      testMerge('pos=fixed position-absolute', 'position-absolute');
+    });
+
+    it('still merges two position utilities', () => {
+      testMerge('pos=absolute pos=fixed', 'pos=fixed');
+      testMerge('position-area=top position-area=bottom', 'position-area=bottom');
+    });
+
+    /**
+     * `position-try` is a real shorthand of `position-try-order` and
+     * `position-try-fallbacks`, so the hierarchy still applies inside
+     * the family.
+     */
+    it('keeps position-try covering its own longhands', () => {
+      testMerge(
+        'position-try-order=most-width position-try=flip-block',
+        'position-try=flip-block',
+      );
+      testMerge(
+        'position-try-fallbacks=flip-inline position-try=flip-block',
+        'position-try=flip-block',
+      );
+    });
+  });
+
+  describe('Other prefix-sharing families', () => {
+    /**
+     * Each of these shares a prefix with a shorthand that does not set
+     * it, verified against the browser's own shorthand expansion: set
+     * the longhand, set the shorthand, see whether the longhand moved.
+     * The second case in each pair is a property the shorthand really
+     * does govern, so the hierarchy must still apply there.
+     */
+    it('background does not cover blend mode', () => {
+      testMerge(
+        'background-blend-mode=multiply background=red',
+        'background-blend-mode=multiply background=red',
+      );
+      testMerge('background-color=blue background=red', 'background=red');
+    });
+
+    it('contain does not cover contain-intrinsic-*', () => {
+      testMerge(
+        'contain-intrinsic-size=100px contain=layout',
+        'contain-intrinsic-size=100px contain=layout',
+      );
+      /**
+       * No positive control in this family: the hierarchy walks string
+       * prefixes, and `contain-intrinsic-size` is not a prefix of
+       * `contain-intrinsic-width`, so its real shorthand relationship
+       * is invisible here — as `border-radius` is to
+       * `border-top-left-radius`. Both classes survive.
+       */
+      testMerge(
+        'contain-intrinsic-width=50px contain-intrinsic-size=100px',
+        'contain-intrinsic-width=50px contain-intrinsic-size=100px',
+      );
+    });
+
+    it('mask does not cover mask-type', () => {
+      testMerge('mask-type=alpha mask=none', 'mask-type=alpha mask=none');
+      testMerge('mask-image=none mask=none', 'mask=none');
+    });
+
+    it('text-emphasis does not cover its position', () => {
+      testMerge(
+        'text-emphasis-position=[under_left] text-emphasis=[dot_red]',
+        'text-emphasis-position=[under_left] text-emphasis=[dot_red]',
+      );
+      testMerge(
+        'text-emphasis-style=circle text-emphasis=[dot_red]',
+        'text-emphasis=[dot_red]',
+      );
+    });
+  });
+
   describe('Plain classes with a shared first segment', () => {
     it('keeps state classes that are not utilities', () => {
       testMerge('is-read is-mark', 'is-read is-mark');
