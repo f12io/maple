@@ -91,6 +91,12 @@ export interface ParsedClass {
 }
 
 export interface RuleData {
+  /**
+   * Class cache entry this rule is accounted under, so a rule the
+   * stylesheet rejects can retract it. Absent for dynamic rules and
+   * media-query override rules, which are never cached.
+   */
+  cacheKey?: string;
   content: string;
   isAlias?: boolean;
   overrideRule?: RuleData;

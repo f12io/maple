@@ -578,3 +578,25 @@ describe('Stress Tests', () => {
     );
   });
 });
+
+describe('Unrecognizable Queries', () => {
+  const PADDING =
+    'padding: var(--p-4, var(--space-4, calc(4rem * var(--p-spacer, var(--spacer, 0.25)))));';
+
+  /**
+   * A query whose every segment is unusable leaves nothing to wrap the
+   * rule in, so the utility applies unconditionally, exactly as it does
+   * for a class that carries no query at all.
+   */
+  it('empty supports value', () => {
+    expect(convert('@supports=[]:p-4')).toBe(
+      `.\\@supports\\=\\[\\]\\:p-4 { ${PADDING} }`,
+    );
+  });
+
+  it('unbalanced supports value', () => {
+    expect(convert('@supports=[((]:p-4')).toBe(
+      `.\\@supports\\=\\[\\(\\(\\]\\:p-4 { ${PADDING} }`,
+    );
+  });
+});

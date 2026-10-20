@@ -1,3 +1,4 @@
+import { CLASS_CACHE, SKIPPED_CLASS_CACHE } from './constants/caches';
 import { CHAR_AT } from './constants/chars';
 import {
   MEDIA_BUCKET_TYPE_ORDER,
@@ -12,6 +13,8 @@ import {
   REGEX_CSS_ESCAPED_CHARS,
   REGEX_NUMBER_WITH_UNIT,
 } from './constants/regex';
+import { setCacheItem } from './helpers/cache.helper';
+import { debugWarn } from './helpers/debug.helper';
 import { Bucket, BucketType, ParsedMediaQuery, RuleData } from './types';
 
 type Sheet = CSSStyleSheet | null;
@@ -31,6 +34,8 @@ let dynamicLayer: Group;
 const pendingRules: Array<{
   rule: CSSGroupingRule | CSSStyleSheet;
   content: string;
+  cacheKey?: string;
+  srcClass?: string;
 }> = [];
 
 const pendingVars: Array<{
@@ -48,17 +53,57 @@ export function flush() {
     }
   }
 
-  for (const { rule, content } of pendingRules) {
-    rule.insertRule(content, rule.cssRules.length);
-  }
+  try {
+    for (const { rule, content, cacheKey, srcClass } of pendingRules) {
+      insertOrAbsorb(rule, content, cacheKey, srcClass);
+    }
 
-  for (const { rule, key, val } of pendingVars) {
-    rule.style.setProperty(key, val);
+    for (const { rule, key, val } of pendingVars) {
+      rule.style.setProperty(key, val);
+    }
+  } finally {
+    // Reset even if something unforeseen throws.
+    pendingRules.length = 0;
+    pendingVars.length = 0;
+    isScheduled = false;
   }
+}
 
-  pendingRules.length = 0;
-  pendingVars.length = 0;
-  isScheduled = false;
+/**
+ * Inserts a rule, absorbing the SyntaxError the browser throws for a
+ * selector it cannot parse — a vendor pseudo element from another
+ * engine is the common case, and Maple passes any selector through
+ * untouched. Letting it escape would abandon the rest of the element's
+ * rules and its pending class attribute update, and on the root pass it
+ * would leave the runtime unstarted, since `startObserver` locks the
+ * aliases and attaches the observer only after that pass returns.
+ */
+function insertOrAbsorb(
+  target: CSSGroupingRule | CSSStyleSheet,
+  content: string,
+  cacheKey?: string,
+  srcClass?: string,
+): void {
+  try {
+    target.insertRule(content, target.cssRules.length);
+  } catch (error) {
+    if (cacheKey) {
+      /**
+       * The cache must not claim a rule the stylesheet never took. A
+       * class always serializes to the same content, so the rejection
+       * is final: record it as skipped instead of rebuilding and
+       * refailing it for every element that carries it.
+       */
+      CLASS_CACHE.delete(cacheKey);
+      setCacheItem(SKIPPED_CLASS_CACHE, cacheKey, 1);
+    }
+
+    if (OPTIONS.debug) {
+      debugWarn(
+        `skipped "${srcClass ?? content}": rejected by the browser — ${(error as Error).message}`,
+      );
+    }
+  }
 }
 
 function scheduleFlush() {
@@ -120,7 +165,13 @@ export function insertRefVar(
   }
 }
 
-function insertRule({ content, isAlias, parsedMediaQuery, parsed }: RuleData) {
+function insertRule({
+  cacheKey,
+  content,
+  isAlias,
+  parsedMediaQuery,
+  parsed,
+}: RuleData) {
   if (!sheet) return;
 
   if (parsed.isDynamic) {
@@ -161,10 +212,15 @@ function insertRule({ content, isAlias, parsedMediaQuery, parsed }: RuleData) {
   }
 
   if (OPTIONS.batching && bucket?.rule) {
-    pendingRules.push({ rule: bucket.rule, content });
+    pendingRules.push({
+      rule: bucket.rule,
+      content,
+      cacheKey,
+      srcClass: parsed.srcClass,
+    });
     scheduleFlush();
-  } else {
-    bucket?.rule?.insertRule(content, bucket.rule.cssRules.length);
+  } else if (bucket?.rule) {
+    insertOrAbsorb(bucket.rule, content, cacheKey, parsed.srcClass);
   }
 }
 

@@ -8,6 +8,7 @@ import {
 } from './constants/chars';
 import { MEDIA_BUCKET_TYPE_ORDER, OPTIONS } from './constants/config';
 import { setCacheItem } from './helpers/cache.helper';
+import { debugWarn } from './helpers/debug.helper';
 import { removeBrackets, split } from './helpers/string.helper';
 import { serializeValue } from './serializer';
 import { MediaQueryBucketParams, ParsedClass, ParsedMediaQuery } from './types';
@@ -441,6 +442,23 @@ export function parseMediaQuery({
       maxPriority = priority;
       winnerIndex = i;
     }
+  }
+
+  /**
+   * Nothing collected means no segment was recognizable — `supports=[]`
+   * with an empty value, for example. Treat that like a class carrying
+   * no query at all, as the `!mediaQuery` exit above does, rather than
+   * destructuring an empty collection: that throws, and the throw takes
+   * down whatever was building the class.
+   */
+  if (!collection.length) {
+    if (OPTIONS.debug) {
+      debugWarn(
+        `unrecognized media query "${mediaQuery}": the utility applies unconditionally`,
+      );
+    }
+
+    return;
   }
 
   // Build the parsed media query

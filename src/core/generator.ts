@@ -228,6 +228,10 @@ function generateStylesFromClass(
     const rule = buildRule(srcClass, isRoot, selClass);
 
     if (rule) {
+      if (!rule.parsed.isDynamic) {
+        rule.cacheKey = cacheKey;
+      }
+
       if (canInsert && !rule.parsed.isDynamic) {
         CLASS_CACHE.set(cacheKey, rule.parsed.conflictKey);
       }
@@ -292,6 +296,7 @@ function buildAliasOverrideRule(
   );
 
   if (rule) {
+    rule.cacheKey = cacheKey;
     CLASS_CACHE.set(cacheKey, rule.parsed.conflictKey);
   }
 
