@@ -23,6 +23,13 @@ type Group = CSSGroupingRule | undefined;
 
 const buckets = new Map<CSSGroupingRule, Array<Bucket>>();
 const BASE_KEY = 'base';
+/**
+ * Upper bound for the depth index, so it can be flipped for important
+ * mode. `hyphens * 2` plus the promote adjustment reaches about 7 for
+ * the deepest property names CSS has today, and the headroom costs only
+ * the empty layers declared on the way to the index in use.
+ */
+const MAX_PRIORITY_INDEX = 16;
 let sheet: Sheet = null;
 let refNumbersLayer: Group;
 let refColorsLayer: Group;
@@ -195,9 +202,21 @@ function insertRule({
     }
   }
 
+  /**
+   * Layer order reverses for important declarations, so when the
+   * `important` flag makes every declaration important, the depth
+   * ordering has to be laid out backwards to keep meaning the same
+   * thing: a longhand still beats the shorthand that sets it, and a
+   * physical property still beats its logical peer. The flag is read
+   * once from the script URL, so a page never mixes the two orders.
+   */
+  const depthIndex = OPTIONS.important
+    ? MAX_PRIORITY_INDEX - Math.min(priorityIndex, MAX_PRIORITY_INDEX)
+    : priorityIndex;
+
   const layer = getOrInsertLayer(
     isAlias ? aliasesLayer : utilsLayer,
-    priorityIndex,
+    depthIndex,
     typeIndex,
   );
 
