@@ -68,7 +68,7 @@ export function parseClass(srcClass: string): ParsedClass {
 
   const parts = split(srcClass, REF_CHAR_UTILITY_DELIMITER);
   let contextRaw = '';
-  let utilityRaw = '';
+  let utilityRaw: string;
 
   if (parts.length > 1) {
     utilityRaw = parts.pop() ?? '';

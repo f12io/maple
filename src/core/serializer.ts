@@ -873,7 +873,6 @@ function serializeTransitionValue(
   index: number,
   items: Array<string>,
 ): string | undefined {
-  let mappedValueItem = valueItem;
   let varCat;
   let utilKey = parsed.utilKey;
 
@@ -881,7 +880,7 @@ function serializeTransitionValue(
     ABBREVIATIONS_REVERSE[valueItem] ||
     ABBREVIATIONS_REVERSE[toCamelCase(valueItem)] ||
     valueItem;
-  mappedValueItem = ABBREVIATIONS[valueItem]
+  const mappedValueItem = ABBREVIATIONS[valueItem]
     ? toKebabCase(ABBREVIATIONS[valueItem])
     : valueItem;
 
@@ -939,9 +938,7 @@ function serializeAnimationValue(
   items: Array<string>,
   parentAnimName?: string,
 ): string | undefined {
-  let mappedValueItem = valueItem;
-  let varCat;
-  let utilKey = parsed.utilKey;
+  let utilKey: string;
 
   if (!parentAnimName && items.length > 1) {
     const nameItem = items.find((item) => {
@@ -978,7 +975,7 @@ function serializeAnimationValue(
     ABBREVIATIONS_REVERSE[valueItem] ||
     ABBREVIATIONS_REVERSE[toCamelCase(valueItem)] ||
     valueItem;
-  mappedValueItem = ABBREVIATIONS[valueItem]
+  const mappedValueItem = ABBREVIATIONS[valueItem]
     ? toKebabCase(ABBREVIATIONS[valueItem])
     : valueItem;
 
@@ -1029,7 +1026,7 @@ function serializeAnimationValue(
       mappedValueItem,
       parsed.isNoRef,
       undefined,
-      varCat,
+      undefined,
     );
 
     if (shouldUseNamedFallback) {
@@ -1044,7 +1041,7 @@ function serializeAnimationValue(
     utilKey,
     utilVal: mappedValueItem,
     validVarVal: escapeVariable(valueItem),
-    varCat,
+    varCat: undefined,
   });
 
   if (shouldUseNamedFallback) {
