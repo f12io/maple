@@ -55,6 +55,8 @@ You can generate a wide range of tones from any base color by appending a numeri
 - **Tones < 500**: Move the color toward white (lighter).
 - **Tones > 500**: Move the color toward black (darker).
 
+A color name may contain digits, as long as every hyphen-separated part of it has a letter: `bgc-body2`, `c-surface1` and `bgc-gray50` are names, and they take tones like any other (`bgc-body2-50`). The part after the last hyphen decides which is which — `gray50` is a name, while `gray-50` is `gray` at tone 50. A part made only of digits is therefore always the tone, so a token named `elevation-2` cannot be addressed as such: define the base variable (`--body2`) and let the tone suffix do the rest, rather than defining `--body2-50`.
+
 |              |            |                             |
 | ------------ | ---------- | --------------------------- |
 | **Class**    | **Effect** | **Logic**                   |

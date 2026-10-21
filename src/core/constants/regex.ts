@@ -14,8 +14,14 @@ const VAR_NAME = '[a-z][a-z0-9]*(?:-[a-z0-9]+)*';
 export const REGEX_VAR_NAME = new RegExp(`\\$(${VAR_NAME})`, 'g');
 // A whole token that is one `$name`
 export const REGEX_VAR_TOKEN = new RegExp(`^\\$(${VAR_NAME})$`);
+// A colour name segment carries at least one letter, so a trailing
+// all-digit segment is always the tone step: `gray50` is a name while
+// `gray-50` is `gray` at tone 50. Digits inside a segment are allowed,
+// matching `$name`, so design tokens like `body2` or `surface1` can
+// take tones and reach the `--color-*` tier like any other name.
+const COLOR_NAME_SEGMENT = '[a-z0-9]*[a-z][a-z0-9]*';
 export const REGEX_COLOR_TOKEN = new RegExp(
-  `^([a-z]+(?:-[a-z]+)*)(?:-(\\d{1,4}|\\$${VAR_NAME}))?(?:\\/(\\d{1,3}|\\$${VAR_NAME}))?$`,
+  `^(${COLOR_NAME_SEGMENT}(?:-${COLOR_NAME_SEGMENT})*)(?:-(\\d{1,4}|\\$${VAR_NAME}))?(?:\\/(\\d{1,3}|\\$${VAR_NAME}))?$`,
   'i',
 );
 export const REGEX_NUMBER_WITH_UNIT = /^([\d.]+)([a-z]*)/;

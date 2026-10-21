@@ -140,3 +140,61 @@ describe('Color', () => {
     expect(convert('c=#ff0000')).toBe('.c\\=\\#ff0000 { color: #ff0000; }');
   });
 });
+
+describe('Color names with digits', () => {
+  /**
+   * A name segment carries at least one letter, so a trailing all-digit
+   * segment is always the tone step. Design tokens named `body2` or
+   * `surface1` are therefore ordinary names: they take tones and reach
+   * the `--color-*` tier like any other.
+   */
+  it('treats a digit-bearing name as a name', () => {
+    expect(convert('bgc-body2')).toBe(
+      '.bgc-body2 { background-color: oklch(from var(--bgc-body2, var(--color-body2, var(--body2, body2))) calc(l * var(--bgc-body2-l-scale, var(--body2-l-scale, var(--bgc-l-scale, var(--l-scale, 1))))) calc(c * var(--bgc-body2-c-scale, var(--body2-c-scale, var(--bgc-c-scale, var(--c-scale, 1))))) calc(h + var(--bgc-body2-h-rotate, var(--body2-h-rotate, var(--bgc-h-rotate, var(--h-rotate, 0))))) / alpha); }',
+    );
+  });
+
+  it('applies a tone to a digit-bearing name', () => {
+    const rule = convert('bgc-body2-50');
+
+    expect(rule).toContain(
+      'var(--bgc-body2, var(--color-body2, var(--body2, body2)))',
+    );
+    // the tone step drives the lightness formula rather than the name
+    expect(rule).toContain('l + ');
+    expect(rule).not.toContain('--body2-50');
+  });
+
+  it('applies tone and alpha together', () => {
+    const rule = convert('bgc-body2-50/30');
+
+    expect(rule).toContain('var(--color-body2');
+    expect(rule).toContain('/ 30%');
+  });
+
+  it('reads tone and alpha from variables', () => {
+    const rule = convert('bgc-body2-$tone/$alpha');
+
+    expect(rule).toContain('var(--color-body2');
+    // each magnitude keeps its default, so a theme can leave it unset
+    expect(rule).toContain('var(--tone, 500)');
+    expect(rule).toContain('var(--alpha, 100)');
+  });
+
+  it('keeps a trailing number as the tone, not part of the name', () => {
+    expect(convert('c-gray50/40')).toBe(
+      '.c-gray50\\/40 { color: oklch(from var(--c-gray50, var(--color-gray50, var(--gray50, gray50))) calc(l * var(--c-gray50-l-scale, var(--gray50-l-scale, var(--c-l-scale, var(--l-scale, 1))))) calc(c * var(--c-gray50-c-scale, var(--gray50-c-scale, var(--c-c-scale, var(--c-scale, 1))))) calc(h + var(--c-gray50-h-rotate, var(--gray50-h-rotate, var(--c-h-rotate, var(--h-rotate, 0))))) / 40%); }',
+    );
+  });
+
+  it('splits a multi-segment digit name from its tone', () => {
+    const rule = convert('bgc-a1-b2-30');
+
+    expect(rule).toContain('var(--color-a1-b2');
+    expect(rule).not.toContain('--a1-b2-30,');
+  });
+
+  it('still rejects a bare number as a color name', () => {
+    expect(convert('bgc-50')).not.toContain('oklch');
+  });
+});
