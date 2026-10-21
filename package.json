@@ -1,6 +1,6 @@
 {
   "name": "@f12io/maple",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A variable-first, stack-agnostic runtime CSS engine.",
   "private": false,
   "type": "module",
