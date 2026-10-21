@@ -46,6 +46,20 @@ Maple's merge model is property-aware rather than string-only:
 
 Maple also handles CSS shorthand relationships carefully. A later broad shorthand can remove earlier covered utilities, but Maple avoids false positives for properties that share a prefix without actually overriding each other. For example, `br-px rad-px`, `fx-1 fxdir=row`, `of=hidden ofwr=anywhere`, and `cols-1 col-2` are kept because those pairs target distinct CSS behavior.
 
+**Variants Across Contexts**
+
+Two utilities in different contexts both survive the merge, so the cascade decides between them. Context outranks selectors: a media or container query variant beats the base value for the same property, and it beats a state or parent-selector variant too, however many classes that selector carries.
+
+```html
+<div class="p-2 &:hover:p-4 @md:p-8">
+  <!-- At md and above the padding is p-8, hover included -->
+</div>
+```
+
+Inside a single context, specificity settles it as usual, so `&:hover:p-4` beats a plain `p-2`. Combine the two when a state needs its own value at a breakpoint: `@md:&:hover:p-6`.
+
+Query variants rely on cascade layers for that precedence, which `!important` reverses — see [Global Important Mode](17-configuration.md) for the one case this does not cover.
+
 **Shorthand and Longhand Across Contexts**
 
 Conflict resolution only rewrites the class attribute when two utilities collide in the _same_ context. Across contexts both classes survive, so a shorthand and one of its own longhands can end up on the same element with both rules live. The cascade decides those, and Maple guarantees one outcome: **the longhand wins, whatever the class order and whatever the selector.**

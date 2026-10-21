@@ -91,18 +91,29 @@ describe('Important mode', () => {
     });
   });
 
-  describe('variants keep winning over their base', () => {
-    it('viewport media variant', () => {
-      expect(styled('c=red @mnw=1px:c=green', 'color')).toBe('rgb(0, 128, 0)');
+  describe('variants against their base', () => {
+    /**
+     * The known limitation of this mode. A query variant outranks its
+     * base through the layer that holds the base bucket, and layer
+     * order is what `!important` reverses — so with every declaration
+     * important, the base wins instead. Authoring a query variant and
+     * a base for the same property in this mode therefore does not
+     * work; write the two values in separate utilities, or drop the
+     * flag for that part of the page.
+     */
+    it('a viewport media variant loses to its base', () => {
+      expect(styled('c=red @mnw=1px:c=green', 'color')).toBe('rgb(255, 0, 0)');
     });
 
-    it('container query variant', () => {
+    it('a container query variant loses to its base', () => {
       expect(styled('c=red mnw=1px:c=green', 'color', 'cnt w=500px')).toBe(
-        'rgb(0, 128, 0)',
+        'rgb(255, 0, 0)',
       );
     });
 
-    it('selector variant', () => {
+    // selector variants are decided by specificity, which importance
+    // leaves alone, so these keep working in this mode
+    it('a selector variant still wins', () => {
       expect(styled('bgc=red &.on:bgc=blue', 'background-color')).toBe(
         'rgb(0, 0, 255)',
       );

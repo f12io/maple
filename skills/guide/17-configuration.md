@@ -71,6 +71,10 @@ The per-utility `!` prefix continues to work and produces the same output; you o
 **When to avoid it:**
 
 - Greenfield projects, or sites where all CSS lives in layers — the cascade already resolves correctly, and blanket `!important` makes any later per-element override harder.
+- Pages that rely on a query variant overriding a base value for the same property. A media or container variant outranks its base through cascade layers, and layer order is the one thing `!important` reverses, so in this mode the base wins instead: `p-4 @md:p-8` stays at `p-4`. Selector variants such as `&:hover:` are unaffected, because specificity settles those and importance leaves specificity alone. The same applies to a single `!` on both a base and its query variant.
+
+> [!NOTE]
+> Keep a query variant and its base in one mode. If a page needs both `important` and responsive overrides of the same property, drop the flag and use the `!` prefix on the utilities that need it, leaving the variant pair unprefixed.
 
 ### Debug Mode (`debug`)
 

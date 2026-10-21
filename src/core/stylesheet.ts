@@ -299,16 +299,23 @@ function getOrInsertLayer(
 
       if (layer) {
         /**
-         * The base bucket is a conditional group rule rather than a
-         * nested layer, so that it and the media buckets beside it sit
-         * in one layer and plain source order decides between them.
-         * As a nested layer it would be layered while the buckets are
-         * unlayered, and that relationship reverses for `!important`
-         * declarations: a matching variant would lose to its own base
-         * whenever both are important — which the `important` config
-         * flag makes true of every declaration.
+         * The base bucket is a nested layer while the media buckets
+         * beside it are not, and unlayered declarations beat layered
+         * ones: that is what makes a query variant outrank its base
+         * whatever the selectors involved. Without it, precedence falls
+         * to specificity, and anything carrying a selector — a state
+         * variant, a parent selector, the combined selector an alias
+         * override emits — jumps ahead of the query that should win.
+         *
+         * The cost is that the relationship inverts for `!important`
+         * declarations, which read layer order backwards: a variant
+         * loses to its own base when both are important, and so for
+         * every declaration under the `important` flag. Removing the
+         * asymmetry fixes that and breaks the common case instead, so
+         * the asymmetry stays until precedence stops depending on two
+         * mechanisms that disagree.
          */
-        layer.insertRule('@media all {}', 0);
+        layer.insertRule('@layer base {}', 0);
         buckets.set(layer, [
           {
             key: BASE_KEY,
